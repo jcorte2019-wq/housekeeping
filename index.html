@@ -1,11 +1,4 @@
 <!DOCTYPE html>
-<script type="application/json" id="cowork-artifact-meta">
-{
-  "name": "Housekeeping Dashboard",
-  "schemaVersion": 1,
-  "description": "App móvil de housekeeping: seguimiento de cuartos, inspecciones con checklist, reporte de items faltantes y lista de actualización para Lightspeed."
-}
-</script>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -27,6 +20,8 @@
   --rf: #2563eb; --rf-bg: #eff6ff; --rf-border: #93c5fd;
   --so: #7c3aed; --so-bg: #f5f3ff; --so-border: #c4b5fd;
   --occ: #4b5563; --occ-bg: #f9fafb; --occ-border: #d1d5db;
+  --vd: #059669; --vd-bg: #ecfdf5; --vd-border: #6ee7b7;
+  --vp: #b45309; --vp-bg: #fffbeb; --vp-border: #fcd34d;
 
   --pending: #d97706; --pending-bg: #fffbeb;
   --inprogress: #2563eb; --inprogress-bg: #dbeafe;
@@ -222,6 +217,87 @@ body {
 .type-rf { color: var(--rf); }
 .type-so { color: var(--so); }
 .type-occ { color: var(--occ); }
+.type-vd { color: var(--vd); }
+.type-vp { color: var(--vp); }
+
+/* ── SCAN ── */
+.fab {
+  position:fixed; bottom:72px; right:16px;
+  width:54px; height:54px; border-radius:50%;
+  background:var(--primary); color:white; border:none;
+  font-size:1.5rem; cursor:pointer; z-index:200;
+  box-shadow:0 4px 16px rgba(26,95,122,.5);
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .15s;
+}
+.fab:active { transform:scale(.92); }
+
+.drop-zone {
+  border:2.5px dashed var(--border); border-radius:14px;
+  padding:32px 16px; text-align:center; cursor:pointer;
+  background:var(--bg); position:relative; transition:all .2s;
+}
+.drop-zone:hover { border-color:var(--primary); background:var(--primary-light); }
+.drop-zone input {
+  position:absolute; inset:0; opacity:0; cursor:pointer;
+  width:100%; height:100%; border:none; padding:0;
+}
+.drop-zone .dz-icon { font-size:2.5rem; display:block; margin-bottom:8px; }
+.drop-zone .dz-text { font-size:.9rem; color:var(--muted); }
+.drop-zone .dz-sub  { font-size:.75rem; color:var(--muted); margin-top:4px; opacity:.7; }
+
+.scan-preview {
+  width:100%; max-height:200px; object-fit:contain;
+  border-radius:10px; border:1.5px solid var(--border);
+  margin-bottom:12px; display:none;
+}
+.spinner-wrap { text-align:center; padding:20px; display:none; }
+.spinner-wrap.show { display:block; }
+.spinner {
+  display:inline-block; width:28px; height:28px;
+  border:3px solid var(--border); border-top-color:var(--primary);
+  border-radius:50%; animation:spin .8s linear infinite; margin-bottom:8px;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.spinner-wrap p { font-size:.85rem; color:var(--muted); }
+
+.scan-out { display:none; margin-top:4px; }
+.scan-out.show { display:block; }
+.scan-label {
+  font-size:.7rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.05em; color:var(--muted); margin:10px 0 6px;
+}
+.chips { display:flex; flex-wrap:wrap; gap:6px; }
+.chip {
+  padding:5px 11px; border-radius:20px; font-size:.78rem;
+  font-weight:600; cursor:pointer; border:2px solid transparent;
+  transition:opacity .15s; user-select:none;
+}
+.chip.off { opacity:.35; }
+.chip-co  { background:var(--co-bg);  color:var(--co);  border-color:var(--co-border); }
+.chip-rf  { background:var(--rf-bg);  color:var(--rf);  border-color:var(--rf-border); }
+.chip-vd  { background:var(--vd-bg);  color:var(--vd);  border-color:var(--vd-border); }
+.chip-vp  { background:var(--vp-bg);  color:var(--vp);  border-color:var(--vp-border); }
+.chip-so  { background:var(--so-bg);  color:var(--so);  border-color:var(--so-border); }
+.chip-occ { background:var(--occ-bg); color:var(--occ); border-color:var(--occ-border); }
+.emp-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--primary-light); color:var(--primary);
+  border-radius:8px; padding:7px 12px; font-size:.85rem; font-weight:600;
+}
+.warn-box {
+  background:#fffbeb; border:1px solid #fcd34d; border-radius:8px;
+  padding:8px 12px; font-size:.78rem; color:#92400e; margin-bottom:8px;
+}
+.raw-box {
+  background:var(--bg); border:1px solid var(--border); border-radius:8px;
+  padding:10px; font-size:.72rem; color:var(--muted); max-height:90px;
+  overflow-y:auto; white-space:pre-wrap; word-break:break-word; margin-top:6px;
+}
+.key-info {
+  background:#eff6ff; border:1px solid #93c5fd; border-radius:10px;
+  padding:12px; font-size:.82rem; color:#1e40af; margin-bottom:14px; line-height:1.6;
+}
 
 /* ── FILTER BAR ── */
 .filter-bar {
@@ -631,6 +707,7 @@ textarea { min-height: 70px; resize: vertical; }
       <div class="header-date" id="headerDate"></div>
     </div>
     <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;border:none;font-size:0.78rem" onclick="showPage('setup')">⚙️ Config</button>
+    <button class="btn btn-sm" style="background:rgba(255,255,255,0.2);color:white;border:none;font-size:0.78rem" onclick="fabTapped()">📷 Escanear</button>
   </div>
   <div class="header-pills" id="headerPills"></div>
 </div>
@@ -741,7 +818,84 @@ textarea { min-height: 70px; resize: vertical; }
 
 <div id="toast"></div>
 
-<!-- ═══ MODALS ═══ -->
+<!-- FAB escanear -->
+<button class="fab" onclick="fabTapped()">📷</button>
+
+<!-- MODAL: API KEY -->
+<div class="modal-overlay" id="modalKey">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">🔑 API Key de Anthropic</div>
+      <button class="modal-close" onclick="closeModal('modalKey')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="key-info">
+        <strong>Solo se hace una vez.</strong> La key se guarda en tu teléfono.<br><br>
+        1. Ve a <strong>console.anthropic.com</strong><br>
+        2. Crea cuenta gratis<br>
+        3. API Keys → <strong>Create Key</strong> → copia<br>
+        4. Pégala aquí abajo
+      </div>
+      <div class="form-group">
+        <label>API Key</label>
+        <input type="password" id="keyInput" placeholder="sk-ant-api03-..."
+               style="font-family:monospace;font-size:.82rem"
+               oninput="document.getElementById('keyErr').textContent=''"
+               onkeydown="if(event.key==='Enter')doSaveKey()">
+        <div id="keyErr" style="color:var(--attention);font-size:.75rem;margin-top:4px"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalKey')">Cancelar</button>
+      <button class="btn btn-primary" onclick="doSaveKey()">Guardar y escanear →</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SCAN -->
+<div class="modal-overlay" id="modalScan">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">📷 Escanear hoja</div>
+      <button class="modal-close" onclick="closeModal('modalScan')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="drop-zone" id="dropZone">
+        <input type="file" accept="image/*" capture="environment"
+               id="fileIn" onchange="onFileChosen(event)">
+        <span class="dz-icon">📄</span>
+        <div class="dz-text">Toca para fotografiar o elegir imagen</div>
+        <div class="dz-sub">Foto de la hoja impresa de la empleada</div>
+      </div>
+
+      <img id="scanImg" class="scan-preview" alt="">
+
+      <div class="spinner-wrap" id="spinWrap">
+        <div class="spinner"></div>
+        <p>Analizando con IA…</p>
+      </div>
+
+      <div class="scan-out" id="scanOut">
+        <div id="empOut"></div>
+        <div id="warnOut"></div>
+        <div class="scan-label">🚪 Cuartos detectados — toca para deseleccionar</div>
+        <div class="chips" id="chipsOut"></div>
+        <details style="margin-top:10px">
+          <summary style="font-size:.75rem;color:var(--muted);cursor:pointer">Ver respuesta IA ▾</summary>
+          <div class="raw-box" id="rawOut"></div>
+        </details>
+      </div>
+
+    </div>
+    <div class="modal-footer" id="scanFoot" style="display:none">
+      <button class="btn btn-outline" onclick="closeModal('modalScan')">Cancelar</button>
+      <button class="btn btn-primary" onclick="doImport()">✅ Agregar cuartos</button>
+    </div>
+  </div>
+</div>
 
 <!-- Room action modal -->
 <div class="modal-overlay" id="modalRoom">
@@ -1019,9 +1173,9 @@ function renderAll() {
   if (curPage==='setup') renderSetup();
 }
 
-const STATUS_ICON = {pending:'⏳',inprogress:'🧹',clean:'✅',approved:'⭐',attention:'⚠️',dnd:'🚫'};
+const STATUS_ICON  = {pending:'⏳',inprogress:'🧹',clean:'✅',approved:'⭐',attention:'⚠️',dnd:'🚫'};
 const STATUS_LABEL = {pending:'Pendiente',inprogress:'En proceso',clean:'Limpio',approved:'Aprobado',attention:'Con nota',dnd:'DND'};
-const TYPE_LABEL = {co:'CO',rf:'RF',so:'SO',occ:'OCC'};
+const TYPE_LABEL   = {co:'CO',rf:'RF',so:'SO',occ:'OCC',vd:'VD',vp:'VP'};
 
 function renderHeader() {
   const r = st.rooms;
@@ -1425,7 +1579,7 @@ function saveRoom() {
 }
 
 function addBulk() {
-  const typeMap={co:'co',salida:'co',checkout:'co',rf:'rf',refresh:'rf',so:'so',stayover:'so',occ:'occ',ocupado:'occ'};
+  const typeMap={co:'co',salida:'co',checkout:'co',cout:'co',rf:'rf',refresh:'rf',rfsh:'rf',full:'rf','full clean':'rf',so:'so',stayover:'so',occ:'occ',ocupado:'occ',vd:'vd','vacant dirty':'vd',vp:'vp','vacant pickup':'vp',mantenimiento:'vp',maintenance:'vp'};
   const lines = document.getElementById('bulkInput').value.trim().split('\n');
   let added=0;
   for(const line of lines) {
@@ -1518,6 +1672,246 @@ function toast(msg) {
   el.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(()=>el.classList.remove('show'), 2500);
+}
+
+// ══════════════════════════════════════════════
+// SCAN / API KEY
+// ══════════════════════════════════════════════
+let _scanRooms = [];   // [{number, type}]
+let _scanEmp   = '';   // detected employee name
+
+/* ---- API KEY ---- */
+function getKey()  { return localStorage.getItem('hk_key') || ''; }
+function saveKey(k){ localStorage.setItem('hk_key', k); }
+
+function fabTapped() {
+  if (!getKey()) {
+    document.getElementById('keyInput').value = '';
+    document.getElementById('keyErr').textContent = '';
+    openModal('modalKey');
+  } else {
+    openScan();
+  }
+}
+
+function doSaveKey() {
+  const k = document.getElementById('keyInput').value.trim();
+  if (!k) { document.getElementById('keyErr').textContent = 'Ingresa la key'; return; }
+  if (!k.startsWith('sk-ant-')) { document.getElementById('keyErr').textContent = 'Debe empezar con sk-ant-'; return; }
+  saveKey(k);
+  closeModal('modalKey');
+  toast('🔑 Key guardada');
+  setTimeout(openScan, 300);
+}
+
+/* ---- SCAN MODAL ---- */
+function openScan() {
+  // reset UI
+  _scanRooms = []; _scanEmp = '';
+  document.getElementById('scanImg').style.display   = 'none';
+  document.getElementById('scanImg').src             = '';
+  document.getElementById('dropZone').style.display  = 'block';
+  document.getElementById('spinWrap').classList.remove('show');
+  document.getElementById('scanOut').classList.remove('show');
+  document.getElementById('scanFoot').style.display  = 'none';
+  document.getElementById('fileIn').value            = '';
+  document.getElementById('empOut').innerHTML        = '';
+  document.getElementById('warnOut').innerHTML       = '';
+  document.getElementById('chipsOut').innerHTML      = '';
+  document.getElementById('rawOut').textContent      = '';
+  openModal('modalScan');
+}
+
+function onFileChosen(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const dataUrl = ev.target.result;
+    document.getElementById('scanImg').src            = dataUrl;
+    document.getElementById('scanImg').style.display  = 'block';
+    document.getElementById('dropZone').style.display = 'none';
+    callAI(dataUrl);
+  };
+  reader.readAsDataURL(file);
+}
+
+async function callAI(dataUrl) {
+  document.getElementById('spinWrap').classList.add('show');
+  document.getElementById('scanOut').classList.remove('show');
+  document.getElementById('scanFoot').style.display = 'none';
+
+  const b64       = dataUrl.split(',')[1];
+  const mediaType = dataUrl.split(';')[0].split(':')[1] || 'image/jpeg';
+
+  const prompt = `Eres un experto en housekeeping hotelero. Analiza esta imagen de una hoja de asignación de cuartos.
+
+REGLA PRINCIPAL: El tipo de cada cuarto está en la columna "HK Package Information". Úsala primero.
+
+MAPEO DE TIPOS:
+- COUT / Check Out / Checkout → "co"
+- RFSH / Refresh / FULL / Full Clean → "rf"  
+- VD / Vacant Dirty → "vd"
+- VP / Vacant Pickup → "vp"
+- SO / Stay Over → "so"
+- OCC / OD / Occupied → "occ"
+
+EMPLEADA: busca el nombre escrito a mano arriba de la hoja, o en el encabezado "Attendant [Nombre]". Solo hay una empleada por hoja.
+
+Responde SOLO con este JSON, sin texto extra:
+{"employee":"Nombre","rooms":[{"n":"101","t":"co"},{"n":"102","t":"vd"}]}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': getKey(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: b64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+
+    document.getElementById('spinWrap').classList.remove('show');
+
+    if (res.status === 401) {
+      localStorage.removeItem('hk_key');
+      showScanError('API Key inválida. Cierra y toca 📷 de nuevo para ingresar una nueva.');
+      return;
+    }
+    if (!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      showScanError('Error ' + res.status + ': ' + (err?.error?.message || res.statusText));
+      return;
+    }
+
+    const data = await res.json();
+    // extract text from response
+    let raw = '';
+    for (const block of (data.content || [])) {
+      if (block.type === 'text') raw += block.text;
+    }
+
+    document.getElementById('rawOut').textContent = raw;
+
+    // parse JSON — find the { } block anywhere in the response
+    let parsed;
+    try {
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('no json');
+      parsed = JSON.parse(match[0]);
+    } catch(_) {
+      showScanError('La IA no devolvió JSON válido. Expande "Ver respuesta IA" y manda captura.');
+      document.getElementById('scanOut').classList.add('show');
+      return;
+    }
+
+    renderScanResults(parsed);
+
+  } catch(err) {
+    document.getElementById('spinWrap').classList.remove('show');
+    const msg = err.message || String(err);
+    // CORS / network errors happen when file is opened as file:// local
+    if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('Load failed')) {
+      showScanError('Error de conexión. Asegúrate de tener internet y que la app NO esté abierta como archivo local (file://). Ábrela desde Safari con el link de Claude.');
+    } else {
+      showScanError('Error: ' + msg);
+    }
+  }
+}
+
+function showScanError(msg) {
+  document.getElementById('chipsOut').innerHTML =
+    '<div style="color:var(--attention);font-size:.85rem;padding:8px 0">⚠️ ' + msg + '</div>';
+  document.getElementById('scanOut').classList.add('show');
+  document.getElementById('scanFoot').style.display = 'none';
+}
+
+function renderScanResults(parsed) {
+  _scanEmp   = (parsed.employee || '').trim();
+  _scanRooms = parsed.rooms || [];
+
+  // employee
+  const empEl = document.getElementById('empOut');
+  empEl.innerHTML = _scanEmp
+    ? '<div class="scan-label">👤 Empleada detectada</div><span class="emp-badge">👤 ' + _scanEmp + '</span>'
+    : '';
+
+  // conflicts
+  const existing = new Set(st.rooms.map(r => r.number));
+  const conflicts = _scanRooms.filter(r => existing.has(r.n)).map(r => r.n);
+  const warnEl = document.getElementById('warnOut');
+  warnEl.innerHTML = conflicts.length
+    ? '<div class="warn-box">⚠️ Cuartos que ya existen (no se duplicarán): ' + conflicts.join(', ') + '</div>'
+    : '';
+
+  // chips
+  const typeClass = { co:'chip-co', rf:'chip-rf', vd:'chip-vd', vp:'chip-vp', so:'chip-so', occ:'chip-occ' };
+  const typeLabel = { co:'CO', rf:'RF', vd:'VD', vp:'VP', so:'SO', occ:'OCC' };
+
+  if (!_scanRooms.length) {
+    showScanError('No se detectaron cuartos. Intenta con una foto más clara.');
+    return;
+  }
+
+  document.getElementById('chipsOut').innerHTML = _scanRooms.map((r, i) => {
+    const cls = typeClass[r.t] || 'chip-co';
+    const lbl = typeLabel[r.t] || r.t.toUpperCase();
+    const dup = existing.has(r.n);
+    return '<span class="chip ' + cls + (dup?' off':'') + '" id="chip' + i + '" onclick="toggleChip(' + i + ')">'
+      + r.n + ' <span style="opacity:.65;font-size:.68rem">' + lbl + '</span></span>';
+  }).join('');
+
+  document.getElementById('scanOut').classList.add('show');
+  document.getElementById('scanFoot').style.display = 'flex';
+}
+
+function toggleChip(i) {
+  document.getElementById('chip' + i).classList.toggle('off');
+}
+
+function doImport() {
+  // find or create employee
+  let empId = null;
+  if (_scanEmp) {
+    let emp = st.employees.find(e => e.name.toLowerCase() === _scanEmp.toLowerCase());
+    if (!emp) { emp = { id: gid(), name: _scanEmp }; st.employees.push(emp); }
+    empId = emp.id;
+  }
+
+  const existing = new Set(st.rooms.map(r => r.number));
+  let added = 0;
+
+  _scanRooms.forEach((r, i) => {
+    if (document.getElementById('chip' + i)?.classList.contains('off')) return;
+    if (existing.has(r.n)) return;
+    const type = r.t || 'co';
+    st.rooms.push({
+      id: gid(), number: r.n, type,
+      floor: '', priority: 'normal',
+      note: type === 'vp' ? '🔧 Mantenimiento' : '',
+      status: type === 'occ' ? 'dnd' : type === 'vp' ? 'attention' : 'pending',
+      assignedTo: empId,
+      missing: [], inspectionData: null
+    });
+    existing.add(r.n);
+    added++;
+  });
+
+  closeModal('modalScan');
+  save(); renderAll();
+  toast('📷 ' + added + ' cuartos importados' + (_scanEmp ? ' → ' + _scanEmp : ''));
 }
 
 // ══════════════════════════════════════════════
