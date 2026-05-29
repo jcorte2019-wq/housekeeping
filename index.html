@@ -13,71 +13,100 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
   --p:#1a5f7a;--pl:#e8f4f8;--bg:#f0f4f8;--text:#1a2332;--muted:#6b7280;--bdr:#e2e8f0;
-  --co:#dc2626;--co-bg:#fef2f2;--co-bd:#fca5a5;
-  --rf:#2563eb;--rf-bg:#eff6ff;--rf-bd:#93c5fd;
-  --vd:#059669;--vd-bg:#ecfdf5;--vd-bd:#6ee7b7;
-  --vp:#b45309;--vp-bg:#fffbeb;--vp-bd:#fcd34d;
-  --od:#7c3aed;--od-bg:#f5f3ff;--od-bd:#c4b5fd;
-  --so:#0891b2;--so-bg:#ecfeff;--so-bd:#67e8f9;
-  --occ:#4b5563;--occ-bg:#f9fafb;--occ-bd:#d1d5db;
+  --vc:#059669;--vc-bg:#d1fae5;--vc-bd:#6ee7b7;
+  --vd:#2563eb;--vd-bg:#eff6ff;--vd-bd:#93c5fd;
+  --vp:#dc2626;--vp-bg:#fef2f2;--vp-bd:#fca5a5;
+  --odrf:#7c3aed;--odrf-bg:#f5f3ff;--odrf-bd:#c4b5fd;
+  --odco:#d97706;--odco-bg:#fffbeb;--odco-bd:#fcd34d;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:68px;max-width:480px;margin:0 auto}
+
+/* HEADER */
 .hdr{background:linear-gradient(135deg,#1a5f7a,#0d3d52);color:white;padding:12px 16px 10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
 .hotel{font-weight:700;font-size:1.05rem;cursor:pointer}
 .hdate{font-size:.72rem;opacity:.7;margin-top:1px}
 .hbtns{display:flex;gap:6px;flex-shrink:0}
-.hbtn{background:rgba(255,255,255,.2);color:white;border:none;border-radius:8px;padding:7px 11px;font-size:.78rem;font-weight:600;cursor:pointer}
+.hbtn{background:rgba(255,255,255,.2);color:white;border:none;border-radius:8px;padding:7px 10px;font-size:.76rem;font-weight:600;cursor:pointer;white-space:nowrap}
 .pills{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:1px}
 .pills::-webkit-scrollbar{display:none}
-.pill{background:rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;font-size:.72rem;white-space:nowrap;display:flex;align-items:center;gap:3px;flex-shrink:0}
-.pill strong{font-size:.85rem}
+.pill{border-radius:20px;padding:3px 9px;font-size:.7rem;white-space:nowrap;display:flex;align-items:center;gap:3px;flex-shrink:0}
+.pill strong{font-size:.82rem}
+
+/* FILTER BAR */
 .filters{display:flex;gap:5px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;background:white;border-bottom:1px solid var(--bdr);position:sticky;top:100px;z-index:90}
 .filters::-webkit-scrollbar{display:none}
-.filt{padding:4px 11px;border-radius:20px;border:1px solid var(--bdr);background:white;color:var(--muted);font-size:.72rem;font-weight:500;white-space:nowrap;cursor:pointer;flex-shrink:0}
-.filt.on{background:var(--p);color:white;border-color:var(--p)}
+.filt{padding:5px 11px;border-radius:20px;border:1px solid var(--bdr);background:white;color:var(--muted);font-size:.72rem;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0}
+.filt.on{color:white;border-color:transparent}
+
+/* NAV */
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:white;border-top:1px solid var(--bdr);display:flex;height:58px;z-index:100}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:.62rem;color:#9ca3af;border:none;background:none;cursor:pointer;padding:4px 0;transition:color .15s}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:.6rem;color:#9ca3af;border:none;background:none;cursor:pointer;padding:4px 0;transition:color .15s}
 .nav-btn.on{color:var(--p)}
-.nav-btn .ni{font-size:1.25rem;transition:transform .15s}
+.nav-btn .ni{font-size:1.2rem;transition:transform .15s}
 .nav-btn.on .ni{transform:scale(1.1)}
-.page{display:none;padding:12px}
+
+/* PAGES */
+.page{display:none;padding:10px}
 .page.on{display:block}
+
+/* ROOM GRID */
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.tile{background:white;border-radius:10px;border:2px solid var(--bdr);padding:10px 6px;cursor:pointer;text-align:center;position:relative;user-select:none;transition:transform .1s}
-.tile:active{transform:scale(.94)}
-.tile-num{font-size:1.05rem;font-weight:800}
-.tile-type{font-size:.6rem;font-weight:700;letter-spacing:.05em;margin-top:1px}
-.tile-icon{font-size:.95rem;margin-top:3px;display:block}
-.tile-emp{font-size:.56rem;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tile{border-radius:10px;border:2px solid var(--bdr);padding:10px 6px;cursor:pointer;text-align:center;position:relative;user-select:none;transition:transform .1s;background:white}
+.tile:active{transform:scale(.93)}
+.tile-num{font-size:1.1rem;font-weight:800}
+.tile-status{font-size:.62rem;font-weight:700;letter-spacing:.03em;margin-top:2px;line-height:1.2}
+.tile-emp{font-size:.55rem;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tile-alert{position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700}
-/* Asociada card in list view */
-.assoc-card{background:white;border-radius:12px;border:1px solid var(--bdr);margin-bottom:10px;overflow:hidden;cursor:pointer;transition:box-shadow .15s}
-.assoc-card:active{box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.assoc-header{display:flex;align-items:center;gap:12px;padding:14px}
-.assoc-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#1a5f7a,#0d3d52);color:white;font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* STATUS COLORS */
+.s-vc  {border-color:var(--vc-bd) !important;background:var(--vc-bg) !important}
+.s-vd  {border-color:var(--vd-bd) !important;background:var(--vd-bg) !important}
+.s-vp  {border-color:var(--vp-bd) !important;background:var(--vp-bg) !important}
+.s-odrf{border-color:var(--odrf-bd)!important;background:var(--odrf-bg)!important}
+.s-odco{border-color:var(--odco-bd)!important;background:var(--odco-bg)!important}
+
+/* ASSOC LIST */
+.assoc-card{background:white;border-radius:12px;border:1px solid var(--bdr);margin-bottom:10px;overflow:hidden;cursor:pointer}
+.assoc-card:active{opacity:.85}
+.assoc-hdr{display:flex;align-items:center;gap:12px;padding:13px 14px}
+.assoc-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1a5f7a,#0d3d52);color:white;font-weight:700;font-size:.95rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .assoc-info{flex:1;min-width:0}
 .assoc-name{font-weight:700;font-size:.95rem}
-.assoc-stats{font-size:.75rem;color:var(--muted);margin-top:2px}
-.assoc-arrow{font-size:1rem;color:#9ca3af}
-.assoc-progress{height:4px;background:var(--bdr);margin:0 14px 12px}
+.assoc-sub{font-size:.72rem;color:var(--muted);margin-top:2px}
+.assoc-floors{font-size:.68rem;color:var(--p);font-weight:600;margin-top:2px}
+.assoc-prog{height:4px;background:var(--bdr);margin:0 14px 12px;border-radius:2px}
 .assoc-prog-fill{height:100%;background:#059669;border-radius:2px;transition:width .4s}
-/* Room list in assoc view */
-.back-btn{display:flex;align-items:center;gap:8px;padding:10px 0 14px;cursor:pointer;color:var(--p);font-weight:600;font-size:.88rem}
+
+/* ROOM LIST inside assoc */
+.back-btn{display:flex;align-items:center;gap:6px;padding:8px 0 12px;cursor:pointer;color:var(--p);font-weight:600;font-size:.85rem}
 .room-row{display:flex;align-items:center;padding:11px 14px;border-bottom:1px solid #f0f4f8;gap:10px;cursor:pointer}
+.room-row:active{background:#f8fafc}
 .rr-num{font-weight:800;font-size:1rem;min-width:42px}
+.rr-badge{font-size:.65rem;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
 .rr-info{flex:1;min-width:0}
-.rr-top{display:flex;align-items:center;gap:5px;margin-bottom:2px}
-.badge{font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:8px}
-.rr-emp{font-size:.75rem;color:var(--muted)}
-.rr-note{font-size:.7rem;color:#dc2626;margin-top:1px}
-.rr-st{font-size:1.1rem}
+.rr-note{font-size:.7rem;color:#dc2626;margin-top:2px}
+.rr-missing{font-size:.68rem;background:#fff3cd;color:#856404;padding:2px 6px;border-radius:6px;margin-top:2px;display:inline-block}
+
+/* SUMMARY */
+.summ-section{margin-bottom:16px}
+.summ-title{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;padding:0 2px}
+.summ-card{background:white;border-radius:12px;border:1px solid var(--bdr);overflow:hidden;margin-bottom:10px}
+.summ-hdr{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f4f8;background:#f8fafc}
+.summ-name{font-weight:700;font-size:.9rem}
+.summ-stat{font-size:.75rem;color:var(--muted)}
+.summ-row{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px;font-size:.8rem}
+.summ-row:last-child{border-bottom:none}
+.summ-icon{font-size:1rem;min-width:22px;text-align:center}
+
+/* CARD & FORMS */
 .card{background:white;border-radius:12px;border:1px solid var(--bdr);overflow:hidden;margin-bottom:12px}
 .card-hdr{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f4f8;background:#f8fafc;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-size:.88rem;font-weight:600;transition:opacity .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-size:.88rem;font-weight:600;transition:opacity .15s;gap:6px}
 .btn-p{background:var(--p);color:white}
 .btn-o{background:white;border:1.5px solid var(--bdr)!important;color:var(--text)}
-.btn-sm{padding:6px 11px;font-size:.78rem;border-radius:8px}
+.btn-r{background:#fee2e2;color:#dc2626;border:none!important}
+.btn-sm{padding:6px 11px;font-size:.76rem;border-radius:8px}
 .btn-block{width:100%}
 .btn:active{opacity:.8}
 .fg{margin-bottom:12px}
@@ -85,6 +114,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 input[type=text],select,textarea{width:100%;border:1.5px solid var(--bdr);border-radius:8px;padding:10px 12px;font-size:.92rem;color:var(--text);background:white;outline:none;font-family:inherit;-webkit-appearance:none}
 input:focus,select:focus,textarea:focus{border-color:var(--p)}
 textarea{min-height:60px;resize:none}
+
+/* MODAL / SHEET */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:flex-end}
 .overlay.on{display:flex}
 .sheet{background:white;border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,16px)}
@@ -95,44 +126,51 @@ textarea{min-height:60px;resize:none}
 .sheet-body{padding:14px 16px}
 .sheet-foot{padding:10px 16px 16px;display:flex;gap:8px}
 .sheet-foot .btn{flex:1}
-.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}
-.so{padding:10px 6px;border-radius:10px;border:2px solid transparent;text-align:center;cursor:pointer;font-size:.75rem;font-weight:600;user-select:none;transition:all .15s}
-.so:active{transform:scale(.95)}
-.so.sel{border-color:var(--p)!important;box-shadow:0 0 0 3px var(--pl)}
-.mg{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-bottom:12px}
+
+/* STATUS OPTIONS in modal */
+.st-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.st-opt{padding:12px 10px;border-radius:10px;border:2px solid transparent;cursor:pointer;user-select:none;transition:all .15s;text-align:center}
+.st-opt:active{transform:scale(.96)}
+.st-opt.sel{border-color:#1a5f7a!important;box-shadow:0 0 0 3px #e8f4f8}
+.st-opt-icon{font-size:1.3rem;margin-bottom:4px}
+.st-opt-label{font-size:.72rem;font-weight:700;line-height:1.2}
+.st-opt-desc{font-size:.62rem;opacity:.75;margin-top:2px}
+
+/* MISSING */
+.mg{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-bottom:14px}
 .mo{padding:8px 10px;border-radius:8px;border:1.5px solid var(--bdr);background:white;font-size:.76rem;cursor:pointer;display:flex;align-items:center;gap:5px;user-select:none;transition:all .15s}
 .mo.sel{border-color:#f59e0b;background:#fffbeb;color:#92400e}
-.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.prog-lbl{font-size:.76rem;color:var(--muted);min-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.prog-bar{flex:1;height:7px;background:var(--bdr);border-radius:10px;overflow:hidden}
-.prog-fill{height:100%;border-radius:10px;background:#059669;transition:width .4s}
-.prog-val{font-size:.76rem;font-weight:700;min-width:30px;text-align:right}
+
+/* STAT CARDS */
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
-.stat-card{background:white;border:1px solid var(--bdr);border-radius:10px;padding:12px 10px;text-align:center}
+.stat-card{background:white;border:1px solid var(--bdr);border-radius:10px;padding:12px;text-align:center}
 .stat-val{font-size:1.6rem;font-weight:800}
 .stat-lbl{font-size:.7rem;color:var(--muted);margin-top:2px}
-.stat-pct{font-size:.68rem;color:#9ca3af}
-.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+
+/* PROG */
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.prog-lbl{font-size:.75rem;min-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.prog-bar{flex:1;height:7px;background:var(--bdr);border-radius:10px;overflow:hidden}
+.prog-fill{height:100%;border-radius:10px;transition:width .4s}
+.prog-val{font-size:.75rem;font-weight:700;min-width:32px;text-align:right}
+
+/* EMPTY */
+.empty{text-align:center;padding:44px 20px;color:var(--muted)}
 .empty .ei{font-size:2.5rem;margin-bottom:8px}
 .empty p{font-size:.88rem}
-.empty small{font-size:.78rem;opacity:.7;margin-top:4px;display:block}
+.empty small{font-size:.76rem;opacity:.7;margin-top:4px;display:block}
+
+/* TOAST */
 #toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a2332;color:white;padding:9px 18px;border-radius:20px;font-size:.82rem;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-.ls-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid #f0f4f8;gap:10px}
-.ls-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;transition:all .15s}
-.ls-check.on{background:#059669;border-color:#059669;color:white}
-/* Change type chips */
-.type-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-.type-chip{padding:6px 12px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;border:2px solid transparent;user-select:none;transition:all .15s;opacity:.45}
-.type-chip.sel{opacity:1;border-color:currentColor}
-@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
-    <div onclick="openModal('modalHotel')" style="cursor:pointer">
+    <div onclick="openModal('modalHotel')" style="cursor:pointer;flex:1;min-width:0">
       <div class="hotel" id="hotelName">🏨 Mi Hotel</div>
       <div class="hdate" id="hdate"></div>
     </div>
@@ -144,27 +182,28 @@ textarea{min-height:60px;resize:none}
   <div class="pills" id="pills"></div>
 </div>
 
+<!-- FILTER BAR (rooms tab only) -->
 <div class="filters" id="filterBar">
-  <button class="filt on" onclick="setFilter('all',this)">Todos</button>
-  <button class="filt" onclick="setFilter('pending',this)">⏳</button>
-  <button class="filt" onclick="setFilter('inprogress',this)">🧹</button>
-  <button class="filt" onclick="setFilter('clean',this)">✅</button>
-  <button class="filt" onclick="setFilter('approved',this)">⭐</button>
-  <button class="filt" onclick="setFilter('attention',this)">⚠️</button>
-  <button class="filt" onclick="setFilter('dnd',this)">🚫</button>
+  <button class="filt on" data-f="all" onclick="setFilter('all',this)" style="">Todos</button>
+  <button class="filt" data-f="vd"   onclick="setFilter('vd',this)"   style="background:var(--vd-bg);color:var(--vd)">VD</button>
+  <button class="filt" data-f="vc"   onclick="setFilter('vc',this)"   style="background:var(--vc-bg);color:var(--vc)">VC</button>
+  <button class="filt" data-f="odco" onclick="setFilter('odco',this)" style="background:var(--odco-bg);color:var(--odco)">OD COUT</button>
+  <button class="filt" data-f="odrf" onclick="setFilter('odrf',this)" style="background:var(--odrf-bg);color:var(--odrf)">OD RFSH</button>
+  <button class="filt" data-f="vp"   onclick="setFilter('vp',this)"   style="background:var(--vp-bg);color:var(--vp)">VP</button>
 </div>
 
+<!-- PAGES -->
 <div class="page on" id="tab-rooms"><div class="grid" id="roomsGrid"></div></div>
-<div class="page" id="tab-list"><div id="listContent"></div></div>
+<div class="page" id="tab-assoc"><div id="assocContent"></div></div>
 <div class="page" id="tab-progress"></div>
-<div class="page" id="tab-lightspeed"></div>
 <div class="page" id="tab-setup"></div>
 
+<!-- NAV -->
 <nav class="nav">
   <button class="nav-btn on" onclick="showTab('rooms',this)" id="nav-rooms"><span class="ni">🏠</span>Cuartos</button>
-  <button class="nav-btn" onclick="showTab('list',this)" id="nav-list"><span class="ni">👥</span>Asociadas</button>
+  <button class="nav-btn" onclick="showTab('assoc',this)" id="nav-assoc"><span class="ni">👥</span>Asociadas</button>
   <button class="nav-btn" onclick="showTab('progress',this)" id="nav-progress"><span class="ni">📊</span>Progreso</button>
-  <button class="nav-btn" onclick="showTab('lightspeed',this)" id="nav-lightspeed"><span class="ni">💻</span>Lightspeed</button>
+  <button class="nav-btn" onclick="showTab('setup',this)" id="nav-setup"><span class="ni">⚙️</span>Config</button>
 </nav>
 
 <div id="toast"></div>
@@ -177,13 +216,13 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-body">
       <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.82rem;color:#1e40af;line-height:1.6">
         <strong>Cómo importar:</strong><br>
-        1. Toma foto de la hoja y mándala en el chat de Claude<br>
+        1. Manda la foto de la hoja en el chat de Claude<br>
         2. Claude te da un código corto<br>
         3. Pégalo aquí y toca Importar
       </div>
       <div class="fg">
         <label>Código</label>
-        <textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-co,212-rf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea>
+        <textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco,212-odrf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea>
       </div>
     </div>
     <div class="sheet-foot">
@@ -193,27 +232,24 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 
-<!-- MODAL: ROOM -->
+<!-- MODAL: ROOM STATUS -->
 <div class="overlay" id="modalRoom">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title" id="roomModalTitle">Cuarto</span><button class="sheet-close" onclick="closeModal('modalRoom')">✕</button></div>
+    <div class="sheet-hdr">
+      <span class="sheet-title" id="roomModalTitle">Cuarto</span>
+      <button class="sheet-close" onclick="closeModal('modalRoom')">✕</button>
+    </div>
     <div class="sheet-body">
-      <!-- Change type -->
-      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Tipo de cuarto</div>
-      <div class="type-chips" id="typeChips"></div>
-      <!-- Status -->
-      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Estado</div>
-      <div class="sg" id="statusGrid"></div>
-      <!-- Missing -->
-      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Items faltantes</div>
+      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Cambiar estado</div>
+      <div class="st-opts" id="stOpts"></div>
+      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Items faltantes / problemas</div>
       <div class="mg" id="missingGrid"></div>
-      <!-- Note -->
       <div class="fg"><label>Nota</label><textarea id="roomNote" placeholder="Observaciones..."></textarea></div>
       <div id="roomEmpLabel" style="font-size:.78rem;color:var(--muted);margin-bottom:4px"></div>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-o" style="flex:0;padding:10px 14px;background:#fee2e2;color:#dc2626;border:none!important" onclick="delRoom()">🗑</button>
+      <button class="btn btn-r" style="flex:0;padding:10px 14px" onclick="delRoom()">🗑</button>
       <button class="btn btn-o" onclick="closeModal('modalRoom')">Cancelar</button>
       <button class="btn btn-p" onclick="saveRoom()">Guardar</button>
     </div>
@@ -247,16 +283,14 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-hdr"><span class="sheet-title">Agregar cuarto</span><button class="sheet-close" onclick="closeModal('modalAddRoom')">✕</button></div>
     <div class="sheet-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="fg"><label>Cuarto #</label><input type="text" id="addNum" placeholder="101" onkeydown="if(event.key==='Enter')saveAddRoom()"></div>
-        <div class="fg"><label>Tipo</label>
-          <select id="addType">
-            <option value="co">CO — Checkout</option>
-            <option value="rf">RF — Refresh</option>
-            <option value="vd">VD — Vacant Dirty</option>
-            <option value="od">OD — Occupied Dirty</option>
-            <option value="vp">VP — Mantenimiento</option>
-            <option value="so">SO — Stay-over</option>
-            <option value="occ">OCC — Ocupado</option>
+        <div class="fg"><label>Cuarto #</label><input type="text" id="addNum" placeholder="201"></div>
+        <div class="fg"><label>Estado</label>
+          <select id="addStatus">
+            <option value="odco">OD COUT</option>
+            <option value="odrf">OD RFSH</option>
+            <option value="vd">VD</option>
+            <option value="vc">VC</option>
+            <option value="vp">VP</option>
           </select>
         </div>
       </div>
@@ -267,46 +301,52 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 
+<!-- MODAL: ASSOC ROOMS -->
+<div class="overlay" id="modalAssocRooms">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <span class="sheet-title" id="assocRoomsTitle">Cuartos</span>
+      <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
+    </div>
+    <div class="sheet-body" id="assocRoomsBody" style="padding:0"></div>
+  </div>
+</div>
+
 <script>
-const LS={get:k=>{try{return JSON.parse(localStorage.getItem('hk8_'+k))}catch(_){return null}},set:(k,v)=>localStorage.setItem('hk8_'+k,JSON.stringify(v))};
-let st={hotel:'Mi Hotel',employees:[],rooms:[],lsDone:{}};
-let curTab='rooms',curFilter='all',curRoomId=null,curStatus='pending',curType='co';
-let listView='assoc', curAssocId=null; // 'assoc' | 'rooms'
+// ── DATA ───────────────────────────────────────────────────
+const LS={get:k=>{try{return JSON.parse(localStorage.getItem('hk9_'+k))}catch(_){return null}},set:(k,v)=>localStorage.setItem('hk9_'+k,JSON.stringify(v))};
+let st={hotel:'Mi Hotel',employees:[],rooms:[]};
+let curTab='rooms',curFilter='all',curRoomId=null,curStatus='odco';
 const gid=()=>Math.random().toString(36).substr(2,9);
 
-const TYPE={
-  co: {label:'CO', color:'#dc2626',bg:'#fef2f2',border:'#fca5a5',desc:'Checkout'},
-  rf: {label:'RF', color:'#2563eb',bg:'#eff6ff',border:'#93c5fd',desc:'Refresh/Full'},
-  vd: {label:'VD', color:'#059669',bg:'#ecfdf5',border:'#6ee7b7',desc:'Vacant Dirty'},
-  od: {label:'OD', color:'#7c3aed',bg:'#f5f3ff',border:'#c4b5fd',desc:'Occupied Dirty'},
-  vp: {label:'VP', color:'#b45309',bg:'#fffbeb',border:'#fcd34d',desc:'Mantenimiento'},
-  so: {label:'SO', color:'#0891b2',bg:'#ecfeff',border:'#67e8f9',desc:'Stay-over'},
-  occ:{label:'OCC',color:'#4b5563',bg:'#f9fafb',border:'#d1d5db',desc:'Ocupado'},
-};
+// ── STATUS DEFINITIONS ─────────────────────────────────────
 const STATUS={
-  pending:   {icon:'⏳',label:'Pendiente', bg:'#fffbeb',color:'#d97706'},
-  inprogress:{icon:'🧹',label:'En proceso',bg:'#dbeafe',color:'#2563eb'},
-  clean:     {icon:'✅',label:'Limpio',    bg:'#d1fae5',color:'#059669'},
-  approved:  {icon:'⭐',label:'Aprobado',  bg:'#a7f3d0',color:'#065f46'},
-  attention: {icon:'⚠️',label:'Con nota',  bg:'#fee2e2',color:'#dc2626'},
-  dnd:       {icon:'🚫',label:'DND',        bg:'#f3f4f6',color:'#6b7280'},
+  vd:  {label:'VD',   desc:'Vacante sucio',         color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
+  vc:  {label:'VC',   desc:'Vacante limpio',         color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
+  odco:{label:'OD COUT',desc:'Ocupado — salida hoy', color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
+  odrf:{label:'OD RFSH',desc:'Ocupado — pide refresh',color:'var(--odrf)',bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
+  vp:  {label:'VP',   desc:'Vacante con problema',   color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
 };
+
 const MISSING=[
-  {id:'towels',label:'Toallas',icon:'🛁'},{id:'tp',label:'Papel higiénico',icon:'🧻'},
-  {id:'soap',label:'Jabón/Champú',icon:'🧴'},{id:'hangers',label:'Ganchos',icon:'🪝'},
-  {id:'pillow',label:'Almohadas',icon:'🛏️'},{id:'remote',label:'Control TV',icon:'📺'},
-  {id:'coffee',label:'Café/Té',icon:'☕'},{id:'hairdryer',label:'Secadora',icon:'💨'},
-  {id:'iron',label:'Plancha',icon:'👔'},{id:'steamer',label:'Steamer',icon:'♨️'},
+  {id:'towels',  label:'Toallas',        icon:'🛁'},
+  {id:'tp',      label:'Papel higiénico',icon:'🧻'},
+  {id:'soap',    label:'Jabón/Champú',   icon:'🧴'},
+  {id:'hangers', label:'Ganchos',        icon:'🪝'},
+  {id:'pillow',  label:'Almohadas',      icon:'🛏️'},
+  {id:'remote',  label:'Control TV',     icon:'📺'},
+  {id:'coffee',  label:'Café/Té',        icon:'☕'},
+  {id:'hairdryer',label:'Secadora',      icon:'💨'},
+  {id:'dirty',   label:'Sucio/manchado', icon:'🔴'},
+  {id:'damaged', label:'Daño/desperfecto',icon:'🔧'},
 ];
 
-function save(){LS.set('hotel',st.hotel);LS.set('employees',st.employees);LS.set('rooms',st.rooms);LS.set('lsDone',st.lsDone)}
-function load(){
-  st.hotel=LS.get('hotel')||'Mi Hotel';
-  st.employees=LS.get('employees')||[];
-  st.rooms=LS.get('rooms')||[];
-  st.lsDone=LS.get('lsDone')||{};
-}
+// ── PERSIST ────────────────────────────────────────────────
+function save(){LS.set('hotel',st.hotel);LS.set('employees',st.employees);LS.set('rooms',st.rooms)}
+function load(){st.hotel=LS.get('hotel')||'Mi Hotel';st.employees=LS.get('employees')||[];st.rooms=LS.get('rooms')||[]}
 
+// ── INIT ───────────────────────────────────────────────────
 function init(){
   load();
   const d=new Date();
@@ -318,261 +358,307 @@ function init(){
 
 function renderAll(){
   renderPills();
-  if(curTab==='rooms')renderGrid();
-  if(curTab==='list')renderList();
-  if(curTab==='progress')renderProgress();
-  if(curTab==='lightspeed')renderLightspeed();
-  if(curTab==='setup')renderSetup();
+  if(curTab==='rooms')    renderGrid();
+  if(curTab==='assoc')    renderAssoc();
+  if(curTab==='progress') renderProgress();
+  if(curTab==='setup')    renderSetup();
 }
 
+// ── PILLS ──────────────────────────────────────────────────
 function renderPills(){
   document.getElementById('hotelName').textContent='🏨 '+st.hotel;
-  const r=st.rooms;
-  const co=r.filter(x=>x.type==='co').length,rf=r.filter(x=>x.type==='rf').length;
-  const vd=r.filter(x=>x.type==='vd').length,vp=r.filter(x=>x.type==='vp').length;
-  const od=r.filter(x=>x.type==='od').length;
-  const done=r.filter(x=>['clean','approved'].includes(x.status)).length;
-  const appr=r.filter(x=>x.status==='approved').length;
+  const r=st.rooms,total=r.length;
+  const cnt=k=>r.filter(x=>x.status===k).length;
   document.getElementById('pills').innerHTML=[
-    [r.length,'total','rgba(255,255,255,.15)'],
-    [co,'CO','rgba(220,38,38,.35)'],
-    vd?[vd,'VD','rgba(5,150,105,.35)']:null,
-    od?[od,'OD','rgba(124,58,237,.35)']:null,
-    [rf,'RF','rgba(37,99,235,.35)'],
-    vp?[vp,'VP','rgba(180,83,9,.35)']:null,
-    [done,'✅','rgba(5,150,105,.25)'],
-    [appr,'⭐','rgba(6,95,70,.3)'],
-  ].filter(Boolean).map(([v,l,bg])=>`<span class="pill" style="background:${bg}"><strong>${v}</strong>${l}</span>`).join('');
+    [total,'total','rgba(255,255,255,.15)','white'],
+    [cnt('vd'),'VD','rgba(37,99,235,.4)','white'],
+    [cnt('vc'),'VC','rgba(5,150,105,.4)','white'],
+    [cnt('odco'),'OD COUT','rgba(217,119,6,.4)','white'],
+    [cnt('odrf'),'OD RFSH','rgba(124,58,237,.4)','white'],
+    [cnt('vp'),'VP','rgba(220,38,38,.4)','white'],
+  ].filter(([v])=>v>0||v===total).map(([v,l,bg,c])=>
+    `<span class="pill" style="background:${bg};color:${c}"><strong>${v}</strong>${l}</span>`
+  ).join('');
 }
 
-function sorted(arr){return[...arr].sort((a,b)=>{const p={high:0,normal:1,low:2};if(p[a.priority]!==p[b.priority])return p[a.priority]-p[b.priority];return a.number.localeCompare(b.number,undefined,{numeric:true})})}
+// ── SORTED ROOMS ───────────────────────────────────────────
+function sorted(arr){
+  return[...arr].sort((a,b)=>a.number.localeCompare(b.number,undefined,{numeric:true}));
+}
 
+function getFloors(rooms){
+  const floors=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));
+  return[...floors].sort().map(f=>`P${f}`).join(', ');
+}
+
+// ── ROOMS GRID ─────────────────────────────────────────────
 function renderGrid(){
   const rooms=sorted(curFilter==='all'?st.rooms:st.rooms.filter(r=>r.status===curFilter));
   if(!rooms.length){
-    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos.</p><small>Toca 📋 Importar para cargar.</small></div>`;
+    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos.</p><small>Toca 📋 Importar.</small></div>`;
     return;
   }
   document.getElementById('roomsGrid').innerHTML=rooms.map(r=>{
-    const t=TYPE[r.type]||TYPE.co;
-    const bdr=r.status==='pending'?'#fcd34d':r.status==='inprogress'?'#60a5fa':r.status==='clean'?'#34d399':r.status==='approved'?'#059669':r.status==='attention'?'#f87171':'#d1d5db';
-    const bg=r.status==='inprogress'?'#eff6ff':r.status==='clean'?'#ecfdf5':r.status==='approved'?'#d1fae5':r.status==='attention'?'#fef2f2':r.status==='dnd'?'#f9fafb':'white';
+    const s=STATUS[r.status]||STATUS.vd;
     const emp=st.employees.find(e=>e.id===r.assignedTo);
-    return`<div class="tile" style="border-color:${bdr};background:${bg}" onclick="openRoomModal('${r.id}')">
+    return`<div class="tile s-${r.status}" onclick="openRoomModal('${r.id}')">
       ${r.missing?.length?`<span class="tile-alert">${r.missing.length}</span>`:''}
       <div class="tile-num">${r.number}</div>
-      <div class="tile-type" style="color:${t.color}">${t.label}</div>
-      <span class="tile-icon">${STATUS[r.status]?.icon}</span>
+      <div class="tile-status" style="color:${s.color}">${s.icon} ${s.label}</div>
       <div class="tile-emp">${emp?emp.name.split(' ')[0]:'—'}</div>
     </div>`;
   }).join('');
 }
 
-// ── LIST VIEW: ASOCIADAS ───────────────────────────────────
-function renderList(){
-  const el=document.getElementById('listContent');
-  if(listView==='assoc'){
-    renderAssocList(el);
-  } else {
-    renderAssocRooms(el);
-  }
-}
-
-function renderAssocList(el){
-  // Show all asociadas + unassigned group
-  const groups=[];
-
-  // Each asociada
-  st.employees.forEach(e=>{
+// ── ASOCIADAS ──────────────────────────────────────────────
+function renderAssoc(){
+  const el=document.getElementById('assocContent');
+  const groups=st.employees.map(e=>{
     const rooms=sorted(st.rooms.filter(r=>r.assignedTo===e.id));
-    const done=rooms.filter(r=>['clean','approved'].includes(r.status)).length;
-    const pct=rooms.length?Math.round(done/rooms.length*100):0;
-    groups.push({id:e.id,name:e.name,rooms,done,pct});
+    const vc=rooms.filter(r=>r.status==='vc').length;
+    const pct=rooms.length?Math.round(vc/rooms.length*100):0;
+    const floors=getFloors(rooms);
+    const issues=rooms.filter(r=>r.missing?.length||r.note);
+    return{...e,rooms,vc,pct,floors,issues};
   });
 
-  // Unassigned
   const unassigned=sorted(st.rooms.filter(r=>!r.assignedTo));
-  if(unassigned.length) groups.push({id:'__none__',name:'Sin asignar',rooms:unassigned,done:0,pct:0});
 
-  if(!groups.length){
-    el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>No hay asociadas.</p><small>Ve a ⚙️ para agregar.</small></div>`;
+  if(!groups.length&&!unassigned.length){
+    el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>No hay asociadas.</p><small>Ve a ⚙️ Config para agregar.</small></div>`;
     return;
   }
 
-  el.innerHTML=groups.map(g=>{
-    const typeIcons=g.rooms.slice(0,6).map(r=>{
-      const t=TYPE[r.type]||TYPE.co;
-      return`<span style="background:${t.bg};color:${t.color};border-radius:6px;padding:2px 6px;font-size:.65rem;font-weight:700">${t.label}</span>`;
-    }).join('');
-    return`<div class="assoc-card" onclick="openAssocRooms('${g.id}')">
-      <div class="assoc-header">
-        <div class="assoc-avatar">${g.name[0].toUpperCase()}</div>
-        <div class="assoc-info">
-          <div class="assoc-name">${g.name}</div>
-          <div class="assoc-stats">${g.rooms.length} cuartos · ${g.done} listos · ${g.pct}%</div>
-          <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px">${typeIcons}</div>
-        </div>
-        <div class="assoc-arrow">›</div>
-      </div>
-      <div class="assoc-progress"><div class="assoc-prog-fill" style="width:${g.pct}%"></div></div>
-    </div>`;
-  }).join('');
-}
-
-function openAssocRooms(assocId){
-  listView='rooms';
-  curAssocId=assocId;
-  renderList();
-}
-
-function renderAssocRooms(el){
-  const assoc=assocId==='__none__'
-    ?{name:'Sin asignar'}
-    :st.employees.find(e=>e.id===curAssocId);
-  const assocId=curAssocId;
-  const rooms=sorted(assocId==='__none__'
-    ?st.rooms.filter(r=>!r.assignedTo)
-    :st.rooms.filter(r=>r.assignedTo===assocId));
-
-  const name=assoc?assoc.name:'Sin asignar';
-  const done=rooms.filter(r=>['clean','approved'].includes(r.status)).length;
-
-  el.innerHTML=`
-    <div class="back-btn" onclick="goBackToAssoc()">‹ Todas las asociadas</div>
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;background:white;border-radius:12px;padding:14px;border:1px solid var(--bdr)">
-      <div class="assoc-avatar">${name[0].toUpperCase()}</div>
-      <div>
-        <div style="font-weight:700;font-size:1rem">${name}</div>
-        <div style="font-size:.78rem;color:var(--muted);margin-top:2px">${rooms.length} cuartos · ${done} listos</div>
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:0">
-      ${rooms.length?rooms.map(r=>{
-        const t=TYPE[r.type]||TYPE.co;
-        return`<div class="room-row" onclick="openRoomModal('${r.id}')">
-          <div class="rr-num" style="color:${t.color}">${r.number}</div>
-          <div class="rr-info">
-            <div class="rr-top"><span class="badge" style="background:${t.bg};color:${t.color}">${t.label} · ${t.desc}</span></div>
-            ${r.note?`<div class="rr-note">📝 ${r.note}</div>`:''}
+  el.innerHTML=[
+    ...groups.map(g=>`
+      <div class="assoc-card" onclick="openAssocModal('${g.id}')">
+        <div class="assoc-hdr">
+          <div class="assoc-av">${g.name[0].toUpperCase()}</div>
+          <div class="assoc-info">
+            <div class="assoc-name">${g.name}</div>
+            <div class="assoc-sub">${g.rooms.length} cuartos · ${g.vc} VC · ${g.pct}%</div>
+            ${g.floors?`<div class="assoc-floors">📍 ${g.floors}</div>`:''}
+            ${g.issues.length?`<div style="font-size:.68rem;color:#dc2626;margin-top:2px">⚠️ ${g.issues.length} cuarto${g.issues.length>1?'s':''} con nota</div>`:''}
           </div>
-          <div class="rr-st">${STATUS[r.status]?.icon}</div>
+          <div style="font-size:1.2rem;color:#9ca3af">›</div>
+        </div>
+        <div class="assoc-prog"><div class="assoc-prog-fill" style="width:${g.pct}%"></div></div>
+      </div>`),
+    unassigned.length?`
+      <div class="assoc-card" onclick="openAssocModal('__none__')">
+        <div class="assoc-hdr">
+          <div class="assoc-av" style="background:#6b7280">?</div>
+          <div class="assoc-info">
+            <div class="assoc-name">Sin asignar</div>
+            <div class="assoc-sub">${unassigned.length} cuartos</div>
+          </div>
+          <div style="font-size:1.2rem;color:#9ca3af">›</div>
+        </div>
+      </div>`:''
+  ].join('');
+}
+
+function openAssocModal(assocId){
+  const emp=assocId==='__none__'?{name:'Sin asignar'}:st.employees.find(e=>e.id===assocId);
+  const rooms=sorted(assocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===assocId));
+  const floors=getFloors(rooms);
+  document.getElementById('assocRoomsTitle').textContent=(emp?.name||'')+(floors?' · '+floors:'');
+  document.getElementById('assocRoomsBody').innerHTML=rooms.length
+    ?rooms.map(r=>{
+        const s=STATUS[r.status]||STATUS.vd;
+        return`<div class="room-row" onclick="closeModal('modalAssocRooms');openRoomModal('${r.id}')">
+          <div class="rr-num">${r.number}</div>
+          <div class="rr-info">
+            <span class="rr-badge" style="background:${s.bg};color:${s.color};border:1px solid ${s.border}">${s.icon} ${s.label}</span>
+            ${r.note?`<div class="rr-note">📝 ${r.note}</div>`:''}
+            ${r.missing?.length?`<div class="rr-missing">⚠️ ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
+          </div>
         </div>`;
-      }).join(''):`<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos asignados</div>`}
-    </div>`;
+      }).join('')
+    :`<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos asignados</div>`;
+  openModal('modalAssocRooms');
 }
 
-function goBackToAssoc(){
-  listView='assoc';
-  curAssocId=null;
-  renderList();
-}
-
+// ── PROGRESS ───────────────────────────────────────────────
 function renderProgress(){
   const r=st.rooms,total=r.length||1;
-  const by={};Object.keys(STATUS).forEach(s=>{by[s]=r.filter(x=>x.status===s).length});
-  const done=by.clean+by.approved;
+  const cnt=k=>r.filter(x=>x.status===k).length;
+  const vc=cnt('vc'),vd=cnt('vd'),vp=cnt('vp'),odco=cnt('odco'),odrf=cnt('odrf');
+
+  // Per-assoc summary
+  const summaries=st.employees.map(e=>{
+    const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
+    const vcR=rooms.filter(x=>x.status==='vc').length;
+    const pct=rooms.length?Math.round(vcR/rooms.length*100):0;
+    const issues=rooms.filter(x=>x.missing?.length||x.note);
+    const missingAll={};
+    rooms.forEach(x=>(x.missing||[]).forEach(m=>{missingAll[m]=(missingAll[m]||0)+1}));
+    return{name:e.name,total:rooms.length,vc:vcR,pct,issues,missingAll};
+  });
+
   document.getElementById('tab-progress').innerHTML=`
-    <div style="padding:12px">
-      <div style="font-weight:700;font-size:1rem;margin-bottom:12px">Progreso del día</div>
+    <div style="padding:10px 12px 0;font-weight:700;font-size:1rem;margin-bottom:10px">Progreso del día</div>
+    <div style="padding:0 10px">
       <div class="stat-grid">
-        ${[['✅ Listos',done,'#059669'],['⭐ Aprobados',by.approved,'#065f46'],['🧹 En proceso',by.inprogress,'#2563eb'],['⏳ Pendientes',by.pending,'#d97706']].map(([l,v,c])=>
-        `<div class="stat-card"><div class="stat-val" style="color:${c}">${v}</div><div class="stat-lbl">${l}</div><div class="stat-pct">${Math.round(v/total*100)}%</div></div>`).join('')}
+        <div class="stat-card"><div class="stat-val" style="color:var(--vc)">${vc}</div><div class="stat-lbl">✅ VC Listos</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--vd)">${vd}</div><div class="stat-lbl">🛏️ VD Pendientes</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--odco)">${odco}</div><div class="stat-lbl">🚪 OD COUT</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--odrf)">${odrf}</div><div class="stat-lbl">🔄 OD RFSH</div></div>
       </div>
+
+      <!-- Progress by assoc -->
       <div class="card">
-        <div class="card-hdr">Por asociada</div>
+        <div class="card-hdr">Avance por asociada</div>
         <div style="padding:10px 14px">
-          ${st.employees.map(e=>{
-            const asgn=r.filter(x=>x.assignedTo===e.id);
-            const dn=asgn.filter(x=>['clean','approved'].includes(x.status)).length;
-            const pct=asgn.length?Math.round(dn/asgn.length*100):0;
-            return`<div class="prog-row"><div class="prog-lbl">${e.name.split(' ')[0]}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div><div class="prog-val">${dn}/${asgn.length}</div></div>`;
-          }).join('')||'<p style="font-size:.85rem;color:var(--muted)">Sin asociadas</p>'}
+          ${summaries.map(s=>`
+            <div class="prog-row">
+              <div class="prog-lbl">${s.name.split(' ')[0]}</div>
+              <div class="prog-bar"><div class="prog-fill" style="width:${s.pct}%;background:var(--vc)"></div></div>
+              <div class="prog-val">${s.vc}/${s.total}</div>
+            </div>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">Sin asociadas</p>'}
         </div>
       </div>
+
+      <!-- Summary per assoc -->
+      ${summaries.map(s=>`
+        <div class="summ-card">
+          <div class="summ-hdr">
+            <div class="summ-name">${s.name}</div>
+            <div class="summ-stat">${s.vc}/${s.total} VC · ${s.pct}%</div>
+          </div>
+          ${s.issues.length?s.issues.map(r=>{
+            const st2=STATUS[r.status]||STATUS.vd;
+            return`<div class="summ-row">
+              <div class="summ-icon">${st2.icon}</div>
+              <div style="flex:1;min-width:0">
+                <strong>Cuarto ${r.number}</strong> — ${st2.label}
+                ${r.missing?.length?`<div style="font-size:.72rem;color:#92400e;margin-top:2px">⚠️ Falta: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
+                ${r.note?`<div style="font-size:.72rem;color:#dc2626;margin-top:1px">📝 ${r.note}</div>`:''}
+              </div>
+            </div>`;}).join('')
+          :`<div class="summ-row"><div class="summ-icon">✅</div><div>Sin novedades</div></div>`}
+        </div>`).join('')}
+
+      <!-- Email report -->
+      <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Enviar reporte por correo</button>
     </div>`;
 }
 
-function renderLightspeed(){
-  const changed=st.rooms.filter(r=>['clean','approved','attention'].includes(r.status));
-  document.getElementById('tab-lightspeed').innerHTML=`
-    <div style="padding:12px">
-      <div style="font-weight:700;font-size:1rem;margin-bottom:12px">Actualizar Lightspeed</div>
-      <div class="card">
-        ${changed.map(r=>`<div class="ls-row">
-          <div style="font-weight:800;min-width:40px">${r.number}</div>
-          <div style="font-size:1rem">${STATUS[r.status]?.icon}</div>
-          <div style="flex:1;font-size:.8rem;color:var(--muted)">${STATUS[r.status]?.label}${r.note?' · '+r.note:''}</div>
-          <div class="ls-check ${st.lsDone[r.id]?'on':''}" onclick="toggleLs('${r.id}')">${st.lsDone[r.id]?'✓':''}</div>
-        </div>`).join('')||'<div style="padding:16px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos que actualizar</div>'}
-      </div>
-      <button class="btn btn-p btn-block" onclick="markAllLs()">✓ Marcar todos actualizados</button>
-    </div>`;
+// ── SEND REPORT ────────────────────────────────────────────
+function sendReport(){
+  const d=new Date();
+  const dateStr=d.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  let body=`REPORTE HOUSEKEEPING - ${st.hotel}\n${dateStr}\n`;
+  body+=`${'='.repeat(40)}\n\n`;
+
+  const cnt=k=>st.rooms.filter(x=>x.status===k).length;
+  body+=`RESUMEN GENERAL\n`;
+  body+=`Total cuartos: ${st.rooms.length}\n`;
+  body+=`VC (Listos): ${cnt('vc')}\n`;
+  body+=`VD (Pendientes): ${cnt('vd')}\n`;
+  body+=`OD COUT: ${cnt('odco')}\n`;
+  body+=`OD RFSH: ${cnt('odrf')}\n`;
+  body+=`VP (Problema): ${cnt('vp')}\n\n`;
+
+  st.employees.forEach(e=>{
+    const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
+    const vc=rooms.filter(x=>x.status==='vc').length;
+    body+=`${'─'.repeat(30)}\n`;
+    body+=`ASOCIADA: ${e.name}\n`;
+    body+=`Cuartos: ${rooms.length} total / ${vc} VC\n`;
+    const issues=rooms.filter(x=>x.missing?.length||x.note);
+    if(issues.length){
+      body+=`Novedades:\n`;
+      issues.forEach(r=>{
+        body+=`  • Cuarto ${r.number} (${STATUS[r.status]?.label||r.status})\n`;
+        if(r.missing?.length) body+=`    Faltante: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}\n`;
+        if(r.note) body+=`    Nota: ${r.note}\n`;
+      });
+    } else {
+      body+=`Sin novedades\n`;
+    }
+    body+='\n';
+  });
+
+  const subject=encodeURIComponent(`Reporte Housekeeping ${st.hotel} - ${d.toLocaleDateString('es-MX')}`);
+  const bodyEnc=encodeURIComponent(body);
+  window.location.href=`mailto:?subject=${subject}&body=${bodyEnc}`;
 }
 
+// ── SETUP ──────────────────────────────────────────────────
 function renderSetup(){
-  const empHtml=st.employees.map(e=>`
-    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f4f8">
-      <div style="width:34px;height:34px;border-radius:50%;background:#e8f4f8;color:#1a5f7a;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
-      <div style="flex:1;font-weight:600;font-size:.88rem">${e.name}</div>
-      <div style="font-size:.72rem;color:#9ca3af">${st.rooms.filter(r=>r.assignedTo===e.id).length} cuartos</div>
-      <button onclick="delEmp('${e.id}')" style="background:none;border:none;color:#ef4444;font-size:.9rem;cursor:pointer;padding:4px 6px">🗑</button>
-    </div>`).join('');
-
-  const roomHtml=sorted(st.rooms).map(r=>{
-    const t=TYPE[r.type]||TYPE.co;const emp=st.employees.find(e=>e.id===r.assignedTo);
-    return`<div style="display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px">
-      <div style="font-weight:700;min-width:40px;font-size:.9rem">${r.number}</div>
-      <span class="badge" style="background:${t.bg};color:${t.color}">${t.label}</span>
-      <div style="flex:1;font-size:.78rem;color:var(--muted)">${emp?emp.name.split(' ')[0]:''}</div>
-      <div style="font-size:.88rem">${STATUS[r.status]?.icon}</div>
-      <button onclick="delRoomSetup('${r.id}')" style="background:none;border:none;color:#ef4444;font-size:.85rem;cursor:pointer;padding:3px 5px">🗑</button>
-    </div>`;
-  }).join('');
-
   document.getElementById('tab-setup').innerHTML=`
-    <div style="padding:12px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <span style="font-weight:700;font-size:1rem">Configuración</span>
-        <button onclick="newDay()" style="background:#fff3cd;color:#856404;border:none;border-radius:8px;padding:7px 12px;font-size:.78rem;font-weight:600;cursor:pointer">🔄 Nuevo día</button>
-      </div>
+    <div style="padding:10px 12px 0;font-weight:700;font-size:1rem;margin-bottom:12px">Configuración</div>
+    <div style="padding:0 10px">
       <div class="card">
-        <div class="card-hdr">Asociadas<button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Agregar</button></div>
-        ${empHtml||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
+        <div class="card-hdr">Asociadas <button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Agregar</button></div>
+        ${st.employees.map(e=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f4f8">
+            <div style="width:34px;height:34px;border-radius:50%;background:#e8f4f8;color:#1a5f7a;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
+            <div style="flex:1;font-weight:600;font-size:.88rem">${e.name}</div>
+            <div style="font-size:.72rem;color:#9ca3af">${st.rooms.filter(r=>r.assignedTo===e.id).length} cuartos</div>
+            <button onclick="delEmp('${e.id}')" style="background:none;border:none;color:#ef4444;font-size:.9rem;cursor:pointer;padding:4px 6px">🗑</button>
+          </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
       </div>
+
       <div class="card">
-        <div class="card-hdr">Cuartos del día<button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Cuarto</button></div>
-        ${roomHtml||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📋 Importar.</div>'}
+        <div class="card-hdr">Cuartos del día <button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Cuarto</button></div>
+        ${sorted(st.rooms).map(r=>{
+          const s=STATUS[r.status]||STATUS.vd;
+          const emp=st.employees.find(e=>e.id===r.assignedTo);
+          return`<div style="display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px">
+            <div style="font-weight:700;min-width:40px;font-size:.9rem">${r.number}</div>
+            <span style="font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:10px;background:${s.bg};color:${s.color}">${s.label}</span>
+            <div style="flex:1;font-size:.78rem;color:var(--muted)">${emp?emp.name.split(' ')[0]:''}</div>
+            <button onclick="delRoomSetup('${r.id}')" style="background:none;border:none;color:#ef4444;font-size:.85rem;cursor:pointer;padding:3px 5px">🗑</button>
+          </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📋 Importar.</div>'}
       </div>
+
+      <button class="btn btn-block" style="background:#fff3cd;color:#856404;border:none;font-size:.9rem;font-weight:700;margin-bottom:8px" onclick="newDay()">🔄 Reiniciar día</button>
     </div>`;
 }
 
 // ── IMPORT ─────────────────────────────────────────────────
+// Status mapping from import codes
+const statusMap={
+  co:'odco',cout:'odco',odco:'odco',
+  rf:'odrf',rfsh:'odrf',odrf:'odrf',full:'odrf',
+  vd:'vd','vacant dirty':'vd',
+  vc:'vc','vacant clean':'vc',
+  vp:'vp','vacant pickup':'vp',
+  od:'odco', // default OD without suffix → OD COUT
+};
+
 function doImport(){
   const raw=document.getElementById('pasteInput').value.trim();
   if(!raw){toast('⚠️ Pega un código primero');return}
   try{
     let empName='',roomStr=raw;
     if(raw.includes('|')&&raw.startsWith('EMP:')){
-      const p=raw.split('|');empName=p[0].replace('EMP:','').trim();roomStr=p[1];
+      const p=raw.split('|');
+      empName=p[0].replace('EMP:','').trim();
+      roomStr=p[1];
     }
     const items=roomStr.split(',').map(s=>s.trim()).filter(Boolean);
     if(!items.length)throw new Error('vacío');
+
     let empId=null;
     if(empName){
       let emp=st.employees.find(e=>e.name.toLowerCase()===empName.toLowerCase());
       if(!emp){emp={id:gid(),name:empName};st.employees.push(emp)}
       empId=emp.id;
     }
+
     const existing=new Set(st.rooms.map(r=>r.number));
     let added=0;
     for(const item of items){
-      const[num,type='co']=item.split('-');
+      const[num,code='odco']=item.split('-');
       if(!num||existing.has(num.trim()))continue;
-      const t=type.trim()||'co';
-      st.rooms.push({id:gid(),number:num.trim(),type:t,floor:'',priority:'normal',
-        note:t==='vp'?'🔧 Mantenimiento':'',
-        status:t==='occ'?'dnd':t==='vp'?'attention':'pending',
-        assignedTo:empId,missing:[],inspectionData:null});
+      const status=statusMap[code.trim().toLowerCase()]||'odco';
+      st.rooms.push({
+        id:gid(),number:num.trim(),status,
+        assignedTo:empId,note:'',missing:[],
+      });
       existing.add(num.trim());added++;
     }
     document.getElementById('pasteInput').value='';
@@ -585,20 +671,17 @@ function doImport(){
 function openRoomModal(id){
   curRoomId=id;
   const r=st.rooms.find(x=>x.id===id);
-  const t=TYPE[r.type]||TYPE.co;
   curStatus=r.status;
-  curType=r.type;
-  document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number} · ${t.label}`;
+  const s=STATUS[r.status]||STATUS.vd;
+  document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number}`;
 
-  // Type chips
-  document.getElementById('typeChips').innerHTML=Object.entries(TYPE).map(([k,v])=>
-    `<span class="type-chip ${k===r.type?'sel':''}" style="background:${v.bg};color:${v.color};border-color:${v.border}" onclick="selType('${k}',this)">${v.label} ${v.desc}</span>`
-  ).join('');
-
-  // Status grid
-  document.getElementById('statusGrid').innerHTML=Object.entries(STATUS).map(([k,v])=>
-    `<div class="so ${k===r.status?'sel':''}" style="background:${v.bg};color:${v.color}" onclick="selStatus('${k}',this)">${v.icon}<br><span style="font-size:.65rem">${v.label}</span></div>`
-  ).join('');
+  // Status options
+  document.getElementById('stOpts').innerHTML=Object.entries(STATUS).map(([k,v])=>`
+    <div class="st-opt ${k===r.status?'sel':''}" style="background:${v.bg};border-color:${k===r.status?'#1a5f7a':v.border}" onclick="selStatus('${k}',this)">
+      <div class="st-opt-icon">${v.icon}</div>
+      <div class="st-opt-label" style="color:${v.color}">${v.label}</div>
+      <div class="st-opt-desc" style="color:${v.color}">${v.desc}</div>
+    </div>`).join('');
 
   // Missing
   document.getElementById('missingGrid').innerHTML=MISSING.map(m=>
@@ -611,26 +694,26 @@ function openRoomModal(id){
   openModal('modalRoom');
 }
 
-function selType(k,el){
-  curType=k;
-  document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('sel'));
+function selStatus(k,el){
+  curStatus=k;
+  document.querySelectorAll('.st-opt').forEach(o=>{
+    const sk=o.getAttribute('onclick').match(/'(\w+)'/)[1];
+    const v=STATUS[sk];
+    o.classList.remove('sel');
+    o.style.borderColor=v.border;
+  });
   el.classList.add('sel');
-  document.getElementById('roomModalTitle').textContent=document.getElementById('roomModalTitle').textContent.split('·')[0]+'· '+(TYPE[k]?.label||k);
+  el.style.borderColor='#1a5f7a';
 }
-function selStatus(k,el){curStatus=k;document.querySelectorAll('.so').forEach(o=>o.classList.remove('sel'));el.classList.add('sel')}
 function togMissing(id){document.getElementById('mo-'+id).classList.toggle('sel')}
-
 function saveRoom(){
   const r=st.rooms.find(x=>x.id===curRoomId);
-  r.type=curType;
   r.status=curStatus;
   r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
   r.note=document.getElementById('roomNote').value.trim();
-  st.lsDone[curRoomId]=false;
   closeModal('modalRoom');save();renderAll();
-  toast(`${STATUS[r.status]?.icon} Cuarto ${r.number} guardado`);
+  toast(`${STATUS[r.status]?.icon} Cuarto ${r.number} → ${STATUS[r.status]?.label}`);
 }
-
 function delRoom(){
   const r=st.rooms.find(x=>x.id===curRoomId);
   if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;
@@ -638,49 +721,63 @@ function delRoom(){
   closeModal('modalRoom');save();renderAll();toast('🗑 Cuarto eliminado');
 }
 
-// ── SETUP ──────────────────────────────────────────────────
+// ── SETUP ACTIONS ──────────────────────────────────────────
 function saveHotel(){const n=document.getElementById('hotelInput').value.trim();if(n){st.hotel=n;save();renderAll()}closeModal('modalHotel')}
 function saveEmp(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada')}
 function delEmp(id){if(!confirm('¿Eliminar asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll()}
 function delRoomSetup(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll()}
-function newDay(){if(!confirm('¿Nuevo día? Se eliminan todos los cuartos.'))return;st.rooms=[];st.lsDone={};listView='assoc';save();renderAll();toast('🌅 Nuevo día iniciado')}
-function toggleLs(id){st.lsDone[id]=!st.lsDone[id];save();renderLightspeed()}
-function markAllLs(){st.rooms.forEach(r=>{st.lsDone[r.id]=true});save();renderLightspeed();toast('✅ Todo marcado')}
+
+function newDay(){
+  if(!confirm('¿Reiniciar día? Se eliminarán todos los cuartos.'))return;
+  st.rooms=[];save();renderAll();toast('🌅 Día reiniciado');
+}
 
 function openAddRoom(){
   document.getElementById('addNum').value='';document.getElementById('addNote').value='';
-  document.getElementById('addType').value='co';
-  document.getElementById('addEmp').innerHTML='<option value="">Sin asignar</option>'+st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  document.getElementById('addStatus').value='odco';
+  document.getElementById('addEmp').innerHTML='<option value="">Sin asignar</option>'+
+    st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
   openModal('modalAddRoom');
 }
 function saveAddRoom(){
   const num=document.getElementById('addNum').value.trim();
-  if(!num){toast('⚠️ Ingresa el número');return}
-  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Ya existe el cuarto '+num);return}
-  const type=document.getElementById('addType').value;
-  st.rooms.push({id:gid(),number:num,type,floor:'',priority:'normal',
-    note:document.getElementById('addNote').value.trim(),
-    status:type==='occ'?'dnd':type==='vp'?'attention':'pending',
+  if(!num){toast('⚠️ Ingresa número');return}
+  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Ya existe '+num);return}
+  st.rooms.push({id:gid(),number:num,status:document.getElementById('addStatus').value,
     assignedTo:document.getElementById('addEmp').value||null,
-    missing:[],inspectionData:null});
+    note:document.getElementById('addNote').value.trim(),missing:[]});
   closeModal('modalAddRoom');save();renderAll();toast('🏠 Cuarto '+num+' agregado');
 }
 
-// ── NAV ────────────────────────────────────────────────────
+// ── NAV / FILTER ───────────────────────────────────────────
 function showTab(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById('tab-'+name).classList.add('on');
   document.getElementById('filterBar').style.display=name==='rooms'?'flex':'none';
   curTab=name;
-  if(name==='list'){listView='assoc';curAssocId=null;}
   const nb=btn||document.getElementById('nav-'+name);if(nb)nb.classList.add('on');
   renderAll();
 }
-function setFilter(f,btn){curFilter=f;document.querySelectorAll('.filt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderGrid()}
+
+function setFilter(f,btn){
+  curFilter=f;
+  document.querySelectorAll('.filt').forEach(b=>{
+    b.classList.remove('on');
+    if(b.dataset.f!=='all') b.style.background='white';
+    else b.style.background='white';
+    b.style.color=b.style.color||'var(--muted)';
+  });
+  btn.classList.add('on');
+  if(f==='all'){btn.style.background='var(--p)';btn.style.color='white';}
+  else{const s=STATUS[f];btn.style.background=s.color;btn.style.color='white';}
+  renderGrid();
+}
+
 function openModal(id){document.getElementById(id).classList.add('on')}
 function closeModal(id){document.getElementById(id).classList.remove('on')}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on')}));
+
 let tt;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),2800)}
 
