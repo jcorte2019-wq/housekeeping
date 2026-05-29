@@ -7,20 +7,21 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Housekeeping">
 <meta name="theme-color" content="#1a5f7a">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Housekeeping</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --p:#1a5f7a;--pl:#e8f4f8;--bg:#f0f4f8;--card:#fff;--text:#1a2332;--muted:#6b7280;--bdr:#e2e8f0;
+  --p:#1a5f7a;--pl:#e8f4f8;--bg:#f0f4f8;--text:#1a2332;--muted:#6b7280;--bdr:#e2e8f0;
   --co:#dc2626;--co-bg:#fef2f2;--co-bd:#fca5a5;
   --rf:#2563eb;--rf-bg:#eff6ff;--rf-bd:#93c5fd;
   --vd:#059669;--vd-bg:#ecfdf5;--vd-bd:#6ee7b7;
   --vp:#b45309;--vp-bg:#fffbeb;--vp-bd:#fcd34d;
-  --so:#7c3aed;--so-bg:#f5f3ff;--so-bd:#c4b5fd;
+  --od:#7c3aed;--od-bg:#f5f3ff;--od-bd:#c4b5fd;
+  --so:#0891b2;--so-bg:#ecfeff;--so-bd:#67e8f9;
   --occ:#4b5563;--occ-bg:#f9fafb;--occ-bd:#d1d5db;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:68px;max-width:480px;margin:0 auto}
-/* HEADER */
 .hdr{background:linear-gradient(135deg,#1a5f7a,#0d3d52);color:white;padding:12px 16px 10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
 .hotel{font-weight:700;font-size:1.05rem;cursor:pointer}
@@ -31,21 +32,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pills::-webkit-scrollbar{display:none}
 .pill{background:rgba(255,255,255,.15);border-radius:20px;padding:3px 9px;font-size:.72rem;white-space:nowrap;display:flex;align-items:center;gap:3px;flex-shrink:0}
 .pill strong{font-size:.85rem}
-/* FILTER */
 .filters{display:flex;gap:5px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;background:white;border-bottom:1px solid var(--bdr);position:sticky;top:100px;z-index:90}
 .filters::-webkit-scrollbar{display:none}
 .filt{padding:4px 11px;border-radius:20px;border:1px solid var(--bdr);background:white;color:var(--muted);font-size:.72rem;font-weight:500;white-space:nowrap;cursor:pointer;flex-shrink:0}
 .filt.on{background:var(--p);color:white;border-color:var(--p)}
-/* NAV */
 .nav{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;background:white;border-top:1px solid var(--bdr);display:flex;height:58px;z-index:100}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:.62rem;color:#9ca3af;border:none;background:none;cursor:pointer;padding:4px 0;transition:color .15s}
 .nav-btn.on{color:var(--p)}
 .nav-btn .ni{font-size:1.25rem;transition:transform .15s}
 .nav-btn.on .ni{transform:scale(1.1)}
-/* PAGES */
 .page{display:none;padding:12px}
 .page.on{display:block}
-/* GRID */
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .tile{background:white;border-radius:10px;border:2px solid var(--bdr);padding:10px 6px;cursor:pointer;text-align:center;position:relative;user-select:none;transition:transform .1s}
 .tile:active{transform:scale(.94)}
@@ -54,14 +51,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tile-icon{font-size:.95rem;margin-top:3px;display:block}
 .tile-emp{font-size:.56rem;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tile-alert{position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700}
-/* STATUS COLORS */
-.s-pending{border-color:#fcd34d}
-.s-inprogress{border-color:#60a5fa;background:#eff6ff}
-.s-clean{border-color:#34d399;background:#ecfdf5}
-.s-approved{border-color:#059669;background:#d1fae5}
-.s-attention{border-color:#f87171;background:#fef2f2}
-.s-dnd{border-color:#d1d5db;background:#f9fafb;opacity:.75}
-/* LIST */
+/* Asociada card in list view */
+.assoc-card{background:white;border-radius:12px;border:1px solid var(--bdr);margin-bottom:10px;overflow:hidden;cursor:pointer;transition:box-shadow .15s}
+.assoc-card:active{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.assoc-header{display:flex;align-items:center;gap:12px;padding:14px}
+.assoc-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#1a5f7a,#0d3d52);color:white;font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.assoc-info{flex:1;min-width:0}
+.assoc-name{font-weight:700;font-size:.95rem}
+.assoc-stats{font-size:.75rem;color:var(--muted);margin-top:2px}
+.assoc-arrow{font-size:1rem;color:#9ca3af}
+.assoc-progress{height:4px;background:var(--bdr);margin:0 14px 12px}
+.assoc-prog-fill{height:100%;background:#059669;border-radius:2px;transition:width .4s}
+/* Room list in assoc view */
+.back-btn{display:flex;align-items:center;gap:8px;padding:10px 0 14px;cursor:pointer;color:var(--p);font-weight:600;font-size:.88rem}
 .room-row{display:flex;align-items:center;padding:11px 14px;border-bottom:1px solid #f0f4f8;gap:10px;cursor:pointer}
 .rr-num{font-weight:800;font-size:1rem;min-width:42px}
 .rr-info{flex:1;min-width:0}
@@ -70,23 +72,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .rr-emp{font-size:.75rem;color:var(--muted)}
 .rr-note{font-size:.7rem;color:#dc2626;margin-top:1px}
 .rr-st{font-size:1.1rem}
-/* CARD */
 .card{background:white;border-radius:12px;border:1px solid var(--bdr);overflow:hidden;margin-bottom:12px}
 .card-hdr{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f4f8;background:#f8fafc;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-/* BTN */
 .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-size:.88rem;font-weight:600;transition:opacity .15s}
 .btn-p{background:var(--p);color:white}
-.btn-o{background:white;border:1.5px solid var(--bdr)!important;border:none;color:var(--text)}
+.btn-o{background:white;border:1.5px solid var(--bdr)!important;color:var(--text)}
 .btn-sm{padding:6px 11px;font-size:.78rem;border-radius:8px}
 .btn-block{width:100%}
 .btn:active{opacity:.8}
-/* FORMS */
 .fg{margin-bottom:12px}
 .fg label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
 input[type=text],select,textarea{width:100%;border:1.5px solid var(--bdr);border-radius:8px;padding:10px 12px;font-size:.92rem;color:var(--text);background:white;outline:none;font-family:inherit;-webkit-appearance:none}
 input:focus,select:focus,textarea:focus{border-color:var(--p)}
 textarea{min-height:60px;resize:none}
-/* MODAL */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:flex-end}
 .overlay.on{display:flex}
 .sheet{background:white;border-radius:20px 20px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,16px)}
@@ -97,50 +95,44 @@ textarea{min-height:60px;resize:none}
 .sheet-body{padding:14px 16px}
 .sheet-foot{padding:10px 16px 16px;display:flex;gap:8px}
 .sheet-foot .btn{flex:1}
-/* STATUS GRID */
 .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:14px}
 .so{padding:10px 6px;border-radius:10px;border:2px solid transparent;text-align:center;cursor:pointer;font-size:.75rem;font-weight:600;user-select:none;transition:all .15s}
 .so:active{transform:scale(.95)}
 .so.sel{border-color:var(--p)!important;box-shadow:0 0 0 3px var(--pl)}
-/* MISSING */
 .mg{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-bottom:12px}
 .mo{padding:8px 10px;border-radius:8px;border:1.5px solid var(--bdr);background:white;font-size:.76rem;cursor:pointer;display:flex;align-items:center;gap:5px;user-select:none;transition:all .15s}
 .mo.sel{border-color:#f59e0b;background:#fffbeb;color:#92400e}
-/* PROGRESS */
 .prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.prog-lbl{font-size:.76rem;color:var(--muted);min-width:68px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prog-lbl{font-size:.76rem;color:var(--muted);min-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .prog-bar{flex:1;height:7px;background:var(--bdr);border-radius:10px;overflow:hidden}
 .prog-fill{height:100%;border-radius:10px;background:#059669;transition:width .4s}
 .prog-val{font-size:.76rem;font-weight:700;min-width:30px;text-align:right}
-/* EMPTY */
-.empty{text-align:center;padding:48px 20px;color:var(--muted)}
-.empty .ei{font-size:2.5rem;margin-bottom:8px}
-.empty p{font-size:.88rem}
-.empty small{font-size:.78rem;opacity:.7;margin-top:4px;display:block}
-/* TOAST */
-#toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a2332;color:white;padding:9px 18px;border-radius:20px;font-size:.82rem;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25)}
-#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-/* LS */
-.ls-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid #f0f4f8;gap:10px}
-.ls-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;transition:all .15s}
-.ls-check.on{background:#059669;border-color:#059669;color:white}
-/* PASTE BOX */
-.paste-info{background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.82rem;color:#1e40af;line-height:1.6}
-/* STAT CARDS */
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
 .stat-card{background:white;border:1px solid var(--bdr);border-radius:10px;padding:12px 10px;text-align:center}
 .stat-val{font-size:1.6rem;font-weight:800}
 .stat-lbl{font-size:.7rem;color:var(--muted);margin-top:2px}
 .stat-pct{font-size:.68rem;color:#9ca3af}
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty .ei{font-size:2.5rem;margin-bottom:8px}
+.empty p{font-size:.88rem}
+.empty small{font-size:.78rem;opacity:.7;margin-top:4px;display:block}
+#toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a2332;color:white;padding:9px 18px;border-radius:20px;font-size:.82rem;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25)}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.ls-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid #f0f4f8;gap:10px}
+.ls-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.72rem;flex-shrink:0;transition:all .15s}
+.ls-check.on{background:#059669;border-color:#059669;color:white}
+/* Change type chips */
+.type-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.type-chip{padding:6px 12px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;border:2px solid transparent;user-select:none;transition:all .15s;opacity:.45}
+.type-chip.sel{opacity:1;border-color:currentColor}
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
-    <div onclick="openModal('modalHotel')">
+    <div onclick="openModal('modalHotel')" style="cursor:pointer">
       <div class="hotel" id="hotelName">🏨 Mi Hotel</div>
       <div class="hdate" id="hdate"></div>
     </div>
@@ -152,7 +144,6 @@ textarea{min-height:60px;resize:none}
   <div class="pills" id="pills"></div>
 </div>
 
-<!-- FILTER -->
 <div class="filters" id="filterBar">
   <button class="filt on" onclick="setFilter('all',this)">Todos</button>
   <button class="filt" onclick="setFilter('pending',this)">⏳</button>
@@ -163,107 +154,41 @@ textarea{min-height:60px;resize:none}
   <button class="filt" onclick="setFilter('dnd',this)">🚫</button>
 </div>
 
-<!-- PAGES -->
 <div class="page on" id="tab-rooms"><div class="grid" id="roomsGrid"></div></div>
-<div class="page" id="tab-list"><div class="card" style="border-radius:0;border-left:none;border-right:none;margin-bottom:0"><div id="roomList"></div></div></div>
-<div class="page" id="tab-progress" id="tab-progress"></div>
+<div class="page" id="tab-list"><div id="listContent"></div></div>
+<div class="page" id="tab-progress"></div>
 <div class="page" id="tab-lightspeed"></div>
 <div class="page" id="tab-setup"></div>
 
-<!-- NAV -->
 <nav class="nav">
   <button class="nav-btn on" onclick="showTab('rooms',this)" id="nav-rooms"><span class="ni">🏠</span>Cuartos</button>
-  <button class="nav-btn" onclick="showTab('list',this)" id="nav-list"><span class="ni">📋</span>Lista</button>
+  <button class="nav-btn" onclick="showTab('list',this)" id="nav-list"><span class="ni">👥</span>Asociadas</button>
   <button class="nav-btn" onclick="showTab('progress',this)" id="nav-progress"><span class="ni">📊</span>Progreso</button>
   <button class="nav-btn" onclick="showTab('lightspeed',this)" id="nav-lightspeed"><span class="ni">💻</span>Lightspeed</button>
 </nav>
 
 <div id="toast"></div>
 
-<!-- MODAL: IMPORT (scan + paste) -->
+<!-- MODAL: IMPORT -->
 <div class="overlay" id="modalPaste">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-hdr"><span class="sheet-title">📋 Importar hoja</span><button class="sheet-close" onclick="closeModal('modalPaste')">✕</button></div>
     <div class="sheet-body">
-
-      <!-- TABS -->
-      <div style="display:flex;gap:0;margin-bottom:14px;border:1.5px solid var(--bdr);border-radius:10px;overflow:hidden">
-        <button id="tab-scan-btn" onclick="switchImportTab('scan')" style="flex:1;padding:9px;border:none;background:#1a5f7a;color:white;font-size:.82rem;font-weight:600;cursor:pointer">📷 Escanear</button>
-        <button id="tab-paste-btn" onclick="switchImportTab('paste')" style="flex:1;padding:9px;border:none;background:white;color:#6b7280;font-size:.82rem;font-weight:600;cursor:pointer">📋 Código</button>
+      <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.82rem;color:#1e40af;line-height:1.6">
+        <strong>Cómo importar:</strong><br>
+        1. Toma foto de la hoja y mándala en el chat de Claude<br>
+        2. Claude te da un código corto<br>
+        3. Pégalo aquí y toca Importar
       </div>
-
-      <!-- SCAN TAB -->
-      <div id="import-scan">
-        <!-- API Key section -->
-        <div id="apiKeySection">
-          <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-bottom:12px;font-size:.8rem;color:#92400e;line-height:1.6" id="apiKeyInfo">
-            <strong>📸 Escaneo con IA</strong><br>
-            Necesitas una API key de Anthropic (gratis):<br>
-            1. Ve a <strong>console.anthropic.com</strong><br>
-            2. Crea cuenta → API Keys → Create Key<br>
-            3. Pégala abajo — solo se hace una vez
-          </div>
-          <div class="fg" id="apiKeyField">
-            <label>API Key de Anthropic</label>
-            <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." style="font-family:monospace;font-size:.82rem">
-            <div id="apiKeyErr" style="color:#dc2626;font-size:.72rem;margin-top:4px"></div>
-          </div>
-          <button class="btn btn-p btn-block" onclick="saveApiKey()" style="margin-bottom:12px">Guardar key y escanear</button>
-        </div>
-
-        <!-- Camera section (shown after key saved) -->
-        <div id="cameraSection" style="display:none">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-            <div style="font-size:.78rem;color:#059669;font-weight:600">✅ API Key configurada</div>
-            <button onclick="clearApiKey()" style="background:none;border:none;color:#6b7280;font-size:.72rem;cursor:pointer;text-decoration:underline">Cambiar</button>
-          </div>
-
-          <!-- Drop zone -->
-          <div id="dropZone" onclick="document.getElementById('fileInput').click()" style="border:2.5px dashed var(--bdr);border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;background:var(--bg);position:relative;transition:all .2s">
-            <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none" onchange="onFileChosen(event)">
-            <div style="font-size:2.5rem;margin-bottom:8px">📄</div>
-            <div style="font-size:.88rem;color:var(--muted)">Toca para fotografiar la hoja</div>
-            <div style="font-size:.74rem;color:#9ca3af;margin-top:4px">Una hoja por foto</div>
-          </div>
-
-          <!-- Preview -->
-          <img id="scanPreview" style="display:none;width:100%;max-height:180px;object-fit:contain;border-radius:10px;border:1.5px solid var(--bdr);margin-top:10px" alt="">
-
-          <!-- Spinner -->
-          <div id="scanSpinner" style="display:none;text-align:center;padding:20px">
-            <div style="width:28px;height:28px;border:3px solid var(--bdr);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div>
-            <div style="font-size:.82rem;color:var(--muted)">Analizando con IA…</div>
-          </div>
-
-          <!-- Results -->
-          <div id="scanResults" style="display:none;margin-top:10px">
-            <div id="scanEmpOut" style="margin-bottom:8px"></div>
-            <div style="font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Cuartos detectados — toca para deseleccionar</div>
-            <div id="scanChips" style="display:flex;flex-wrap:wrap;gap:6px"></div>
-            <div id="scanErr" style="display:none;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:10px;font-size:.82rem;color:#991b1b;margin-top:8px"></div>
-          </div>
-        </div>
+      <div class="fg">
+        <label>Código</label>
+        <textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-co,212-rf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea>
       </div>
-
-      <!-- PASTE TAB -->
-      <div id="import-paste" style="display:none">
-        <div class="paste-info">
-          <strong>Cómo importar:</strong><br>
-          1. Manda la foto de la hoja en el chat de Claude<br>
-          2. Claude te da un código corto<br>
-          3. Pégalo aquí abajo y toca Importar
-        </div>
-        <div class="fg">
-          <label>Código</label>
-          <textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-co,212-rf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea>
-        </div>
-      </div>
-
     </div>
-    <div class="sheet-foot" id="importFoot">
+    <div class="sheet-foot">
       <button class="btn btn-o" onclick="closeModal('modalPaste')">Cancelar</button>
-      <button class="btn btn-p" id="importBtn" onclick="doImportAction()">✅ Importar</button>
+      <button class="btn btn-p" onclick="doImport()">✅ Importar</button>
     </div>
   </div>
 </div>
@@ -274,15 +199,21 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-handle"></div>
     <div class="sheet-hdr"><span class="sheet-title" id="roomModalTitle">Cuarto</span><button class="sheet-close" onclick="closeModal('modalRoom')">✕</button></div>
     <div class="sheet-body">
+      <!-- Change type -->
+      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Tipo de cuarto</div>
+      <div class="type-chips" id="typeChips"></div>
+      <!-- Status -->
       <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Estado</div>
       <div class="sg" id="statusGrid"></div>
+      <!-- Missing -->
       <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Items faltantes</div>
       <div class="mg" id="missingGrid"></div>
+      <!-- Note -->
       <div class="fg"><label>Nota</label><textarea id="roomNote" placeholder="Observaciones..."></textarea></div>
       <div id="roomEmpLabel" style="font-size:.78rem;color:var(--muted);margin-bottom:4px"></div>
     </div>
     <div class="sheet-foot">
-      <button class="btn btn-o" style="flex:0;padding:10px 14px;background:#fee2e2;color:#dc2626" onclick="delRoom()">🗑</button>
+      <button class="btn btn-o" style="flex:0;padding:10px 14px;background:#fee2e2;color:#dc2626;border:none!important" onclick="delRoom()">🗑</button>
       <button class="btn btn-o" onclick="closeModal('modalRoom')">Cancelar</button>
       <button class="btn btn-p" onclick="saveRoom()">Guardar</button>
     </div>
@@ -299,11 +230,11 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 
-<!-- MODAL: ADD EMP -->
+<!-- MODAL: ADD ASOCIADA -->
 <div class="overlay" id="modalAddEmp">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">Agregar empleada</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">Agregar asociada</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
     <div class="sheet-body"><div class="fg"><label>Nombre</label><input type="text" id="empInput" placeholder="Nombre completo" onkeydown="if(event.key==='Enter')saveEmp()"></div></div>
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddEmp')">Cancelar</button><button class="btn btn-p" onclick="saveEmp()">Agregar</button></div>
   </div>
@@ -322,6 +253,7 @@ textarea{min-height:60px;resize:none}
             <option value="co">CO — Checkout</option>
             <option value="rf">RF — Refresh</option>
             <option value="vd">VD — Vacant Dirty</option>
+            <option value="od">OD — Occupied Dirty</option>
             <option value="vp">VP — Mantenimiento</option>
             <option value="so">SO — Stay-over</option>
             <option value="occ">OCC — Ocupado</option>
@@ -336,18 +268,19 @@ textarea{min-height:60px;resize:none}
 </div>
 
 <script>
-// ── STATE ──────────────────────────────────────────────────
-const LS={get:k=>{try{return JSON.parse(localStorage.getItem('hk7_'+k))}catch(_){return null}},set:(k,v)=>localStorage.setItem('hk7_'+k,JSON.stringify(v))};
-let st={hotel:'Mi Hotel',employees:[{id:'e1',name:'Empleada 1'},{id:'e2',name:'Empleada 2'}],rooms:[],lsDone:{}};
-let curTab='rooms',curFilter='all',curRoomId=null,curStatus='pending';
+const LS={get:k=>{try{return JSON.parse(localStorage.getItem('hk8_'+k))}catch(_){return null}},set:(k,v)=>localStorage.setItem('hk8_'+k,JSON.stringify(v))};
+let st={hotel:'Mi Hotel',employees:[],rooms:[],lsDone:{}};
+let curTab='rooms',curFilter='all',curRoomId=null,curStatus='pending',curType='co';
+let listView='assoc', curAssocId=null; // 'assoc' | 'rooms'
 const gid=()=>Math.random().toString(36).substr(2,9);
 
 const TYPE={
-  co:{label:'CO',color:'#dc2626',bg:'#fef2f2',border:'#fca5a5',desc:'Checkout'},
-  rf:{label:'RF',color:'#2563eb',bg:'#eff6ff',border:'#93c5fd',desc:'Refresh'},
-  vd:{label:'VD',color:'#059669',bg:'#ecfdf5',border:'#6ee7b7',desc:'Vacant Dirty'},
-  vp:{label:'VP',color:'#b45309',bg:'#fffbeb',border:'#fcd34d',desc:'Mantenimiento'},
-  so:{label:'SO',color:'#7c3aed',bg:'#f5f3ff',border:'#c4b5fd',desc:'Stay-over'},
+  co: {label:'CO', color:'#dc2626',bg:'#fef2f2',border:'#fca5a5',desc:'Checkout'},
+  rf: {label:'RF', color:'#2563eb',bg:'#eff6ff',border:'#93c5fd',desc:'Refresh/Full'},
+  vd: {label:'VD', color:'#059669',bg:'#ecfdf5',border:'#6ee7b7',desc:'Vacant Dirty'},
+  od: {label:'OD', color:'#7c3aed',bg:'#f5f3ff',border:'#c4b5fd',desc:'Occupied Dirty'},
+  vp: {label:'VP', color:'#b45309',bg:'#fffbeb',border:'#fcd34d',desc:'Mantenimiento'},
+  so: {label:'SO', color:'#0891b2',bg:'#ecfeff',border:'#67e8f9',desc:'Stay-over'},
   occ:{label:'OCC',color:'#4b5563',bg:'#f9fafb',border:'#d1d5db',desc:'Ocupado'},
 };
 const STATUS={
@@ -369,12 +302,11 @@ const MISSING=[
 function save(){LS.set('hotel',st.hotel);LS.set('employees',st.employees);LS.set('rooms',st.rooms);LS.set('lsDone',st.lsDone)}
 function load(){
   st.hotel=LS.get('hotel')||'Mi Hotel';
-  st.employees=LS.get('employees')||[{id:'e1',name:'Empleada 1'},{id:'e2',name:'Empleada 2'}];
+  st.employees=LS.get('employees')||[];
   st.rooms=LS.get('rooms')||[];
   st.lsDone=LS.get('lsDone')||{};
 }
 
-// ── INIT ───────────────────────────────────────────────────
 function init(){
   load();
   const d=new Date();
@@ -384,7 +316,6 @@ function init(){
   renderAll();
 }
 
-// ── RENDER ─────────────────────────────────────────────────
 function renderAll(){
   renderPills();
   if(curTab==='rooms')renderGrid();
@@ -399,12 +330,14 @@ function renderPills(){
   const r=st.rooms;
   const co=r.filter(x=>x.type==='co').length,rf=r.filter(x=>x.type==='rf').length;
   const vd=r.filter(x=>x.type==='vd').length,vp=r.filter(x=>x.type==='vp').length;
+  const od=r.filter(x=>x.type==='od').length;
   const done=r.filter(x=>['clean','approved'].includes(x.status)).length;
   const appr=r.filter(x=>x.status==='approved').length;
   document.getElementById('pills').innerHTML=[
     [r.length,'total','rgba(255,255,255,.15)'],
     [co,'CO','rgba(220,38,38,.35)'],
     vd?[vd,'VD','rgba(5,150,105,.35)']:null,
+    od?[od,'OD','rgba(124,58,237,.35)']:null,
     [rf,'RF','rgba(37,99,235,.35)'],
     vp?[vp,'VP','rgba(180,83,9,.35)']:null,
     [done,'✅','rgba(5,150,105,.25)'],
@@ -417,7 +350,7 @@ function sorted(arr){return[...arr].sort((a,b)=>{const p={high:0,normal:1,low:2}
 function renderGrid(){
   const rooms=sorted(curFilter==='all'?st.rooms:st.rooms.filter(r=>r.status===curFilter));
   if(!rooms.length){
-    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos.</p><small>Toca 📋 Importar para cargar una hoja.</small></div>`;
+    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos.</p><small>Toca 📋 Importar para cargar.</small></div>`;
     return;
   }
   document.getElementById('roomsGrid').innerHTML=rooms.map(r=>{
@@ -425,7 +358,7 @@ function renderGrid(){
     const bdr=r.status==='pending'?'#fcd34d':r.status==='inprogress'?'#60a5fa':r.status==='clean'?'#34d399':r.status==='approved'?'#059669':r.status==='attention'?'#f87171':'#d1d5db';
     const bg=r.status==='inprogress'?'#eff6ff':r.status==='clean'?'#ecfdf5':r.status==='approved'?'#d1fae5':r.status==='attention'?'#fef2f2':r.status==='dnd'?'#f9fafb':'white';
     const emp=st.employees.find(e=>e.id===r.assignedTo);
-    return`<div class="tile s-${r.status}" style="border-color:${bdr};background:${bg}" onclick="openRoomModal('${r.id}')">
+    return`<div class="tile" style="border-color:${bdr};background:${bg}" onclick="openRoomModal('${r.id}')">
       ${r.missing?.length?`<span class="tile-alert">${r.missing.length}</span>`:''}
       <div class="tile-num">${r.number}</div>
       <div class="tile-type" style="color:${t.color}">${t.label}</div>
@@ -435,20 +368,103 @@ function renderGrid(){
   }).join('');
 }
 
+// ── LIST VIEW: ASOCIADAS ───────────────────────────────────
 function renderList(){
-  if(!st.rooms.length){document.getElementById('roomList').innerHTML=`<div class="empty"><div class="ei">📋</div><p>Sin cuartos.</p></div>`;return}
-  document.getElementById('roomList').innerHTML=sorted(st.rooms).map(r=>{
-    const t=TYPE[r.type]||TYPE.co;const emp=st.employees.find(e=>e.id===r.assignedTo);
-    return`<div class="room-row" onclick="openRoomModal('${r.id}')">
-      <div class="rr-num" style="color:${t.color}">${r.number}</div>
-      <div class="rr-info">
-        <div class="rr-top"><span class="badge" style="background:${t.bg};color:${t.color}">${t.label}</span></div>
-        <div class="rr-emp">${emp?emp.name:'Sin asignar'}</div>
-        ${r.note?`<div class="rr-note">📝 ${r.note}</div>`:''}
+  const el=document.getElementById('listContent');
+  if(listView==='assoc'){
+    renderAssocList(el);
+  } else {
+    renderAssocRooms(el);
+  }
+}
+
+function renderAssocList(el){
+  // Show all asociadas + unassigned group
+  const groups=[];
+
+  // Each asociada
+  st.employees.forEach(e=>{
+    const rooms=sorted(st.rooms.filter(r=>r.assignedTo===e.id));
+    const done=rooms.filter(r=>['clean','approved'].includes(r.status)).length;
+    const pct=rooms.length?Math.round(done/rooms.length*100):0;
+    groups.push({id:e.id,name:e.name,rooms,done,pct});
+  });
+
+  // Unassigned
+  const unassigned=sorted(st.rooms.filter(r=>!r.assignedTo));
+  if(unassigned.length) groups.push({id:'__none__',name:'Sin asignar',rooms:unassigned,done:0,pct:0});
+
+  if(!groups.length){
+    el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>No hay asociadas.</p><small>Ve a ⚙️ para agregar.</small></div>`;
+    return;
+  }
+
+  el.innerHTML=groups.map(g=>{
+    const typeIcons=g.rooms.slice(0,6).map(r=>{
+      const t=TYPE[r.type]||TYPE.co;
+      return`<span style="background:${t.bg};color:${t.color};border-radius:6px;padding:2px 6px;font-size:.65rem;font-weight:700">${t.label}</span>`;
+    }).join('');
+    return`<div class="assoc-card" onclick="openAssocRooms('${g.id}')">
+      <div class="assoc-header">
+        <div class="assoc-avatar">${g.name[0].toUpperCase()}</div>
+        <div class="assoc-info">
+          <div class="assoc-name">${g.name}</div>
+          <div class="assoc-stats">${g.rooms.length} cuartos · ${g.done} listos · ${g.pct}%</div>
+          <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px">${typeIcons}</div>
+        </div>
+        <div class="assoc-arrow">›</div>
       </div>
-      <div class="rr-st">${STATUS[r.status]?.icon}</div>
+      <div class="assoc-progress"><div class="assoc-prog-fill" style="width:${g.pct}%"></div></div>
     </div>`;
   }).join('');
+}
+
+function openAssocRooms(assocId){
+  listView='rooms';
+  curAssocId=assocId;
+  renderList();
+}
+
+function renderAssocRooms(el){
+  const assoc=assocId==='__none__'
+    ?{name:'Sin asignar'}
+    :st.employees.find(e=>e.id===curAssocId);
+  const assocId=curAssocId;
+  const rooms=sorted(assocId==='__none__'
+    ?st.rooms.filter(r=>!r.assignedTo)
+    :st.rooms.filter(r=>r.assignedTo===assocId));
+
+  const name=assoc?assoc.name:'Sin asignar';
+  const done=rooms.filter(r=>['clean','approved'].includes(r.status)).length;
+
+  el.innerHTML=`
+    <div class="back-btn" onclick="goBackToAssoc()">‹ Todas las asociadas</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;background:white;border-radius:12px;padding:14px;border:1px solid var(--bdr)">
+      <div class="assoc-avatar">${name[0].toUpperCase()}</div>
+      <div>
+        <div style="font-weight:700;font-size:1rem">${name}</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:2px">${rooms.length} cuartos · ${done} listos</div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      ${rooms.length?rooms.map(r=>{
+        const t=TYPE[r.type]||TYPE.co;
+        return`<div class="room-row" onclick="openRoomModal('${r.id}')">
+          <div class="rr-num" style="color:${t.color}">${r.number}</div>
+          <div class="rr-info">
+            <div class="rr-top"><span class="badge" style="background:${t.bg};color:${t.color}">${t.label} · ${t.desc}</span></div>
+            ${r.note?`<div class="rr-note">📝 ${r.note}</div>`:''}
+          </div>
+          <div class="rr-st">${STATUS[r.status]?.icon}</div>
+        </div>`;
+      }).join(''):`<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos asignados</div>`}
+    </div>`;
+}
+
+function goBackToAssoc(){
+  listView='assoc';
+  curAssocId=null;
+  renderList();
 }
 
 function renderProgress(){
@@ -459,18 +475,18 @@ function renderProgress(){
     <div style="padding:12px">
       <div style="font-weight:700;font-size:1rem;margin-bottom:12px">Progreso del día</div>
       <div class="stat-grid">
-        ${[['✅ Listos',done,'#059669'],['⭐ Aprobados',by.approved,'#065f46'],['🧹 En proceso',by.inprogress,'#2563eb'],['⏳ Pendientes',by.pending,'#d97706']].map(([l,v,c])=>`
-        <div class="stat-card"><div class="stat-val" style="color:${c}">${v}</div><div class="stat-lbl">${l}</div><div class="stat-pct">${Math.round(v/total*100)}%</div></div>`).join('')}
+        ${[['✅ Listos',done,'#059669'],['⭐ Aprobados',by.approved,'#065f46'],['🧹 En proceso',by.inprogress,'#2563eb'],['⏳ Pendientes',by.pending,'#d97706']].map(([l,v,c])=>
+        `<div class="stat-card"><div class="stat-val" style="color:${c}">${v}</div><div class="stat-lbl">${l}</div><div class="stat-pct">${Math.round(v/total*100)}%</div></div>`).join('')}
       </div>
       <div class="card">
-        <div class="card-hdr">Por empleada</div>
+        <div class="card-hdr">Por asociada</div>
         <div style="padding:10px 14px">
           ${st.employees.map(e=>{
             const asgn=r.filter(x=>x.assignedTo===e.id);
             const dn=asgn.filter(x=>['clean','approved'].includes(x.status)).length;
             const pct=asgn.length?Math.round(dn/asgn.length*100):0;
             return`<div class="prog-row"><div class="prog-lbl">${e.name.split(' ')[0]}</div><div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div><div class="prog-val">${dn}/${asgn.length}</div></div>`;
-          }).join('')}
+          }).join('')||'<p style="font-size:.85rem;color:var(--muted)">Sin asociadas</p>'}
         </div>
       </div>
     </div>`;
@@ -520,8 +536,8 @@ function renderSetup(){
         <button onclick="newDay()" style="background:#fff3cd;color:#856404;border:none;border-radius:8px;padding:7px 12px;font-size:.78rem;font-weight:600;cursor:pointer">🔄 Nuevo día</button>
       </div>
       <div class="card">
-        <div class="card-hdr">Empleadas<button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Agregar</button></div>
-        ${empHtml||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin empleadas</div>'}
+        <div class="card-hdr">Asociadas<button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Agregar</button></div>
+        ${empHtml||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
       </div>
       <div class="card">
         <div class="card-hdr">Cuartos del día<button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Cuarto</button></div>
@@ -541,22 +557,21 @@ function doImport(){
     }
     const items=roomStr.split(',').map(s=>s.trim()).filter(Boolean);
     if(!items.length)throw new Error('vacío');
-
     let empId=null;
     if(empName){
       let emp=st.employees.find(e=>e.name.toLowerCase()===empName.toLowerCase());
       if(!emp){emp={id:gid(),name:empName};st.employees.push(emp)}
       empId=emp.id;
     }
-
     const existing=new Set(st.rooms.map(r=>r.number));
     let added=0;
     for(const item of items){
-      const [num,type='co']=item.split('-');
+      const[num,type='co']=item.split('-');
       if(!num||existing.has(num.trim()))continue;
-      st.rooms.push({id:gid(),number:num.trim(),type:type.trim()||'co',floor:'',priority:'normal',
-        note:type.trim()==='vp'?'🔧 Mantenimiento':'',
-        status:type.trim()==='occ'?'dnd':type.trim()==='vp'?'attention':'pending',
+      const t=type.trim()||'co';
+      st.rooms.push({id:gid(),number:num.trim(),type:t,floor:'',priority:'normal',
+        note:t==='vp'?'🔧 Mantenimiento':'',
+        status:t==='occ'?'dnd':t==='vp'?'attention':'pending',
         assignedTo:empId,missing:[],inspectionData:null});
       existing.add(num.trim());added++;
     }
@@ -571,18 +586,24 @@ function openRoomModal(id){
   curRoomId=id;
   const r=st.rooms.find(x=>x.id===id);
   const t=TYPE[r.type]||TYPE.co;
-  document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number} · ${t.label}`;
   curStatus=r.status;
+  curType=r.type;
+  document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number} · ${t.label}`;
 
-  document.getElementById('statusGrid').innerHTML=Object.entries(STATUS).map(([k,v])=>`
-    <div class="so ${k===r.status?'sel':''}" style="background:${v.bg};color:${v.color}" onclick="selStatus('${k}',this)">
-      ${v.icon}<br><span style="font-size:.65rem">${v.label}</span>
-    </div>`).join('');
+  // Type chips
+  document.getElementById('typeChips').innerHTML=Object.entries(TYPE).map(([k,v])=>
+    `<span class="type-chip ${k===r.type?'sel':''}" style="background:${v.bg};color:${v.color};border-color:${v.border}" onclick="selType('${k}',this)">${v.label} ${v.desc}</span>`
+  ).join('');
 
-  document.getElementById('missingGrid').innerHTML=MISSING.map(m=>`
-    <div class="mo ${(r.missing||[]).includes(m.id)?'sel':''}" id="mo-${m.id}" onclick="togMissing('${m.id}')">
-      ${m.icon} ${m.label}
-    </div>`).join('');
+  // Status grid
+  document.getElementById('statusGrid').innerHTML=Object.entries(STATUS).map(([k,v])=>
+    `<div class="so ${k===r.status?'sel':''}" style="background:${v.bg};color:${v.color}" onclick="selStatus('${k}',this)">${v.icon}<br><span style="font-size:.65rem">${v.label}</span></div>`
+  ).join('');
+
+  // Missing
+  document.getElementById('missingGrid').innerHTML=MISSING.map(m=>
+    `<div class="mo ${(r.missing||[]).includes(m.id)?'sel':''}" id="mo-${m.id}" onclick="togMissing('${m.id}')">${m.icon} ${m.label}</div>`
+  ).join('');
 
   document.getElementById('roomNote').value=r.note||'';
   const emp=st.employees.find(e=>e.id===r.assignedTo);
@@ -590,16 +611,18 @@ function openRoomModal(id){
   openModal('modalRoom');
 }
 
-function selStatus(k,el){
-  curStatus=k;
-  document.querySelectorAll('.so').forEach(o=>o.classList.remove('sel'));
+function selType(k,el){
+  curType=k;
+  document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');
+  document.getElementById('roomModalTitle').textContent=document.getElementById('roomModalTitle').textContent.split('·')[0]+'· '+(TYPE[k]?.label||k);
 }
-
+function selStatus(k,el){curStatus=k;document.querySelectorAll('.so').forEach(o=>o.classList.remove('sel'));el.classList.add('sel')}
 function togMissing(id){document.getElementById('mo-'+id).classList.toggle('sel')}
 
 function saveRoom(){
   const r=st.rooms.find(x=>x.id===curRoomId);
+  r.type=curType;
   r.status=curStatus;
   r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
   r.note=document.getElementById('roomNote').value.trim();
@@ -615,12 +638,12 @@ function delRoom(){
   closeModal('modalRoom');save();renderAll();toast('🗑 Cuarto eliminado');
 }
 
-// ── SETUP ACTIONS ──────────────────────────────────────────
+// ── SETUP ──────────────────────────────────────────────────
 function saveHotel(){const n=document.getElementById('hotelInput').value.trim();if(n){st.hotel=n;save();renderAll()}closeModal('modalHotel')}
 function saveEmp(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada')}
-function delEmp(id){if(!confirm('¿Eliminar empleada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll()}
+function delEmp(id){if(!confirm('¿Eliminar asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll()}
 function delRoomSetup(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll()}
-function newDay(){if(!confirm('¿Nuevo día? Se eliminan todos los cuartos.'))return;st.rooms=[];st.lsDone={};save();renderAll();toast('🌅 Nuevo día iniciado')}
+function newDay(){if(!confirm('¿Nuevo día? Se eliminan todos los cuartos.'))return;st.rooms=[];st.lsDone={};listView='assoc';save();renderAll();toast('🌅 Nuevo día iniciado')}
 function toggleLs(id){st.lsDone[id]=!st.lsDone[id];save();renderLightspeed()}
 function markAllLs(){st.rooms.forEach(r=>{st.lsDone[r.id]=true});save();renderLightspeed();toast('✅ Todo marcado')}
 
@@ -643,237 +666,23 @@ function saveAddRoom(){
   closeModal('modalAddRoom');save();renderAll();toast('🏠 Cuarto '+num+' agregado');
 }
 
-// ── NAV & FILTER ───────────────────────────────────────────
+// ── NAV ────────────────────────────────────────────────────
 function showTab(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById('tab-'+name).classList.add('on');
   document.getElementById('filterBar').style.display=name==='rooms'?'flex':'none';
   curTab=name;
+  if(name==='list'){listView='assoc';curAssocId=null;}
   const nb=btn||document.getElementById('nav-'+name);if(nb)nb.classList.add('on');
   renderAll();
 }
-
-function setFilter(f,btn){
-  curFilter=f;
-  document.querySelectorAll('.filt').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  renderGrid();
-}
-
-// ── MODAL UTILS ────────────────────────────────────────────
+function setFilter(f,btn){curFilter=f;document.querySelectorAll('.filt').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderGrid()}
 function openModal(id){document.getElementById(id).classList.add('on')}
 function closeModal(id){document.getElementById(id).classList.remove('on')}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on')}));
-
-// ── TOAST ──────────────────────────────────────────────────
 let tt;
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),2800)}
-
-// ── API KEY ────────────────────────────────────────────────
-function getKey(){return localStorage.getItem('hk7_apikey')||''}
-function saveApiKey(){
-  const k=document.getElementById('apiKeyInput').value.trim();
-  const err=document.getElementById('apiKeyErr');
-  if(!k){err.textContent='Ingresa la key';return}
-  if(!k.startsWith('sk-ant-')){err.textContent='Debe empezar con sk-ant-';return}
-  localStorage.setItem('hk7_apikey',k);
-  showCameraSection();
-  toast('🔑 Key guardada');
-}
-function clearApiKey(){
-  localStorage.removeItem('hk7_apikey');
-  document.getElementById('apiKeyInput').value='';
-  document.getElementById('apiKeyErr').textContent='';
-  document.getElementById('cameraSection').style.display='none';
-  document.getElementById('apiKeySection').style.display='block';
-  resetScan();
-}
-function showCameraSection(){
-  document.getElementById('apiKeySection').style.display='none';
-  document.getElementById('cameraSection').style.display='block';
-  document.getElementById('importBtn').textContent='✅ Agregar cuartos';
-}
-
-// ── IMPORT TAB SWITCH ──────────────────────────────────────
-let importTab='scan';
-function switchImportTab(t){
-  importTab=t;
-  document.getElementById('import-scan').style.display=t==='scan'?'block':'none';
-  document.getElementById('import-paste').style.display=t==='paste'?'block':'none';
-  document.getElementById('tab-scan-btn').style.background=t==='scan'?'#1a5f7a':'white';
-  document.getElementById('tab-scan-btn').style.color=t==='scan'?'white':'#6b7280';
-  document.getElementById('tab-paste-btn').style.background=t==='paste'?'#1a5f7a':'white';
-  document.getElementById('tab-paste-btn').style.color=t==='paste'?'white':'#6b7280';
-  document.getElementById('importBtn').textContent=t==='paste'?'✅ Importar':'✅ Agregar cuartos';
-}
-
-function doImportAction(){
-  if(importTab==='paste') doImport();
-  else doScanImport();
-}
-
-// ── SCAN ───────────────────────────────────────────────────
-let _scanRooms=[],_scanEmp='';
-
-function resetScan(){
-  _scanRooms=[];_scanEmp='';
-  document.getElementById('scanPreview').style.display='none';
-  document.getElementById('scanSpinner').style.display='none';
-  document.getElementById('scanResults').style.display='none';
-  document.getElementById('fileInput').value='';
-}
-
-function onFileChosen(e){
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const url=ev.target.result;
-    document.getElementById('scanPreview').src=url;
-    document.getElementById('scanPreview').style.display='block';
-    document.getElementById('dropZone').style.display='none';
-    document.getElementById('scanSpinner').style.display='block';
-    document.getElementById('scanResults').style.display='none';
-    callAI(url);
-  };
-  reader.readAsDataURL(file);
-}
-
-async function callAI(dataUrl){
-  const b64=dataUrl.split(',')[1];
-  const mt=dataUrl.split(';')[0].split(':')[1]||'image/jpeg';
-  const prompt=`Analiza esta hoja de asignación de cuartos de hotel (Attendant Cleaning Assignment Sheet del Aloft Houston Shenandoah).
-REGLA: usa la columna "HK Package Information" para el tipo de cada cuarto.
-MAPEO: COUT/Check Out="co", RFSH/Refresh/FULL/Full Clean="rf", VD/Vacant Dirty="vd", VP/Vacant Pickup="vp", SO/Stay Over="so", OCC/OD/Occupied="occ"
-EMPLEADA: nombre escrito a mano arriba, o "Attendant [Nombre]" en el encabezado. Una sola empleada por hoja.
-Responde SOLO con JSON sin texto adicional:
-{"employee":"Nombre","rooms":[{"n":"101","t":"co"},{"n":"102","t":"vd"}]}`;
-
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'content-type':'application/json',
-        'x-api-key':getKey(),
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1024,
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:mt,data:b64}},
-          {type:'text',text:prompt}
-        ]}]
-      })
-    });
-
-    document.getElementById('scanSpinner').style.display='none';
-
-    if(res.status===401){
-      localStorage.removeItem('hk7_apikey');
-      showCameraErr('API Key inválida. Toca "Cambiar" para ingresar una nueva.');
-      return;
-    }
-    if(!res.ok){
-      const err=await res.json().catch(()=>({}));
-      showCameraErr('Error '+(err?.error?.message||res.status));
-      return;
-    }
-
-    const data=await res.json();
-    let raw='';
-    for(const b of(data.content||[])){if(b.type==='text')raw+=b.text}
-
-    const match=raw.match(/\{[\s\S]*\}/);
-    if(!match){showCameraErr('No se detectaron datos. Intenta con una foto más clara.');return}
-    const parsed=JSON.parse(match[0]);
-
-    _scanEmp=(parsed.employee||'').trim();
-    _scanRooms=parsed.rooms||[];
-    renderScanResults();
-
-  }catch(err){
-    document.getElementById('scanSpinner').style.display='none';
-    showCameraErr('Error de conexión: '+err.message);
-  }
-}
-
-function showCameraErr(msg){
-  const el=document.getElementById('scanErr');
-  el.textContent='⚠️ '+msg;el.style.display='block';
-  document.getElementById('scanResults').style.display='block';
-}
-
-function renderScanResults(){
-  document.getElementById('scanResults').style.display='block';
-  document.getElementById('scanErr').style.display='none';
-
-  document.getElementById('scanEmpOut').innerHTML=_scanEmp
-    ?`<div style="display:inline-flex;align-items:center;gap:6px;background:#e8f4f8;color:#1a5f7a;border-radius:8px;padding:7px 12px;font-size:.85rem;font-weight:600;margin-bottom:4px">👤 ${_scanEmp}</div>`
-    :'';
-
-  const TYPE_C={co:'#dc2626',rf:'#2563eb',vd:'#059669',vp:'#b45309',so:'#7c3aed',occ:'#4b5563'};
-  const TYPE_BG={co:'#fef2f2',rf:'#eff6ff',vd:'#ecfdf5',vp:'#fffbeb',so:'#f5f3ff',occ:'#f9fafb'};
-  const TYPE_BD={co:'#fca5a5',rf:'#93c5fd',vd:'#6ee7b7',vp:'#fcd34d',so:'#c4b5fd',occ:'#d1d5db'};
-  const TYPE_L={co:'CO',rf:'RF',vd:'VD',vp:'VP',so:'SO',occ:'OCC'};
-
-  if(!_scanRooms.length){showCameraErr('No se detectaron cuartos. Intenta con una foto más clara.');return}
-
-  const existing=new Set(st.rooms.map(r=>r.number));
-  document.getElementById('scanChips').innerHTML=_scanRooms.map((r,i)=>{
-    const c=TYPE_C[r.t]||'#4b5563';const bg=TYPE_BG[r.t]||'#f9fafb';const bd=TYPE_BD[r.t]||'#d1d5db';const l=TYPE_L[r.t]||r.t;
-    const dup=existing.has(r.n);
-    return`<span id="schip${i}" onclick="toggleSChip(${i})" style="padding:5px 11px;border-radius:20px;font-size:.78rem;font-weight:600;cursor:pointer;border:2px solid ${bd};background:${bg};color:${c};user-select:none;opacity:${dup?.35:1};transition:opacity .15s">${r.n} <span style="opacity:.65;font-size:.68rem">${l}</span></span>`;
-  }).join('');
-}
-
-function toggleSChip(i){
-  const el=document.getElementById('schip'+i);
-  el.style.opacity=el.style.opacity==='0.35'?'1':'0.35';
-}
-
-function doScanImport(){
-  if(!_scanRooms.length){toast('⚠️ Primero escanea una hoja');return}
-  let empId=null;
-  if(_scanEmp){
-    let emp=st.employees.find(e=>e.name.toLowerCase()===_scanEmp.toLowerCase());
-    if(!emp){emp={id:gid(),name:_scanEmp};st.employees.push(emp)}
-    empId=emp.id;
-  }
-  const existing=new Set(st.rooms.map(r=>r.number));
-  let added=0;
-  _scanRooms.forEach((r,i)=>{
-    const chip=document.getElementById('schip'+i);
-    if(chip&&chip.style.opacity==='0.35')return;
-    if(existing.has(r.n))return;
-    const type=r.t||'co';
-    st.rooms.push({id:gid(),number:r.n,type,floor:'',priority:'normal',
-      note:type==='vp'?'🔧 Mantenimiento':'',
-      status:type==='occ'?'dnd':type==='vp'?'attention':'pending',
-      assignedTo:empId,missing:[],inspectionData:null});
-    existing.add(r.n);added++;
-  });
-  closeModal('modalPaste');save();renderAll();
-  toast(`📷 ${added} cuartos importados${_scanEmp?' → '+_scanEmp:''}`);
-  resetScan();
-}
-
-// ── OPEN MODAL OVERRIDE ────────────────────────────────────
-const _origOpenModal=openModal;
-function openModal(id){
-  _origOpenModal(id);
-  if(id==='modalPaste'){
-    resetScan();
-    importTab='scan';
-    switchImportTab('scan');
-    if(getKey()){showCameraSection();}
-    else{
-      document.getElementById('apiKeySection').style.display='block';
-      document.getElementById('cameraSection').style.display='none';
-    }
-  }
-}
 
 init();
 </script>
