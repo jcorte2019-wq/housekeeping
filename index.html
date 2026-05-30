@@ -222,7 +222,7 @@ textarea{min-height:60px;resize:none}
       </div>
       <div class="fg">
         <label>Código</label>
-        <textarea id="pasteInput" placeholder="EMP:Juan|201-vd,203-odco,212-odrf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea>
+        <textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco,212-odrf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea>
       </div>
     </div>
     <div class="sheet-foot">
@@ -246,7 +246,15 @@ textarea{min-height:60px;resize:none}
       <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Items faltantes / problemas</div>
       <div class="mg" id="missingGrid"></div>
       <div class="fg"><label>Nota</label><textarea id="roomNote" placeholder="Observaciones..."></textarea></div>
-      <div id="roomEmpLabel" style="font-size:.78rem;color:var(--muted);margin-bottom:4px"></div>
+      <div id="roomEmpLabel" style="font-size:.78rem;color:var(--muted);margin-bottom:10px"></div>
+      <!-- Lightspeed reported -->
+      <label style="display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #f0f4f8;cursor:pointer;user-select:none">
+        <input type="checkbox" id="lsCheck" style="width:20px;height:20px;accent-color:#059669;cursor:pointer">
+        <div>
+          <div style="font-size:.85rem;font-weight:600">✅ Reportado en Lightspeed</div>
+          <div style="font-size:.72rem;color:var(--muted);margin-top:1px">Marca cuando lo hayas subido al sistema</div>
+        </div>
+      </label>
     </div>
     <div class="sheet-foot">
       <button class="btn btn-r" style="flex:0;padding:10px 14px" onclick="delRoom()">🗑</button>
@@ -316,8 +324,8 @@ textarea{min-height:60px;resize:none}
 <script>
 // ── DATA ───────────────────────────────────────────────────
 const LS={get:k=>{try{return JSON.parse(localStorage.getItem('hk9_'+k))}catch(_){return null}},set:(k,v)=>localStorage.setItem('hk9_'+k,JSON.stringify(v))};
-let st={hotel:'Mi Hotel',employees:[],rooms:[]};
-let curTab='rooms',curFilter='all',curRoomId=null,curStatus='odco';
+let st={hotel:'Mi Hotel',employees:[],rooms:[],lsDone:{},reportEmail:''};
+let curTab='rooms',curFilters=new Set(['all']),curRoomId=null,curStatus='odco';
 const gid=()=>Math.random().toString(36).substr(2,9);
 
 // ── STATUS DEFINITIONS ─────────────────────────────────────
@@ -343,8 +351,8 @@ const MISSING=[
 ];
 
 // ── PERSIST ────────────────────────────────────────────────
-function save(){LS.set('hotel',st.hotel);LS.set('employees',st.employees);LS.set('rooms',st.rooms)}
-function load(){st.hotel=LS.get('hotel')||'Mi Hotel';st.employees=LS.get('employees')||[];st.rooms=LS.get('rooms')||[]}
+function save(){LS.set('hotel',st.hotel);LS.set('employees',st.employees);LS.set('rooms',st.rooms);LS.set('lsDone',st.lsDone);LS.set('reportEmail',st.reportEmail)}
+function load(){st.hotel=LS.get('hotel')||'Mi Hotel';st.employees=LS.get('employees')||[];st.rooms=LS.get('rooms')||[];st.lsDone=LS.get('lsDone')||{};st.reportEmail=LS.get('reportEmail')||''}
 
 // ── INIT ───────────────────────────────────────────────────
 function init(){
@@ -393,18 +401,23 @@ function getFloors(rooms){
 
 // ── ROOMS GRID ─────────────────────────────────────────────
 function renderGrid(){
-  const rooms=sorted(curFilter==='all'?st.rooms:st.rooms.filter(r=>r.status===curFilter));
+  const isAll=curFilters.has('all');
+  const rooms=sorted(st.rooms.filter(r=>isAll||curFilters.has(r.status)));
   if(!rooms.length){
-    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos.</p><small>Toca 📋 Importar.</small></div>`;
+    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos${isAll?'':' con ese filtro'}.</p><small>${isAll?'Toca 📋 Importar.':'Prueba con otro filtro.'}</small></div>`;
     return;
   }
-  document.getElementById('roomsGrid').innerHTML=rooms.map(r=>{
+  // Sort: not-reported first, reported last
+  const sorted2=[...rooms.filter(r=>!st.lsDone[r.id]),...rooms.filter(r=>st.lsDone[r.id])];
+  document.getElementById('roomsGrid').innerHTML=sorted2.map(r=>{
     const s=STATUS[r.status]||STATUS.vd;
     const emp=st.employees.find(e=>e.id===r.assignedTo);
-    return`<div class="tile s-${r.status}" onclick="openRoomModal('${r.id}')">
+    const reported=st.lsDone[r.id];
+    return`<div class="tile s-${r.status}" onclick="openRoomModal('${r.id}')" style="${reported?'opacity:.45;':''}">
+      ${reported?`<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>`:''}
       ${r.missing?.length?`<span class="tile-alert">${r.missing.length}</span>`:''}
-      <div class="tile-num">${r.number}</div>
-      <div class="tile-status" style="color:${s.color}">${s.icon} ${s.label}</div>
+      <div class="tile-num" style="${reported?'text-decoration:line-through;color:#9ca3af;':''}">${r.number}</div>
+      <div class="tile-status" style="color:${reported?'#9ca3af':s.color}">${s.icon} ${s.label}</div>
       <div class="tile-emp">${emp?emp.name.split(' ')[0]:'—'}</div>
     </div>`;
   }).join('');
@@ -546,11 +559,17 @@ function renderProgress(){
 
 // ── SEND REPORT ────────────────────────────────────────────
 function sendReport(){
+  // Ask for email if not saved
+  if(!st.reportEmail){
+    const email=prompt('¿A qué correo enviar los reportes?\n(Se guardará para próximas veces)');
+    if(!email)return;
+    st.reportEmail=email.trim();
+    save();
+  }
   const d=new Date();
   const dateStr=d.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
   let body=`REPORTE HOUSEKEEPING - ${st.hotel}\n${dateStr}\n`;
   body+=`${'='.repeat(40)}\n\n`;
-
   const cnt=k=>st.rooms.filter(x=>x.status===k).length;
   body+=`RESUMEN GENERAL\n`;
   body+=`Total cuartos: ${st.rooms.length}\n`;
@@ -559,7 +578,6 @@ function sendReport(){
   body+=`OD COUT: ${cnt('odco')}\n`;
   body+=`OD RFSH: ${cnt('odrf')}\n`;
   body+=`VP (Problema): ${cnt('vp')}\n\n`;
-
   st.employees.forEach(e=>{
     const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
     const vc=rooms.filter(x=>x.status==='vc').length;
@@ -574,15 +592,12 @@ function sendReport(){
         if(r.missing?.length) body+=`    Faltante: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}\n`;
         if(r.note) body+=`    Nota: ${r.note}\n`;
       });
-    } else {
-      body+=`Sin novedades\n`;
-    }
+    } else { body+=`Sin novedades\n`; }
     body+='\n';
   });
-
   const subject=encodeURIComponent(`Reporte Housekeeping ${st.hotel} - ${d.toLocaleDateString('es-MX')}`);
   const bodyEnc=encodeURIComponent(body);
-  window.location.href=`mailto:?subject=${subject}&body=${bodyEnc}`;
+  window.location.href=`mailto:${st.reportEmail}?subject=${subject}&body=${bodyEnc}`;
 }
 
 // ── SETUP ──────────────────────────────────────────────────
@@ -615,6 +630,15 @@ function renderSetup(){
       </div>
 
       <button class="btn btn-block" style="background:#fff3cd;color:#856404;border:none;font-size:.9rem;font-weight:700;margin-bottom:8px" onclick="newDay()">🔄 Reiniciar día</button>
+
+      <!-- Email config -->
+      <div class="card" style="margin-top:4px">
+        <div class="card-hdr">📧 Correo para reportes</div>
+        <div style="padding:12px 14px;display:flex;gap:8px;align-items:center">
+          <input type="text" id="emailInput" value="${st.reportEmail}" placeholder="ejemplo@hotel.com" style="flex:1;font-size:.85rem">
+          <button class="btn btn-p btn-sm" onclick="saveEmail()">Guardar</button>
+        </div>
+      </div>
     </div>`;
 }
 
@@ -691,6 +715,7 @@ function openRoomModal(id){
   document.getElementById('roomNote').value=r.note||'';
   const emp=st.employees.find(e=>e.id===r.assignedTo);
   document.getElementById('roomEmpLabel').textContent=emp?'👤 '+emp.name:'';
+  document.getElementById('lsCheck').checked=!!st.lsDone[r.id];
   openModal('modalRoom');
 }
 
@@ -711,6 +736,9 @@ function saveRoom(){
   r.status=curStatus;
   r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
   r.note=document.getElementById('roomNote').value.trim();
+  // Check if "reported to Lightspeed" checkbox is checked
+  const lsEl=document.getElementById('lsCheck');
+  if(lsEl) st.lsDone[r.id]=lsEl.checked;
   closeModal('modalRoom');save();renderAll();
   toast(`${STATUS[r.status]?.icon} Cuarto ${r.number} → ${STATUS[r.status]?.label}`);
 }
@@ -727,9 +755,17 @@ function saveEmp(){const n=document.getElementById('empInput').value.trim();if(!
 function delEmp(id){if(!confirm('¿Eliminar asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll()}
 function delRoomSetup(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll()}
 
+function saveEmail(){
+  const e=document.getElementById('emailInput')?.value.trim();
+  if(!e){toast('⚠️ Ingresa un correo');return}
+  st.reportEmail=e;save();toast('📧 Correo guardado');
+}
+
 function newDay(){
-  if(!confirm('¿Reiniciar día? Se eliminarán todos los cuartos.'))return;
-  st.rooms=[];save();renderAll();toast('🌅 Día reiniciado');
+  if(!confirm('¿Reiniciar día? Se eliminarán cuartos y asociadas.'))return;
+  st.rooms=[];st.employees=[];st.lsDone={};
+  curFilters=new Set(['all']);
+  save();renderAll();toast('🌅 Día reiniciado');
 }
 
 function openAddRoom(){
@@ -761,17 +797,45 @@ function showTab(name,btn){
 }
 
 function setFilter(f,btn){
-  curFilter=f;
-  document.querySelectorAll('.filt').forEach(b=>{
-    b.classList.remove('on');
-    if(b.dataset.f!=='all') b.style.background='white';
-    else b.style.background='white';
-    b.style.color=b.style.color||'var(--muted)';
-  });
-  btn.classList.add('on');
-  if(f==='all'){btn.style.background='var(--p)';btn.style.color='white';}
-  else{const s=STATUS[f];btn.style.background=s.color;btn.style.color='white';}
+  if(f==='all'){
+    // Reset to all
+    curFilters=new Set(['all']);
+    document.querySelectorAll('.filt').forEach(b=>{
+      b.classList.remove('on');
+      resetFiltStyle(b);
+    });
+    btn.classList.add('on');
+    btn.style.background='var(--p)';btn.style.color='white';
+  } else {
+    // Toggle this filter, remove 'all'
+    curFilters.delete('all');
+    document.querySelector('.filt[data-f="all"]').classList.remove('on');
+    resetFiltStyle(document.querySelector('.filt[data-f="all"]'));
+    if(curFilters.has(f)){
+      curFilters.delete(f);
+      btn.classList.remove('on');
+      resetFiltStyle(btn);
+    } else {
+      curFilters.add(f);
+      btn.classList.add('on');
+      const s=STATUS[f];
+      btn.style.background=s.color;btn.style.color='white';
+    }
+    // If nothing selected, go back to all
+    if(curFilters.size===0){
+      curFilters=new Set(['all']);
+      const allBtn=document.querySelector('.filt[data-f="all"]');
+      allBtn.classList.add('on');
+      allBtn.style.background='var(--p)';allBtn.style.color='white';
+    }
+  }
   renderGrid();
+}
+
+function resetFiltStyle(btn){
+  const f=btn.dataset.f;
+  if(f==='all'){btn.style.background='white';btn.style.color='var(--muted)';}
+  else{const s=STATUS[f];if(s){btn.style.background=s.bg;btn.style.color=s.color;}}
 }
 
 function openModal(id){document.getElementById(id).classList.add('on')}
