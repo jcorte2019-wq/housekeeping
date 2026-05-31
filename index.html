@@ -155,7 +155,9 @@ textarea{min-height:60px;resize:none}
 .prog-fill{height:100%;border-radius:10px;transition:width .4s}
 .prog-val{font-size:.75rem;font-weight:700;min-width:32px;text-align:right}
 
-/* EMPTY */
+/* LATE CHECKOUT */
+.late-btn{padding:7px 14px;border-radius:20px;border:1.5px solid var(--bdr);background:white;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s}
+.late-btn.on{background:#7c3aed;color:white;border-color:#7c3aed}
 .empty{text-align:center;padding:44px 20px;color:var(--muted)}
 .empty .ei{font-size:2.5rem;margin-bottom:8px}
 .empty p{font-size:.88rem}
@@ -243,15 +245,31 @@ textarea{min-height:60px;resize:none}
       <button class="sheet-close" onclick="closeModal('modalRoom')">✕</button>
     </div>
     <div class="sheet-body">
-      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Cambiar estado</div>
+      <!-- Status: one tap = instant save -->
+      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Estado — toca para cambiar</div>
       <div class="st-opts" id="stOpts"></div>
-      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Items faltantes / problemas</div>
+
+      <!-- Late checkout -->
+      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Late Checkout</div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap" id="lateOpts">
+        <button class="late-btn" data-h="" onclick="setLate(this)">Sin late</button>
+        <button class="late-btn" data-h="1pm" onclick="setLate(this)">1pm</button>
+        <button class="late-btn" data-h="2pm" onclick="setLate(this)">2pm</button>
+        <button class="late-btn" data-h="3pm" onclick="setLate(this)">3pm</button>
+        <button class="late-btn" data-h="4pm" onclick="setLate(this)">4pm</button>
+      </div>
+
+      <!-- Missing -->
+      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Items faltantes</div>
       <div class="mg" id="missingGrid"></div>
-      <div class="fg"><label>Nota</label><textarea id="roomNote" placeholder="Observaciones..."></textarea></div>
+
+      <!-- Note -->
+      <div class="fg"><label>Nota</label><textarea id="roomNote" placeholder="Observaciones..." onchange="autoSaveNote()"></textarea></div>
       <div id="roomEmpLabel" style="font-size:.78rem;color:var(--muted);margin-bottom:10px"></div>
-      <!-- Lightspeed reported -->
+
+      <!-- Lightspeed: only thing that needs confirm -->
       <label style="display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #f0f4f8;cursor:pointer;user-select:none">
-        <input type="checkbox" id="lsCheck" style="width:20px;height:20px;accent-color:#059669;cursor:pointer">
+        <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:20px;height:20px;accent-color:#059669;cursor:pointer">
         <div>
           <div style="font-size:.85rem;font-weight:600">✅ Reportado en Lightspeed</div>
           <div style="font-size:.72rem;color:var(--muted);margin-top:1px">Marca cuando lo hayas subido al sistema</div>
@@ -260,8 +278,7 @@ textarea{min-height:60px;resize:none}
     </div>
     <div class="sheet-foot">
       <button class="btn btn-r" style="flex:0;padding:10px 14px" onclick="delRoom()">🗑</button>
-      <button class="btn btn-o" onclick="closeModal('modalRoom')">Cancelar</button>
-      <button class="btn btn-p" onclick="saveRoom()">Guardar</button>
+      <button class="btn btn-o btn-block" onclick="closeModal('modalRoom')">Cerrar</button>
     </div>
   </div>
 </div>
@@ -327,7 +344,7 @@ textarea{min-height:60px;resize:none}
 // ── DATA ───────────────────────────────────────────────────
 const LS={get:k=>{try{return JSON.parse(localStorage.getItem('hk9_'+k))}catch(_){return null}},set:(k,v)=>localStorage.setItem('hk9_'+k,JSON.stringify(v))};
 let st={hotel:'Mi Hotel',employees:[],rooms:[],lsDone:{},reportEmail:''};
-let curTab='rooms',curFilters=new Set(['all']),curRoomId=null,curStatus='odco';
+let curTab='rooms',curFilters=new Set(['all']),curRoomId=null,curStatus='odco',curAssocId=null;
 const gid=()=>Math.random().toString(36).substr(2,9);
 
 // ── STATUS DEFINITIONS ─────────────────────────────────────
@@ -437,6 +454,7 @@ function renderGrid(){
       ${r.missing?.length?`<span class="tile-alert">${r.missing.length}</span>`:''}
       <div class="tile-num" style="${reported?'text-decoration:line-through;color:#9ca3af;':''}">${r.number}</div>
       <div class="tile-status" style="color:${reported?'#9ca3af':s.color}">${s.icon} ${s.label}</div>
+      ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed;margin-top:1px">🕐 ${r.lateCheckout}</div>`:''}
       <div class="tile-emp">${emp?emp.name.split(' ')[0]:'—'}</div>
     </div>`;
   }).join('');
@@ -500,6 +518,7 @@ function renderAssoc(){
 }
 
 function openAssocModal(assocId){
+  curAssocId=assocId;
   const emp=assocId==='__none__'?{name:'Sin asignar'}:st.employees.find(e=>e.id===assocId);
   const rooms=sorted(assocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===assocId));
   const floors=getFloors(rooms);
@@ -517,6 +536,7 @@ function openAssocModal(assocId){
           ${r.missing&&r.missing.length?'<span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700">'+r.missing.length+'</span>':''}
           <div style="font-size:1.05rem;font-weight:800">${r.number}</div>
           <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}</div>
+          ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed">🕐 ${r.lateCheckout}</div>`:''}
           <div style="font-size:.58rem;color:var(--muted);margin-top:2px">${CREDITS[r.status]||1}cr</div>
         </div>`;
       }).join('')+'</div>'
@@ -758,7 +778,7 @@ function openRoomModal(id){
   document.getElementById('stOpts').innerHTML=Object.entries(STATUS).map(([k,v])=>{
     const isCurrent=k===r.status;
     const isAllowed=isCurrent||allowed.includes(k);
-    return`<div class="st-opt ${isCurrent?'sel':''}" style="background:${v.bg};border-color:${isCurrent?'#1a5f7a':v.border};opacity:${isAllowed?1:.28};${!isAllowed?'pointer-events:none':''}" ${isAllowed?`onclick="selStatus('${k}',this)"`:''}>
+    return`<div class="st-opt ${isCurrent?'sel':''}" data-k="${k}" style="background:${v.bg};border-color:${isCurrent?'#1a5f7a':v.border};opacity:${isAllowed?1:.28};${!isAllowed?'pointer-events:none':''}" ${isAllowed?`onclick="selStatus('${k}')"`:''}> 
       <div class="st-opt-icon">${v.icon}</div>
       <div class="st-opt-label" style="color:${v.color}">${v.label}</div>
       <div class="st-opt-desc" style="color:${v.color}">${isAllowed?v.desc:'No disponible'}</div>
@@ -774,32 +794,105 @@ function openRoomModal(id){
   const emp=st.employees.find(e=>e.id===r.assignedTo);
   document.getElementById('roomEmpLabel').textContent=emp?'👤 '+emp.name:'';
   document.getElementById('lsCheck').checked=!!st.lsDone[r.id];
+
+  // Late checkout buttons
+  document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b.dataset.h===(r.lateCheckout||'')));
+
   openModal('modalRoom');
 }
 
-function selStatus(k,el){
-  curStatus=k;
-  document.querySelectorAll('.st-opt').forEach(o=>{
-    const sk=o.getAttribute('onclick').match(/'(\w+)'/)[1];
-    const v=STATUS[sk];
-    o.classList.remove('sel');
-    o.style.borderColor=v.border;
-  });
-  el.classList.add('sel');
-  el.style.borderColor='#1a5f7a';
-}
-function togMissing(id){document.getElementById('mo-'+id).classList.toggle('sel')}
-function saveRoom(){
+function selStatus(k){
+  // Instant save on tap
   const r=st.rooms.find(x=>x.id===curRoomId);
-  r.status=curStatus;
-  r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
-  r.note=document.getElementById('roomNote').value.trim();
-  // Check if "reported to Lightspeed" checkbox is checked
-  const lsEl=document.getElementById('lsCheck');
-  if(lsEl) st.lsDone[r.id]=lsEl.checked;
-  closeModal('modalRoom');save();renderAll();
-  toast(`${STATUS[r.status]?.icon} Cuarto ${r.number} → ${STATUS[r.status]?.label}`);
+  if(!r)return;
+  const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
+  if(k!==r.status&&!allowed.includes(k))return;
+  r.status=k;
+  curStatus=k;
+  save();
+  // Re-render status options with new current
+  const allowed2=VALID_TRANSITIONS[k]||Object.keys(STATUS);
+  document.querySelectorAll('.st-opt').forEach(o=>{
+    const sk=o.dataset.k;
+    const v=STATUS[sk];
+    if(!v)return;
+    const isCurrent=sk===k;
+    const isAllowed=isCurrent||allowed2.includes(sk);
+    o.classList.toggle('sel',isCurrent);
+    o.style.borderColor=isCurrent?'#1a5f7a':v.border;
+    o.style.opacity=isAllowed?'1':'0.28';
+    o.style.pointerEvents=isAllowed?'':'none';
+    o.querySelector('.st-opt-desc').textContent=isAllowed?v.desc:'No disponible';
+  });
+  // Update tile in background
+  renderGrid();
+  if(curAssocId) refreshAssocModal();
+  toast(`${STATUS[k]?.icon} Cuarto ${r.number} → ${STATUS[k]?.label}`);
 }
+
+function setLate(btn){
+  const r=st.rooms.find(x=>x.id===curRoomId);
+  if(!r)return;
+  const h=btn.dataset.h;
+  r.lateCheckout=h||null;
+  document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&h));
+  save();renderGrid();
+  if(curAssocId) refreshAssocModal();
+  if(h) toast(`🕐 Late checkout ${h} — Cuarto ${r.number}`);
+}
+
+function autoSaveNote(){
+  const r=st.rooms.find(x=>x.id===curRoomId);
+  if(!r)return;
+  r.note=document.getElementById('roomNote').value;
+  save();
+}
+
+function saveLs(){
+  const lsEl=document.getElementById('lsCheck');
+  if(!lsEl||!curRoomId)return;
+  st.lsDone[curRoomId]=lsEl.checked;
+  save();renderGrid();
+  if(curAssocId) refreshAssocModal();
+  if(lsEl.checked) toast('✅ Marcado en Lightspeed');
+}
+
+function togMissing(id){
+  document.getElementById('mo-'+id).classList.toggle('sel');
+  // Auto-save missing instantly
+  const r=st.rooms.find(x=>x.id===curRoomId);
+  if(!r)return;
+  r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
+  save();
+}
+
+function refreshAssocModal(){
+  if(!curAssocId) return;
+  // Refresh the grid inside the assoc modal without closing it
+  const rooms=sorted(curAssocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===curAssocId));
+  const bodyEl=document.getElementById('assocRoomsBody');
+  if(!bodyEl||!document.getElementById('modalAssocRooms').classList.contains('on'))return;
+  // Rebuild just the grid content
+  bodyEl.innerHTML=rooms.length
+    ?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px">`+
+      rooms.map(r=>{
+        const s=STATUS[r.status]||STATUS.vd;
+        const bdr=r.status==='vd'?'var(--vd-bd)':r.status==='vc'?'var(--vc-bd)':r.status==='vp'?'var(--vp-bd)':r.status==='odco'?'var(--odco-bd)':'var(--odrf-bd)';
+        const bg=r.status==='vd'?'var(--vd-bg)':r.status==='vc'?'var(--vc-bg)':r.status==='vp'?'var(--vp-bg)':r.status==='odco'?'var(--odco-bg)':'var(--odrf-bg)';
+        const reported=st.lsDone[r.id];
+        return`<div onclick="openRoomModal('${r.id}')" style="background:${bg};border-radius:10px;border:2px solid ${bdr};padding:10px 6px;cursor:pointer;text-align:center;position:relative;user-select:none;opacity:${reported?'.5':'1'}">
+          ${reported?'<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>':''}
+          ${r.missing&&r.missing.length?'<span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700">'+r.missing.length+'</span>':''}
+          <div style="font-size:1.05rem;font-weight:800">${r.number}</div>
+          <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}</div>
+          ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed">🕐 ${r.lateCheckout}</div>`:''}
+          <div style="font-size:.58rem;color:var(--muted);margin-top:2px">${CREDITS[r.status]||1}cr</div>
+        </div>`;
+      }).join('')+'</div>'
+    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos</div>';
+}
+
+function saveRoom(){} // kept for compatibility
 function delRoom(){
   const r=st.rooms.find(x=>x.id===curRoomId);
   if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;
