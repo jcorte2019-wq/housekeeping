@@ -264,9 +264,20 @@ textarea{min-height:60px;resize:none}
 
       <!-- Note -->
       <div class="fg"><label>Nota</label><textarea id="roomNote" placeholder="Observaciones..." onchange="autoSaveNote()"></textarea></div>
-      <div id="roomEmpLabel" style="font-size:.78rem;color:var(--muted);margin-bottom:10px"></div>
+      <div id="roomEmpLabel" style="font-size:.78rem;color:var(--muted);margin-bottom:4px"></div>
 
-      <!-- Lightspeed: only thing that needs confirm -->
+      <!-- DND (only for refresh/full) -->
+      <div id="dndSection" style="display:none;border-top:1px solid #f0f4f8;padding:12px 0">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none">
+          <input type="checkbox" id="dndCheck" onchange="saveDnd()" style="width:20px;height:20px;accent-color:#6b7280;cursor:pointer">
+          <div>
+            <div style="font-size:.85rem;font-weight:600">🚫 DND — No abrió la puerta</div>
+            <div style="font-size:.72rem;color:var(--muted);margin-top:1px">Se descuenta el 0.5 cr del total</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Lightspeed -->
       <label style="display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #f0f4f8;cursor:pointer;user-select:none">
         <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:20px;height:20px;accent-color:#059669;cursor:pointer">
         <div>
@@ -277,7 +288,23 @@ textarea{min-height:60px;resize:none}
     </div>
     <div class="sheet-foot">
       <button class="btn btn-r" style="flex:0;padding:10px 14px" onclick="delRoom()">🗑</button>
+      <button class="btn btn-o" onclick="openTransfer()" style="flex:0;padding:10px 14px">🔄</button>
       <button class="btn btn-o btn-block" onclick="closeModal('modalRoom')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: TRANSFER -->
+<div class="overlay" id="modalTransfer">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <span class="sheet-title" id="transferTitle">Transferir cuarto</span>
+      <button class="sheet-close" onclick="closeModal('modalTransfer')">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Selecciona a quién le vas a asignar este cuarto:</div>
+      <div id="transferList"></div>
     </div>
   </div>
 </div>
@@ -369,7 +396,10 @@ const VALID_TRANSITIONS={
 // ── CREDITS ────────────────────────────────────────────────
 const CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:0.5};
 const MAX_CREDITS=16;
-function roomCredits(r){return CREDITS[r.status]||1}
+function roomCredits(r){
+  if(r.dnd) return 0; // DND = no credit
+  return CREDITS[r.status]||1;
+}
 function totalCredits(rooms){return rooms.reduce((s,r)=>s+roomCredits(r),0)}
 
 const MISSING=[
@@ -452,7 +482,7 @@ function renderGrid(){
       ${reported?`<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>`:''}
       ${r.missing?.length?`<span class="tile-alert">${r.missing.length}</span>`:''}
       <div class="tile-num" style="${reported?'text-decoration:line-through;color:#9ca3af;':''}">${r.number}</div>
-      <div class="tile-status" style="color:${reported?'#9ca3af':s.color}">${s.icon} ${s.label}</div>
+      <div class="tile-status" style="color:${reported?'#9ca3af':s.color}">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
       ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed;margin-top:1px">🕐 ${r.lateCheckout}</div>`:''}
       <div class="tile-emp">${emp?emp.name.split(' ')[0]:'—'}</div>
     </div>`;
@@ -534,9 +564,9 @@ function openAssocModal(assocId){
           ${reported?'<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>':''}
           ${r.missing&&r.missing.length?'<span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700">'+r.missing.length+'</span>':''}
           <div style="font-size:1.05rem;font-weight:800">${r.number}</div>
-          <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}</div>
+          <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
           ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed">🕐 ${r.lateCheckout}</div>`:''}
-          <div style="font-size:.58rem;color:var(--muted);margin-top:2px">${CREDITS[r.status]||1}cr</div>
+          <div style="font-size:.58rem;color:var(--muted);margin-top:2px">${r.dnd?'0':CREDITS[r.status]||1}cr</div>
         </div>`;
       }).join('')+'</div>'
     :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos asignados</div>';
@@ -556,9 +586,10 @@ function renderProgress(){
     const pct=rooms.length?Math.round(vcR/rooms.length*100):0;
     const issues=rooms.filter(x=>x.missing?.length||x.note);
     const credits=totalCredits(rooms);
-    const normalRooms=rooms.filter(x=>x.status!=='odrf').length;
-    const rfRooms=rooms.filter(x=>x.status==='odrf').length;
-    return{name:e.name,total:rooms.length,vc:vcR,pct,issues,credits,normalRooms,rfRooms};
+    const normalRooms=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu').length;
+    const rfRooms=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd).length;
+    const dndRooms=rooms.filter(x=>x.dnd).length;
+    return{name:e.name,total:rooms.length,vc:vcR,pct,issues,credits,normalRooms,rfRooms,dndRooms};
   });
 
   document.getElementById('tab-progress').innerHTML=`
@@ -645,17 +676,22 @@ function sendReport(){
   st.employees.forEach(e=>{
     const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
     const vc=rooms.filter(x=>x.status==='vc').length;
-    const normalRooms=rooms.filter(x=>x.status!=='odrf');
-    const rfRooms=rooms.filter(x=>x.status==='odrf');
     const credits=totalCredits(rooms);
+    const normalRooms=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu');
+    const rfRooms=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd);
+    const dndRooms=rooms.filter(x=>x.dnd);
     body+=`${'─'.repeat(30)}\n`;
     body+=`ASOCIADA: ${e.name}\n`;
     body+=`Cuartos: ${rooms.length} total / ${vc} VC\n`;
     body+=`CRÉDITOS: ${credits}/${MAX_CREDITS}\n`;
-    body+=`  • Normales (×1 cr): ${normalRooms.length} cuartos → ${normalRooms.length} créditos\n`;
+    body+=`  • Normales (×1 cr): ${normalRooms.length} → ${normalRooms.length} cr\n`;
     body+=`    ${normalRooms.map(r=>r.number).join(', ')||'ninguno'}\n`;
-    body+=`  • Refresh (×0.5 cr): ${rfRooms.length} cuartos → ${rfRooms.length*0.5} créditos\n`;
+    body+=`  • Refresh (×0.5 cr): ${rfRooms.length} → ${rfRooms.length*0.5} cr\n`;
     body+=`    ${rfRooms.map(r=>r.number).join(', ')||'ninguno'}\n`;
+    if(dndRooms.length){
+      body+=`  • DND (×0 cr): ${dndRooms.length} cuartos\n`;
+      body+=`    ${dndRooms.map(r=>r.number).join(', ')}\n`;
+    }
     const issues=rooms.filter(x=>x.missing?.length||x.note);
     if(issues.length){
       body+=`Novedades:\n`;
@@ -794,7 +830,11 @@ function openRoomModal(id){
   document.getElementById('roomEmpLabel').textContent=emp?'👤 '+emp.name:'';
   document.getElementById('lsCheck').checked=!!st.lsDone[r.id];
 
-  // Late checkout buttons
+  // DND: only for refresh and full
+  const isDndEligible=r.status==='odrf'||r.status==='odfu';
+  document.getElementById('dndSection').style.display=isDndEligible?'block':'none';
+  document.getElementById('dndCheck').checked=!!r.dnd;
+
   document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b.dataset.h===(r.lateCheckout||'')));
 
   openModal('modalRoom');
@@ -808,6 +848,10 @@ function selStatus(k){
   if(k!==r.status&&!allowed.includes(k))return;
   r.status=k;
   curStatus=k;
+  // Show/hide DND based on new status
+  const isDndEl=k==='odrf'||k==='odfu';
+  document.getElementById('dndSection').style.display=isDndEl?'block':'none';
+  if(!isDndEl){r.dnd=false;document.getElementById('dndCheck').checked=false;}
   save();
   // Re-render status options with new current
   const allowed2=VALID_TRANSITIONS[k]||Object.keys(STATUS);
@@ -865,6 +909,57 @@ function togMissing(id){
   save();
 }
 
+function saveDnd(){
+  const r=st.rooms.find(x=>x.id===curRoomId);
+  if(!r)return;
+  r.dnd=document.getElementById('dndCheck').checked;
+  save();renderGrid();
+  if(curAssocId) refreshAssocModal();
+  toast(r.dnd?'🚫 DND — crédito descontado':'✅ DND removido');
+}
+
+function openTransfer(){
+  const r=st.rooms.find(x=>x.id===curRoomId);
+  if(!r)return;
+  document.getElementById('transferTitle').textContent=`Transferir cuarto ${r.number}`;
+  const currentEmp=st.employees.find(e=>e.id===r.assignedTo);
+  document.getElementById('transferList').innerHTML=[
+    {id:null,name:'Sin asignar'},
+    ...st.employees
+  ].map(e=>{
+    const isCurrent=e.id===r.assignedTo;
+    const rooms=e.id?st.rooms.filter(x=>x.assignedTo===e.id):st.rooms.filter(x=>!x.assignedTo);
+    const cr=totalCredits(rooms);
+    return`<div onclick="${isCurrent?'':(`doTransfer('${e.id||''}')`)}"
+      style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f0f4f8;cursor:${isCurrent?'default':'pointer'};opacity:${isCurrent?.5:1}">
+      <div style="width:38px;height:38px;border-radius:50%;background:${isCurrent?'#e2e8f0':'linear-gradient(135deg,#1a5f7a,#0d3d52)'};color:${isCurrent?'#9ca3af':'white'};font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:.9rem">${e.name}${isCurrent?' (actual)':''}</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:2px">${rooms.length} cuartos · ${cr} cr</div>
+      </div>
+      ${!isCurrent?'<div style="font-size:1.1rem;color:#9ca3af">›</div>':''}
+    </div>`;
+  }).join('');
+  openModal('modalTransfer');
+}
+
+function doTransfer(empId){
+  const r=st.rooms.find(x=>x.id===curRoomId);
+  if(!r)return;
+  const oldEmp=st.employees.find(e=>e.id===r.assignedTo);
+  const newEmp=st.employees.find(e=>e.id===empId);
+  r.assignedTo=empId||null;
+  save();renderAll();
+  closeModal('modalTransfer');
+  const toName=newEmp?newEmp.name:'Sin asignar';
+  const fromName=oldEmp?oldEmp.name:'Sin asignar';
+  toast(`🔄 ${r.number}: ${fromName} → ${toName}`);
+  // Update room emp label in modal
+  const empLabel=document.getElementById('roomEmpLabel');
+  if(empLabel) empLabel.textContent=newEmp?'👤 '+newEmp.name:'';
+  if(curAssocId) refreshAssocModal();
+}
+
 function refreshAssocModal(){
   if(!curAssocId) return;
   // Refresh the grid inside the assoc modal without closing it
@@ -883,9 +978,9 @@ function refreshAssocModal(){
           ${reported?'<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>':''}
           ${r.missing&&r.missing.length?'<span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700">'+r.missing.length+'</span>':''}
           <div style="font-size:1.05rem;font-weight:800">${r.number}</div>
-          <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}</div>
+          <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
           ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed">🕐 ${r.lateCheckout}</div>`:''}
-          <div style="font-size:.58rem;color:var(--muted);margin-top:2px">${CREDITS[r.status]||1}cr</div>
+          <div style="font-size:.58rem;color:var(--muted);margin-top:2px">${r.dnd?'0':CREDITS[r.status]||1}cr</div>
         </div>`;
       }).join('')+'</div>'
     :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos</div>';
