@@ -235,66 +235,104 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 
-<!-- MODAL: ROOM STATUS -->
+<!-- MODAL: ROOM STATUS (compact) -->
 <div class="overlay" id="modalRoom">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-hdr">
       <span class="sheet-title" id="roomModalTitle">Cuarto</span>
-      <button class="sheet-close" onclick="closeModal('modalRoom')">✕</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span id="roomEmpLabel" style="font-size:.7rem;color:var(--muted)"></span>
+        <button onclick="openTransfer()" style="background:#f0f4f8;border:none;border-radius:8px;padding:5px 8px;font-size:.72rem;cursor:pointer">🔄 Trans.</button>
+        <button class="sheet-close" onclick="closeModal('modalRoom')">✕</button>
+      </div>
     </div>
-    <div class="sheet-body">
-      <!-- Status: one tap = instant save -->
-      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">Estado — toca para cambiar</div>
-      <div class="st-opts" id="stOpts"></div>
+    <div class="sheet-body" style="padding:10px 14px">
 
-      <!-- Late checkout -->
-      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Late Checkout</div>
-      <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap" id="lateOpts">
-        <button class="late-btn" data-h="" onclick="setLate(this)">Sin late</button>
-        <button class="late-btn" data-h="1pm" onclick="setLate(this)">1pm</button>
-        <button class="late-btn" data-h="2pm" onclick="setLate(this)">2pm</button>
-        <button class="late-btn" data-h="3pm" onclick="setLate(this)">3pm</button>
-        <button class="late-btn" data-h="4pm" onclick="setLate(this)">4pm</button>
+      <!-- STATUS compact -->
+      <div class="st-opts" id="stOpts" style="gap:5px;margin-bottom:9px"></div>
+
+      <!-- LATE + DND row -->
+      <div style="display:flex;gap:5px;align-items:center;margin-bottom:9px;flex-wrap:wrap">
+        <span style="font-size:.68rem;font-weight:700;color:var(--muted)">Late:</span>
+        <div style="display:flex;gap:3px" id="lateOpts">
+          <button class="late-btn" data-h="" onclick="setLate(this)" style="padding:4px 8px;font-size:.72rem">—</button>
+          <button class="late-btn" data-h="1pm" onclick="setLate(this)" style="padding:4px 8px;font-size:.72rem">1pm</button>
+          <button class="late-btn" data-h="2pm" onclick="setLate(this)" style="padding:4px 8px;font-size:.72rem">2pm</button>
+          <button class="late-btn" data-h="3pm" onclick="setLate(this)" style="padding:4px 8px;font-size:.72rem">3pm</button>
+          <button class="late-btn" data-h="4pm" onclick="setLate(this)" style="padding:4px 8px;font-size:.72rem">4pm</button>
+        </div>
+        <div id="dndSection" style="display:none;margin-left:4px">
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.75rem;font-weight:600;color:#6b7280">
+            <input type="checkbox" id="dndCheck" onchange="saveDnd()" style="width:15px;height:15px;accent-color:#6b7280;cursor:pointer"> 🚫 DND
+          </label>
+        </div>
       </div>
 
-      <!-- Missing -->
-      <div style="font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Items faltantes</div>
-      <div class="mg" id="missingGrid"></div>
+      <!-- FALTANTES compact 3-col -->
+      <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Faltantes</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
+        <div class="mo" id="mo-towels_pillows" onclick="togMissing('towels_pillows')" style="padding:6px 7px;font-size:.7rem">🛁 Toallas/Alm.</div>
+        <div class="mo" id="mo-soap_tp_coffee" onclick="togMissing('soap_tp_coffee')" style="padding:6px 7px;font-size:.7rem">🧴 Jabón/Papel/Café</div>
+        <div class="mo" id="mo-remote" onclick="togMissing('remote')" style="padding:6px 7px;font-size:.7rem">📺 Control TV</div>
+        <div class="mo" id="mo-hairdryer" onclick="togMissing('hairdryer')" style="padding:6px 7px;font-size:.7rem">💨 Secadora</div>
+        <div class="mo" id="mo-dirty" onclick="togMissing('dirty')" style="padding:6px 7px;font-size:.7rem">🔴 Sucio</div>
+        <div class="mo" id="mo-damaged" onclick="togMissing('damaged')" style="padding:6px 7px;font-size:.7rem">🔧 Daño</div>
+      </div>
 
-      <!-- Note -->
-      <div class="fg"><label>Nota</label><textarea id="roomNote" placeholder="Observaciones..." onchange="autoSaveNote()"></textarea></div>
-      <div id="roomEmpLabel" style="font-size:.78rem;color:var(--muted);margin-bottom:4px"></div>
+      <!-- GANCHOS counter -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;background:#f8fafc;border-radius:8px;padding:7px 10px">
+        <span style="font-size:.78rem;font-weight:600">🪝 Ganchos:</span>
+        <button onclick="adjHangers(-1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+        <span id="hangerCount" style="font-size:1rem;font-weight:800;min-width:18px;text-align:center">4</span>
+        <button onclick="adjHangers(1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+        <span style="font-size:.7rem;color:var(--muted)">/4</span>
+        <span id="hangerNote" style="font-size:.72rem;color:#dc2626;font-weight:600;margin-left:4px"></span>
+      </div>
 
-      <!-- DND (only for refresh/full) -->
-      <div id="dndSection" style="display:none;border-top:1px solid #f0f4f8;padding:12px 0">
-        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none">
-          <input type="checkbox" id="dndCheck" onchange="saveDnd()" style="width:20px;height:20px;accent-color:#6b7280;cursor:pointer">
-          <div>
-            <div style="font-size:.85rem;font-weight:600">🚫 DND — No abrió la puerta</div>
-            <div style="font-size:.72rem;color:var(--muted);margin-top:1px">Se descuenta el 0.5 cr del total</div>
-          </div>
+      <!-- NOTE + LS row -->
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="text" id="roomNote" placeholder="Nota..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:7px 10px;border:1.5px solid var(--bdr);border-radius:8px">
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap">
+          <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:17px;height:17px;accent-color:#059669;cursor:pointer">
+          <span style="font-size:.75rem;font-weight:600;color:#059669">LS</span>
         </label>
       </div>
 
-      <!-- Lightspeed -->
-      <label style="display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid #f0f4f8;cursor:pointer;user-select:none">
-        <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:20px;height:20px;accent-color:#059669;cursor:pointer">
-        <div>
-          <div style="font-size:.85rem;font-weight:600">✅ Reportado en Lightspeed</div>
-          <div style="font-size:.72rem;color:var(--muted);margin-top:1px">Marca cuando lo hayas subido al sistema</div>
-        </div>
-      </label>
     </div>
-    <div class="sheet-foot">
-      <button class="btn btn-r" style="flex:0;padding:10px 14px" onclick="delRoom()">🗑</button>
-      <button class="btn btn-o" onclick="openTransfer()" style="flex:0;padding:10px 14px">🔄</button>
+    <div class="sheet-foot" style="padding:8px 14px 14px">
+      <button class="btn btn-r" style="flex:0;padding:8px 12px;font-size:.82rem" onclick="delRoom()">🗑</button>
       <button class="btn btn-o btn-block" onclick="closeModal('modalRoom')">Cerrar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: TRANSFER -->
+<!-- MODAL: QUICK ADD ROOM TO ASSOC -->
+<div class="overlay" id="modalQuickAdd">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr"><span class="sheet-title" id="quickAddTitle">Agregar cuarto</span><button class="sheet-close" onclick="closeModal('modalQuickAdd')">✕</button></div>
+    <div class="sheet-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div class="fg"><label>Cuarto #</label><input type="text" id="qaNum" placeholder="201" onkeydown="if(event.key==='Enter')doQuickAdd()"></div>
+        <div class="fg"><label>Estado</label>
+          <select id="qaStatus">
+            <option value="odco">OD COUT</option>
+            <option value="odrf">OD RFSH</option>
+            <option value="odfu">FULL</option>
+            <option value="vd">VD</option>
+            <option value="vp">VP</option>
+            <option value="vc">VC</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-o" onclick="closeModal('modalQuickAdd')">Cancelar</button>
+      <button class="btn btn-p" onclick="doQuickAdd()">Agregar</button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="modalTransfer">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -360,7 +398,10 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-handle"></div>
     <div class="sheet-hdr">
       <span class="sheet-title" id="assocRoomsTitle">Cuartos</span>
-      <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button onclick="openAddRoomToAssoc()" style="background:#1a5f7a;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:.75rem;font-weight:600;cursor:pointer">+ Cuarto</button>
+        <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
+      </div>
     </div>
     <div class="sheet-body" id="assocRoomsBody" style="padding:0"></div>
   </div>
@@ -403,17 +444,15 @@ function roomCredits(r){
 function totalCredits(rooms){return rooms.reduce((s,r)=>s+roomCredits(r),0)}
 
 const MISSING=[
-  {id:'towels',  label:'Toallas',        icon:'🛁'},
-  {id:'tp',      label:'Papel higiénico',icon:'🧻'},
-  {id:'soap',    label:'Jabón/Champú',   icon:'🧴'},
-  {id:'hangers', label:'Ganchos',        icon:'🪝'},
-  {id:'pillow',  label:'Almohadas',      icon:'🛏️'},
-  {id:'remote',  label:'Control TV',     icon:'📺'},
-  {id:'coffee',  label:'Café/Té',        icon:'☕'},
-  {id:'hairdryer',label:'Secadora',      icon:'💨'},
-  {id:'dirty',   label:'Sucio/manchado', icon:'🔴'},
-  {id:'damaged', label:'Daño/desperfecto',icon:'🔧'},
+  {id:'towels_pillows', label:'Toallas/Almohadas', icon:'🛁'},
+  {id:'soap_tp_coffee', label:'Jabón/Papel/Café',  icon:'🧴'},
+  {id:'remote',         label:'Control TV',         icon:'📺'},
+  {id:'hairdryer',      label:'Secadora',           icon:'💨'},
+  {id:'dirty',          label:'Sucio/manchado',     icon:'🔴'},
+  {id:'damaged',        label:'Daño/desperfecto',   icon:'🔧'},
 ];
+// Hangers are tracked separately with a count (0-4)
+const MAX_HANGERS=4;
 
 // ── PERSIST ────────────────────────────────────────────────
 function save(){LS.set('hotel',st.hotel);LS.set('employees',st.employees);LS.set('rooms',st.rooms);LS.set('lsDone',st.lsDone);LS.set('reportEmail',st.reportEmail)}
@@ -820,10 +859,16 @@ function openRoomModal(id){
     </div>`;
   }).join('');
 
-  // Missing
-  document.getElementById('missingGrid').innerHTML=MISSING.map(m=>
-    `<div class="mo ${(r.missing||[]).includes(m.id)?'sel':''}" id="mo-${m.id}" onclick="togMissing('${m.id}')">${m.icon} ${m.label}</div>`
-  ).join('');
+  // Missing items - update checkboxes
+  MISSING.forEach(m=>{
+    const el=document.getElementById('mo-'+m.id);
+    if(el) el.classList.toggle('sel',(r.missing||[]).includes(m.id));
+  });
+
+  // Hangers counter
+  const hangers=r.hangers!=null?r.hangers:4;
+  document.getElementById('hangerCount').textContent=hangers;
+  document.getElementById('hangerNote').textContent=hangers<4?`⚠️ Faltan ${4-hangers}`:'';
 
   document.getElementById('roomNote').value=r.note||'';
   const emp=st.employees.find(e=>e.id===r.assignedTo);
@@ -902,11 +947,21 @@ function saveLs(){
 
 function togMissing(id){
   document.getElementById('mo-'+id).classList.toggle('sel');
-  // Auto-save missing instantly
   const r=st.rooms.find(x=>x.id===curRoomId);
   if(!r)return;
   r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
   save();
+}
+
+function adjHangers(delta){
+  const r=st.rooms.find(x=>x.id===curRoomId);
+  if(!r)return;
+  const cur=r.hangers!=null?r.hangers:4;
+  r.hangers=Math.max(0,Math.min(4,cur+delta));
+  document.getElementById('hangerCount').textContent=r.hangers;
+  document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';
+  save();renderGrid();
+  if(curAssocId) refreshAssocModal();
 }
 
 function saveDnd(){
@@ -916,6 +971,33 @@ function saveDnd(){
   save();renderGrid();
   if(curAssocId) refreshAssocModal();
   toast(r.dnd?'🚫 DND — crédito descontado':'✅ DND removido');
+}
+
+function openAddRoomToAssoc(){
+  const emp=curAssocId==='__none__'?null:st.employees.find(e=>e.id===curAssocId);
+  document.getElementById('quickAddTitle').textContent='Agregar cuarto'+(emp?' → '+emp.name.split(' ')[0]:'');
+  document.getElementById('qaNum').value='';
+  document.getElementById('qaStatus').value='odco';
+  openModal('modalQuickAdd');
+  setTimeout(()=>document.getElementById('qaNum').focus(),200);
+}
+
+function doQuickAdd(){
+  const num=document.getElementById('qaNum').value.trim();
+  if(!num){toast('⚠️ Ingresa el número');return}
+  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Ya existe el cuarto '+num);return}
+  const status=document.getElementById('qaStatus').value;
+  st.rooms.push({
+    id:gid(),number:num,status,
+    assignedTo:curAssocId==='__none__'?null:curAssocId,
+    note:'',missing:[],hangers:4,lateCheckout:null,dnd:false,
+  });
+  closeModal('modalQuickAdd');
+  save();renderAll();
+  refreshAssocModal();
+  toast('🏠 Cuarto '+num+' agregado');
+  // Re-open quick add for bulk adding
+  setTimeout(openAddRoomToAssoc,300);
 }
 
 function openTransfer(){
