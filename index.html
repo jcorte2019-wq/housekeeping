@@ -225,7 +225,7 @@ textarea{min-height:60px;resize:none}
       </div>
       <div class="fg">
         <label>Código</label>
-        <textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco,212-odrf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea>
+        <textarea id="pasteInput" placeholder="EMP:JUAN|201-vd,203-odco,212-odrf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea>
       </div>
     </div>
     <div class="sheet-foot">
@@ -308,7 +308,7 @@ textarea{min-height:60px;resize:none}
 </div>
 
 <!-- MODAL: QUICK ADD ROOM TO ASSOC -->
-<div class="overlay" id="modalQuickAdd">
+<div class="overlay" id="modalQuickAdd" style="z-index:600">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-hdr"><span class="sheet-title" id="quickAddTitle">Agregar cuarto</span><button class="sheet-close" onclick="closeModal('modalQuickAdd')">✕</button></div>
@@ -877,8 +877,12 @@ function openRoomModal(id){
 
   // DND: only for refresh and full
   const isDndEligible=r.status==='odrf'||r.status==='odfu';
-  document.getElementById('dndSection').style.display=isDndEligible?'block':'none';
+  document.getElementById('dndSection').style.display=isDndEligible?'flex':'none';
   document.getElementById('dndCheck').checked=!!r.dnd;
+
+  // Late: hide for VD/VP/VC
+  const showLate=lateVisible(r.status);
+  document.getElementById('lateOpts').style.display=showLate?'flex':'none';
 
   document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b.dataset.h===(r.lateCheckout||'')));
 
@@ -895,8 +899,11 @@ function selStatus(k){
   curStatus=k;
   // Show/hide DND based on new status
   const isDndEl=k==='odrf'||k==='odfu';
-  document.getElementById('dndSection').style.display=isDndEl?'block':'none';
+  document.getElementById('dndSection').style.display=isDndEl?'flex':'none';
   if(!isDndEl){r.dnd=false;document.getElementById('dndCheck').checked=false;}
+  // Show/hide late section
+  document.getElementById('lateOpts').style.display=lateVisible(k)?'flex':'none';
+  document.querySelector('span[style*="Late:"]') && (document.querySelector('span[style*="Late:"]').style.display=lateVisible(k)?'':'none');
   save();
   // Re-render status options with new current
   const allowed2=VALID_TRANSITIONS[k]||Object.keys(STATUS);
@@ -916,6 +923,12 @@ function selStatus(k){
   renderGrid();
   if(curAssocId) refreshAssocModal();
   toast(`${STATUS[k]?.icon} Cuarto ${r.number} → ${STATUS[k]?.label}`);
+  // Auto-close when marked VC
+  if(k==='vc') setTimeout(()=>closeModal('modalRoom'),600);
+}
+
+function lateVisible(status){
+  return status==='odco'||status==='odrf'||status==='odfu';
 }
 
 function setLate(btn){
@@ -942,7 +955,10 @@ function saveLs(){
   st.lsDone[curRoomId]=lsEl.checked;
   save();renderGrid();
   if(curAssocId) refreshAssocModal();
-  if(lsEl.checked) toast('✅ Marcado en Lightspeed');
+  if(lsEl.checked){
+    toast('✅ Marcado en Lightspeed');
+    setTimeout(()=>closeModal('modalRoom'),600);
+  }
 }
 
 function togMissing(id){
@@ -996,8 +1012,9 @@ function doQuickAdd(){
   save();renderAll();
   refreshAssocModal();
   toast('🏠 Cuarto '+num+' agregado');
-  // Re-open quick add for bulk adding
-  setTimeout(openAddRoomToAssoc,300);
+  // Keep modal open for bulk adding - clear number field
+  document.getElementById('qaNum').value='';
+  setTimeout(()=>document.getElementById('qaNum').focus(),100);
 }
 
 function openTransfer(){
