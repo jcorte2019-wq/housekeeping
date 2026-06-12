@@ -9,6 +9,7 @@
 <meta name="theme-color" content="#1a5f7a">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Housekeeping</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -28,6 +29,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .hdate{font-size:.72rem;opacity:.7;margin-top:1px}
 .hbtns{display:flex;gap:6px;flex-shrink:0}
 .hbtn{background:rgba(255,255,255,.2);color:white;border:none;border-radius:8px;padding:7px 10px;font-size:.76rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.hbtn-pdf{background:rgba(99,179,237,.35);color:white;border:none;border-radius:8px;padding:7px 10px;font-size:.76rem;font-weight:600;cursor:pointer;white-space:nowrap}
 .pills{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:1px}
 .pills::-webkit-scrollbar{display:none}
 .pill{border-radius:20px;padding:3px 9px;font-size:.7rem;white-space:nowrap;display:flex;align-items:center;gap:3px;flex-shrink:0}
@@ -79,27 +81,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .assoc-prog{height:4px;background:var(--bdr);margin:0 14px 12px;border-radius:2px}
 .assoc-prog-fill{height:100%;background:#059669;border-radius:2px;transition:width .4s}
 
-/* ROOM LIST inside assoc */
-.back-btn{display:flex;align-items:center;gap:6px;padding:8px 0 12px;cursor:pointer;color:var(--p);font-weight:600;font-size:.85rem}
-.room-row{display:flex;align-items:center;padding:11px 14px;border-bottom:1px solid #f0f4f8;gap:10px;cursor:pointer}
-.room-row:active{background:#f8fafc}
-.rr-num{font-weight:800;font-size:1rem;min-width:42px}
-.rr-badge{font-size:.65rem;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
-.rr-info{flex:1;min-width:0}
-.rr-note{font-size:.7rem;color:#dc2626;margin-top:2px}
-.rr-missing{font-size:.68rem;background:#fff3cd;color:#856404;padding:2px 6px;border-radius:6px;margin-top:2px;display:inline-block}
-
-/* SUMMARY */
-.summ-section{margin-bottom:16px}
-.summ-title{font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;padding:0 2px}
-.summ-card{background:white;border-radius:12px;border:1px solid var(--bdr);overflow:hidden;margin-bottom:10px}
-.summ-hdr{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f4f8;background:#f8fafc}
-.summ-name{font-weight:700;font-size:.9rem}
-.summ-stat{font-size:.75rem;color:var(--muted)}
-.summ-row{display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px;font-size:.8rem}
-.summ-row:last-child{border-bottom:none}
-.summ-icon{font-size:1rem;min-width:22px;text-align:center}
-
 /* CARD & FORMS */
 .card{background:white;border-radius:12px;border:1px solid var(--bdr);overflow:hidden;margin-bottom:12px}
 .card-hdr{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f4f8;background:#f8fafc;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
@@ -148,13 +129,6 @@ textarea{min-height:60px;resize:none}
 .stat-val{font-size:1.6rem;font-weight:800}
 .stat-lbl{font-size:.7rem;color:var(--muted);margin-top:2px}
 
-/* PROG */
-.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.prog-lbl{font-size:.75rem;min-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
-.prog-bar{flex:1;height:7px;background:var(--bdr);border-radius:10px;overflow:hidden}
-.prog-fill{height:100%;border-radius:10px;transition:width .4s}
-.prog-val{font-size:.75rem;font-weight:700;min-width:32px;text-align:right}
-
 /* LATE CHECKOUT */
 .late-btn{padding:7px 14px;border-radius:20px;border:1.5px solid var(--bdr);background:white;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s}
 .late-btn.on{background:#7c3aed;color:white;border-color:#7c3aed}
@@ -166,6 +140,33 @@ textarea{min-height:60px;resize:none}
 /* TOAST */
 #toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a2332;color:white;padding:9px 18px;border-radius:20px;font-size:.82rem;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* PDF MODAL SPECIFIC */
+.pdf-drop{border:2px dashed #93c5fd;border-radius:12px;padding:32px 16px;text-align:center;cursor:pointer;transition:all .2s;background:#f0f7ff;position:relative;margin-bottom:14px}
+.pdf-drop:hover,.pdf-drop.dragging{border-color:var(--p);background:#e0effa}
+.pdf-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.pdf-drop-icon{font-size:2rem;margin-bottom:8px}
+.pdf-drop h3{font-size:.92rem;font-weight:700;color:var(--p);margin-bottom:4px}
+.pdf-drop p{font-size:.75rem;color:var(--muted)}
+.pdf-status{display:none;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:.82rem;margin-bottom:10px}
+.pdf-status.visible{display:flex}
+.pdf-status.processing{background:#fffbeb;border:1px solid #fcd34d;color:#92400e}
+.pdf-status.success{background:#d1fae5;border:1px solid #6ee7b7;color:#065f46}
+.pdf-status.error{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b}
+.pdf-spinner{width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pdf-att-list{max-height:320px;overflow-y:auto}
+.pdf-att-row{border:1px solid var(--bdr);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.pdf-att-hdr{background:#f8fafc;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pdf-att-name{font-weight:700;font-size:.88rem;color:var(--p)}
+.pdf-att-badges{display:flex;gap:4px;flex-wrap:wrap}
+.pdf-att-badge{font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:20px}
+.pdf-att-rooms{display:flex;flex-wrap:wrap;gap:4px;padding:8px 12px}
+.pdf-room-chip{font-size:.72rem;font-family:monospace;padding:3px 8px;border-radius:6px;border:1px solid var(--bdr);background:white}
+.pdf-room-chip.vd{border-color:#93c5fd;color:#2563eb;background:#eff6ff}
+.pdf-room-chip.cout{border-color:#fcd34d;color:#d97706;background:#fffbeb}
+.pdf-room-chip.rfsh{border-color:#c4b5fd;color:#7c3aed;background:#f5f3ff}
+.pdf-summary-bar{background:#f0f7ff;border:1px solid #93c5fd;border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:.8rem;color:#1e40af;display:flex;gap:12px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -178,15 +179,16 @@ textarea{min-height:60px;resize:none}
       <div class="hdate" id="hdate"></div>
     </div>
     <div class="hbtns">
+      <button class="hbtn-pdf" onclick="openModal('modalPDF')">📄 PDF</button>
       <button class="hbtn" onclick="openModal('modalPaste')">📋 Importar</button>
     </div>
   </div>
   <div class="pills" id="pills"></div>
 </div>
 
-<!-- FILTER BAR (rooms tab only) -->
+<!-- FILTER BAR -->
 <div class="filters" id="filterBar">
-  <button class="filt on" data-f="all" onclick="setFilter('all',this)" style="">Todos</button>
+  <button class="filt on" data-f="all" onclick="setFilter('all',this)">Todos</button>
   <button class="filt" data-f="vd"   onclick="setFilter('vd',this)"   style="background:var(--vd-bg);color:var(--vd)">VD</button>
   <button class="filt" data-f="vc"   onclick="setFilter('vc',this)"   style="background:var(--vc-bg);color:var(--vc)">VC</button>
   <button class="filt" data-f="odco" onclick="setFilter('odco',this)" style="background:var(--odco-bg);color:var(--odco)">OD COUT</button>
@@ -211,7 +213,47 @@ textarea{min-height:60px;resize:none}
 
 <div id="toast"></div>
 
-<!-- MODAL: IMPORT -->
+<!-- ══════════════════════════════════════════════════════════
+     MODAL: PDF IMPORT (NEW)
+═══════════════════════════════════════════════════════════ -->
+<div class="overlay" id="modalPDF">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <span class="sheet-title">📄 Importar desde PDF</span>
+      <button class="sheet-close" onclick="closePdfModal()">✕</button>
+    </div>
+    <div class="sheet-body" style="padding:12px 14px">
+
+      <!-- Drop zone -->
+      <div class="pdf-drop" id="pdfDrop">
+        <input type="file" id="pdfFileInput" accept=".pdf" multiple>
+        <div class="pdf-drop-icon">📄</div>
+        <h3>Subir hoja de Lightspeed</h3>
+        <p>Arrastra el PDF aquí o toca para seleccionar</p>
+      </div>
+
+      <!-- Status -->
+      <div class="pdf-status" id="pdfStatus">
+        <div class="pdf-spinner" id="pdfSpinner"></div>
+        <span id="pdfStatusText"></span>
+      </div>
+
+      <!-- Results -->
+      <div id="pdfResults" style="display:none">
+        <div class="pdf-summary-bar" id="pdfSummaryBar"></div>
+        <div class="pdf-att-list" id="pdfAttList"></div>
+      </div>
+
+    </div>
+    <div class="sheet-foot" id="pdfFooter" style="display:none">
+      <button class="btn btn-o" onclick="closePdfModal()">Cancelar</button>
+      <button class="btn btn-p" onclick="confirmPdfImport()">✅ Importar todo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: IMPORT (manual) -->
 <div class="overlay" id="modalPaste">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -235,7 +277,7 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 
-<!-- MODAL: ROOM STATUS (compact) -->
+<!-- MODAL: ROOM STATUS -->
 <div class="overlay" id="modalRoom">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -248,11 +290,7 @@ textarea{min-height:60px;resize:none}
       </div>
     </div>
     <div class="sheet-body" style="padding:10px 14px">
-
-      <!-- STATUS compact -->
       <div class="st-opts" id="stOpts" style="gap:5px;margin-bottom:9px"></div>
-
-      <!-- LATE + DND row -->
       <div style="display:flex;gap:5px;align-items:center;margin-bottom:9px;flex-wrap:wrap">
         <span style="font-size:.68rem;font-weight:700;color:var(--muted)">Late:</span>
         <div style="display:flex;gap:3px" id="lateOpts">
@@ -268,8 +306,6 @@ textarea{min-height:60px;resize:none}
           </label>
         </div>
       </div>
-
-      <!-- FALTANTES compact 3-col -->
       <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Faltantes</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
         <div class="mo" id="mo-towels_pillows" onclick="togMissing('towels_pillows')" style="padding:6px 7px;font-size:.7rem">🛁 Toallas/Alm.</div>
@@ -279,8 +315,6 @@ textarea{min-height:60px;resize:none}
         <div class="mo" id="mo-dirty" onclick="togMissing('dirty')" style="padding:6px 7px;font-size:.7rem">🔴 Sucio</div>
         <div class="mo" id="mo-damaged" onclick="togMissing('damaged')" style="padding:6px 7px;font-size:.7rem">🔧 Daño</div>
       </div>
-
-      <!-- GANCHOS counter -->
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;background:#f8fafc;border-radius:8px;padding:7px 10px">
         <span style="font-size:.78rem;font-weight:600">🪝 Ganchos:</span>
         <button onclick="adjHangers(-1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
@@ -289,8 +323,6 @@ textarea{min-height:60px;resize:none}
         <span style="font-size:.7rem;color:var(--muted)">/4</span>
         <span id="hangerNote" style="font-size:.72rem;color:#dc2626;font-weight:600;margin-left:4px"></span>
       </div>
-
-      <!-- NOTE + LS row -->
       <div style="display:flex;gap:8px;align-items:center">
         <input type="text" id="roomNote" placeholder="Nota..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:7px 10px;border:1.5px solid var(--bdr);border-radius:8px">
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap">
@@ -298,7 +330,6 @@ textarea{min-height:60px;resize:none}
           <span style="font-size:.75rem;font-weight:600;color:#059669">LS</span>
         </label>
       </div>
-
     </div>
     <div class="sheet-foot" style="padding:8px 14px 14px">
       <button class="btn btn-r" style="flex:0;padding:8px 12px;font-size:.82rem" onclick="delRoom()">🗑</button>
@@ -307,7 +338,7 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 
-<!-- MODAL: QUICK ADD ROOM TO ASSOC -->
+<!-- MODAL: QUICK ADD -->
 <div class="overlay" id="modalQuickAdd" style="z-index:600">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -333,6 +364,8 @@ textarea{min-height:60px;resize:none}
     </div>
   </div>
 </div>
+
+<!-- MODAL: TRANSFER -->
 <div class="overlay" id="modalTransfer">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -408,13 +441,245 @@ textarea{min-height:60px;resize:none}
 </div>
 
 <script>
-// ── DATA ───────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+// PDF.JS SETUP
+// ══════════════════════════════════════════════════════════════
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// ── PDF PARSER ────────────────────────────────────────────────
+// Lightspeed PDF structure: room entries appear BEFORE their attendant header.
+// The header is in the page footer: "...and Attendant NAME (CODE) Page X of Y"
+const PDF_HEADER_RE = /For Schedule HK and Board \S+ and Attendant (.+?) \((\w+)\)\s+Page/i;
+const PDF_ROOM_RE   = /^(\d{3})\s+\S+\s+\d+\s+(VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP)\b/;
+const PDF_HKPKG_RE  = /HK Package Information:\s+(\w+)/i;
+
+function pdfResolveCode(hkStatus, pkgCode) {
+  if (hkStatus === 'VD') return 'vd';
+  if (hkStatus === 'OD') return pkgCode === 'RFSH' ? 'odrf' : 'odco';
+  if (hkStatus === 'VC') return 'vc';
+  if (hkStatus === 'VP') return 'vp';
+  if (hkStatus === 'OP') return 'odco';
+  return 'odco';
+}
+
+function parsePdfText(rawText) {
+  const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const segments = [];
+  let currentLines = [];
+
+  for (const line of lines) {
+    const hm = PDF_HEADER_RE.exec(line);
+    if (hm) {
+      segments.push({ name: hm[1].trim(), code: hm[2].trim(), lines: currentLines });
+      currentLines = [];
+    } else {
+      currentLines.push(line);
+    }
+  }
+
+  // Merge segments with same attendant (multi-page boards)
+  const orderMap = new Map();
+  const merged = [];
+
+  for (const seg of segments) {
+    const key = seg.name + '|||' + seg.code;
+    if (!orderMap.has(key)) {
+      orderMap.set(key, merged.length);
+      merged.push({ name: seg.name, code: seg.code, rooms: [] });
+    }
+    const att = merged[orderMap.get(key)];
+    let pending = null;
+    for (const line of seg.lines) {
+      const rm = PDF_ROOM_RE.exec(line);
+      if (rm) { pending = { number: rm[1], hkStatus: rm[3] }; continue; }
+      if (pending) {
+        const hk = PDF_HKPKG_RE.exec(line);
+        if (hk) {
+          att.rooms.push({
+            number: pending.number,
+            status: pdfResolveCode(pending.hkStatus, hk[1].toUpperCase())
+          });
+          pending = null;
+        }
+      }
+    }
+  }
+  return merged.filter(a => a.rooms.length > 0);
+}
+
+async function extractPdfText(file) {
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  let text = '';
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    text += content.items.map(i => i.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+// ── PDF UI STATE ──────────────────────────────────────────────
+let pdfParsedAttendants = [];
+
+function closePdfModal() {
+  closeModal('modalPDF');
+  // Reset state
+  pdfParsedAttendants = [];
+  document.getElementById('pdfResults').style.display = 'none';
+  document.getElementById('pdfFooter').style.display = 'none';
+  document.getElementById('pdfStatus').className = 'pdf-status';
+  document.getElementById('pdfDrop').style.display = 'block';
+  document.getElementById('pdfFileInput').value = '';
+}
+
+function showPdfStatus(type, msg) {
+  const el = document.getElementById('pdfStatus');
+  el.className = 'pdf-status visible ' + type;
+  document.getElementById('pdfStatusText').textContent = msg;
+  document.getElementById('pdfSpinner').style.display = type === 'processing' ? 'block' : 'none';
+}
+
+async function handlePdfFiles(files) {
+  const pdfs = [...files].filter(f => f.name.endsWith('.pdf') || f.type === 'application/pdf');
+  if (!pdfs.length) { showPdfStatus('error', 'No se encontraron archivos PDF.'); return; }
+
+  document.getElementById('pdfDrop').style.display = 'none';
+  showPdfStatus('processing', 'Leyendo PDF...');
+  document.getElementById('pdfResults').style.display = 'none';
+  document.getElementById('pdfFooter').style.display = 'none';
+  pdfParsedAttendants = [];
+
+  try {
+    for (const file of pdfs) {
+      const text = await extractPdfText(file);
+      pdfParsedAttendants.push(...parsePdfText(text));
+    }
+
+    if (!pdfParsedAttendants.length) {
+      showPdfStatus('error', 'No se encontraron datos. ¿Es un PDF de Lightspeed?');
+      document.getElementById('pdfDrop').style.display = 'block';
+      return;
+    }
+
+    const totalRooms = pdfParsedAttendants.reduce((s, a) => s + a.rooms.length, 0);
+    const totalCr = pdfParsedAttendants.reduce((s, a) => s + a.rooms.reduce((ss, r) => ss + (r.status === 'odrf' ? 0.5 : 1), 0), 0);
+    showPdfStatus('success', `✓ ${pdfParsedAttendants.length} asociada(s) · ${totalRooms} cuartos · ${totalCr} créditos`);
+
+    renderPdfResults();
+    document.getElementById('pdfResults').style.display = 'block';
+    document.getElementById('pdfFooter').style.display = 'flex';
+  } catch (err) {
+    showPdfStatus('error', 'Error: ' + err.message);
+    document.getElementById('pdfDrop').style.display = 'block';
+    console.error(err);
+  }
+}
+
+function renderPdfResults() {
+  const totalRooms = pdfParsedAttendants.reduce((s, a) => s + a.rooms.length, 0);
+  const totalCr = pdfParsedAttendants.reduce((s, a) => s + a.rooms.reduce((ss, r) => ss + (r.status === 'odrf' ? 0.5 : 1), 0), 0);
+
+  document.getElementById('pdfSummaryBar').innerHTML =
+    `<span>👤 <strong>${pdfParsedAttendants.length}</strong> asociadas</span>` +
+    `<span>🚪 <strong>${totalRooms}</strong> cuartos</span>` +
+    `<span>⭐ <strong>${totalCr}</strong> créditos</span>`;
+
+  document.getElementById('pdfAttList').innerHTML = pdfParsedAttendants.map(att => {
+    const vd   = att.rooms.filter(r => r.status === 'vd').length;
+    const cout = att.rooms.filter(r => r.status === 'odco').length;
+    const rfsh = att.rooms.filter(r => r.status === 'odrf').length;
+    const cr   = att.rooms.reduce((s, r) => s + (r.status === 'odrf' ? 0.5 : 1), 0);
+
+    // Check if already exists
+    const existingEmp = st.employees.find(e => e.name.toLowerCase() === att.name.toLowerCase());
+    const existingRooms = att.rooms.filter(r => st.rooms.find(x => x.number === r.number));
+    const newRooms = att.rooms.filter(r => !st.rooms.find(x => x.number === r.number));
+
+    return `<div class="pdf-att-row">
+      <div class="pdf-att-hdr">
+        <div>
+          <div class="pdf-att-name">${att.name} <span style="font-size:.72rem;color:var(--muted);font-weight:400">(${att.code})</span></div>
+          ${existingRooms.length ? `<div style="font-size:.68rem;color:#d97706;margin-top:2px">⚠️ ${existingRooms.length} cuarto(s) ya existen — se omitirán</div>` : ''}
+        </div>
+        <div class="pdf-att-badges">
+          ${vd   ? `<span class="pdf-att-badge" style="background:#eff6ff;color:#2563eb">VD ×${vd}</span>` : ''}
+          ${cout ? `<span class="pdf-att-badge" style="background:#fffbeb;color:#d97706">COUT ×${cout}</span>` : ''}
+          ${rfsh ? `<span class="pdf-att-badge" style="background:#f5f3ff;color:#7c3aed">RFSH ×${rfsh}</span>` : ''}
+          <span class="pdf-att-badge" style="background:#d1fae5;color:#065f46">${cr} cr</span>
+        </div>
+      </div>
+      <div class="pdf-att-rooms">
+        ${att.rooms.map(r => {
+          const cls = r.status === 'vd' ? 'vd' : r.status === 'odrf' ? 'rfsh' : 'cout';
+          const label = r.status === 'vd' ? 'VD' : r.status === 'odrf' ? 'RFSH' : 'COUT';
+          const dup = st.rooms.find(x => x.number === r.number);
+          return `<span class="pdf-room-chip ${cls}" style="${dup ? 'opacity:.4;text-decoration:line-through' : ''}">${r.number}·${label}</span>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function confirmPdfImport() {
+  if (!pdfParsedAttendants.length) return;
+  let totalAdded = 0;
+  let empAdded = 0;
+
+  for (const att of pdfParsedAttendants) {
+    // Find or create employee
+    let emp = st.employees.find(e => e.name.toLowerCase() === att.name.toLowerCase());
+    if (!emp) {
+      emp = { id: gid(), name: att.name };
+      st.employees.push(emp);
+      empAdded++;
+    }
+
+    // Add new rooms only
+    const existing = new Set(st.rooms.map(r => r.number));
+    for (const r of att.rooms) {
+      if (existing.has(r.number)) continue;
+      st.rooms.push({
+        id: gid(),
+        number: r.number,
+        status: r.status,
+        assignedTo: emp.id,
+        note: '',
+        missing: [],
+        hangers: 4,
+        lateCheckout: null,
+        dnd: false
+      });
+      existing.add(r.number);
+      totalAdded++;
+    }
+  }
+
+  save();
+  renderAll();
+  closePdfModal();
+  toast(`✅ ${totalAdded} cuartos importados · ${pdfParsedAttendants.length} asociadas`);
+}
+
+// Wire up PDF drop zone
+document.addEventListener('DOMContentLoaded', () => {
+  const drop = document.getElementById('pdfDrop');
+  const input = document.getElementById('pdfFileInput');
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragging'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('dragging'));
+  drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('dragging'); handlePdfFiles(e.dataTransfer.files); });
+  input.addEventListener('change', () => handlePdfFiles(input.files));
+});
+
+// ══════════════════════════════════════════════════════════════
+// EXISTING APP CODE (unchanged)
+// ══════════════════════════════════════════════════════════════
 const LS={get:k=>{try{return JSON.parse(localStorage.getItem('hk9_'+k))}catch(_){return null}},set:(k,v)=>localStorage.setItem('hk9_'+k,JSON.stringify(v))};
 let st={hotel:'Mi Hotel',employees:[],rooms:[],lsDone:{},reportEmail:''};
 let curTab='rooms',curFilters=new Set(['all']),curRoomId=null,curStatus='odco',curAssocId=null;
 const gid=()=>Math.random().toString(36).substr(2,9);
 
-// ── STATUS DEFINITIONS ─────────────────────────────────────
 const STATUS={
   vd:  {label:'VD',     desc:'Vacante sucio',          color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
   vc:  {label:'VC',     desc:'Vacante limpio',          color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
@@ -424,41 +689,33 @@ const STATUS={
   vp:  {label:'VP',     desc:'Vacante con problema',    color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
 };
 
-// Valid transitions: from → allowed next states
 const VALID_TRANSITIONS={
-  odco: ['vd','vp','odrf','odfu'],   // OD COUT → must go to VD or VP first, OR refresh
-  odrf: ['vd','vp','vc'],            // OD RFSH → VD, VP, or VC
-  odfu: ['vd','vp','vc'],            // FULL    → VD, VP, or VC
-  vd:   ['vc','vp'],                 // VD      → VC or VP
-  vp:   ['vc','vd'],                 // VP      → VC or back to VD
-  vc:   ['vd','vp','odco','odrf','odfu'], // VC → anything (re-open)
+  odco:['vd','vp','odrf','odfu'],
+  odrf:['vd','vp','vc'],
+  odfu:['vd','vp','vc'],
+  vd:  ['vc','vp'],
+  vp:  ['vc','vd'],
+  vc:  ['vd','vp','odco','odrf','odfu'],
 };
 
-// ── CREDITS ────────────────────────────────────────────────
 const CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:0.5};
 const MAX_CREDITS=16;
-function roomCredits(r){
-  if(r.dnd) return 0; // DND = no credit
-  return CREDITS[r.status]||1;
-}
+function roomCredits(r){if(r.dnd)return 0;return CREDITS[r.status]||1}
 function totalCredits(rooms){return rooms.reduce((s,r)=>s+roomCredits(r),0)}
 
 const MISSING=[
-  {id:'towels_pillows', label:'Toallas/Almohadas', icon:'🛁'},
-  {id:'soap_tp_coffee', label:'Jabón/Papel/Café',  icon:'🧴'},
-  {id:'remote',         label:'Control TV',         icon:'📺'},
-  {id:'hairdryer',      label:'Secadora',           icon:'💨'},
-  {id:'dirty',          label:'Sucio/manchado',     icon:'🔴'},
-  {id:'damaged',        label:'Daño/desperfecto',   icon:'🔧'},
+  {id:'towels_pillows',label:'Toallas/Almohadas',icon:'🛁'},
+  {id:'soap_tp_coffee',label:'Jabón/Papel/Café', icon:'🧴'},
+  {id:'remote',        label:'Control TV',        icon:'📺'},
+  {id:'hairdryer',     label:'Secadora',          icon:'💨'},
+  {id:'dirty',         label:'Sucio/manchado',    icon:'🔴'},
+  {id:'damaged',       label:'Daño/desperfecto',  icon:'🔧'},
 ];
-// Hangers are tracked separately with a count (0-4)
 const MAX_HANGERS=4;
 
-// ── PERSIST ────────────────────────────────────────────────
 function save(){LS.set('hotel',st.hotel);LS.set('employees',st.employees);LS.set('rooms',st.rooms);LS.set('lsDone',st.lsDone);LS.set('reportEmail',st.reportEmail)}
 function load(){st.hotel=LS.get('hotel')||'Mi Hotel';st.employees=LS.get('employees')||[];st.rooms=LS.get('rooms')||[];st.lsDone=LS.get('lsDone')||{};st.reportEmail=LS.get('reportEmail')||''}
 
-// ── INIT ───────────────────────────────────────────────────
 function init(){
   load();
   const d=new Date();
@@ -476,7 +733,6 @@ function renderAll(){
   if(curTab==='setup')    renderSetup();
 }
 
-// ── PILLS ──────────────────────────────────────────────────
 function renderPills(){
   document.getElementById('hotelName').textContent='🏨 '+st.hotel;
   const r=st.rooms,total=r.length;
@@ -493,25 +749,16 @@ function renderPills(){
   ).join('');
 }
 
-// ── SORTED ROOMS ───────────────────────────────────────────
-function sorted(arr){
-  return[...arr].sort((a,b)=>a.number.localeCompare(b.number,undefined,{numeric:true}));
-}
+function sorted(arr){return[...arr].sort((a,b)=>a.number.localeCompare(b.number,undefined,{numeric:true}))}
+function getFloors(rooms){const floors=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));return[...floors].sort().map(f=>`P${f}`).join(', ')}
 
-function getFloors(rooms){
-  const floors=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));
-  return[...floors].sort().map(f=>`P${f}`).join(', ');
-}
-
-// ── ROOMS GRID ─────────────────────────────────────────────
 function renderGrid(){
   const isAll=curFilters.has('all');
   const rooms=sorted(st.rooms.filter(r=>isAll||curFilters.has(r.status)));
   if(!rooms.length){
-    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos${isAll?'':' con ese filtro'}.</p><small>${isAll?'Toca 📋 Importar.':'Prueba con otro filtro.'}</small></div>`;
+    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos${isAll?'':' con ese filtro'}.</p><small>${isAll?'Toca 📄 PDF o 📋 Importar.':'Prueba con otro filtro.'}</small></div>`;
     return;
   }
-  // Sort: not-reported first, reported last
   const sorted2=[...rooms.filter(r=>!st.lsDone[r.id]),...rooms.filter(r=>st.lsDone[r.id])];
   document.getElementById('roomsGrid').innerHTML=sorted2.map(r=>{
     const s=STATUS[r.status]||STATUS.vd;
@@ -528,7 +775,6 @@ function renderGrid(){
   }).join('');
 }
 
-// ── ASOCIADAS ──────────────────────────────────────────────
 function renderAssoc(){
   const el=document.getElementById('assocContent');
   const groups=st.employees.map(e=>{
@@ -542,14 +788,11 @@ function renderAssoc(){
     const overLimit=credits>MAX_CREDITS;
     return{...e,rooms,vc,pct,floors,issues,credits,creditPct,overLimit};
   });
-
   const unassigned=sorted(st.rooms.filter(r=>!r.assignedTo));
-
   if(!groups.length&&!unassigned.length){
     el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>No hay asociadas.</p><small>Ve a ⚙️ Config para agregar.</small></div>`;
     return;
   }
-
   el.innerHTML=[
     ...groups.map(g=>`
       <div class="assoc-card" onclick="openAssocModal('${g.id}')">
@@ -612,13 +855,10 @@ function openAssocModal(assocId){
   openModal('modalAssocRooms');
 }
 
-// ── PROGRESS ───────────────────────────────────────────────
 function renderProgress(){
   const r=st.rooms,total=r.length||1;
   const cnt=k=>r.filter(x=>x.status===k).length;
   const vc=cnt('vc'),vd=cnt('vd'),vp=cnt('vp'),odco=cnt('odco'),odrf=cnt('odrf');
-
-  // Per-assoc summary
   const summaries=st.employees.map(e=>{
     const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
     const vcR=rooms.filter(x=>x.status==='vc').length;
@@ -630,7 +870,6 @@ function renderProgress(){
     const dndRooms=rooms.filter(x=>x.dnd).length;
     return{name:e.name,total:rooms.length,vc:vcR,pct,issues,credits,normalRooms,rfRooms,dndRooms};
   });
-
   document.getElementById('tab-progress').innerHTML=`
     <div style="padding:10px 12px 0;font-weight:700;font-size:1rem;margin-bottom:10px">Progreso del día</div>
     <div style="padding:0 10px">
@@ -640,8 +879,6 @@ function renderProgress(){
         <div class="stat-card"><div class="stat-val" style="color:var(--odco)">${odco}</div><div class="stat-lbl">🚪 OD COUT</div></div>
         <div class="stat-card"><div class="stat-val" style="color:var(--odrf)">${odrf}</div><div class="stat-lbl">🔄 OD RFSH</div></div>
       </div>
-
-      <!-- Progress by assoc -->
       <div class="card">
         <div class="card-hdr">Avance y créditos por asociada</div>
         <div style="padding:10px 14px">
@@ -664,54 +901,39 @@ function renderProgress(){
           }).join('')||'<p style="font-size:.82rem;color:var(--muted)">Sin asociadas</p>'}
         </div>
       </div>
-
-      <!-- Summary per assoc -->
       ${summaries.map(s=>`
-        <div class="summ-card">
-          <div class="summ-hdr">
-            <div class="summ-name">${s.name}</div>
-            <div class="summ-stat">${s.credits} cr · ${s.normalRooms}×1 + ${s.rfRooms}×0.5</div>
+        <div class="card" style="margin-bottom:10px">
+          <div class="card-hdr" style="background:#f8fafc">
+            <span>${s.name}</span>
+            <span style="font-weight:400">${s.credits} cr · ${s.normalRooms}×1 + ${s.rfRooms}×0.5</span>
           </div>
           ${s.issues.length?s.issues.map(r=>{
             const st2=STATUS[r.status]||STATUS.vd;
-            return`<div class="summ-row">
-              <div class="summ-icon">${st2.icon}</div>
+            return`<div style="display:flex;align-items:flex-start;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px;font-size:.8rem">
+              <div>${st2.icon}</div>
               <div style="flex:1;min-width:0">
                 <strong>Cuarto ${r.number}</strong> — ${st2.label}
-                ${r.missing?.length?`<div style="font-size:.72rem;color:#92400e;margin-top:2px">⚠️ Falta: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
+                ${r.missing?.length?`<div style="font-size:.72rem;color:#92400e;margin-top:2px">⚠️ ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
                 ${r.note?`<div style="font-size:.72rem;color:#dc2626;margin-top:1px">📝 ${r.note}</div>`:''}
               </div>
             </div>`;}).join('')
-          :`<div class="summ-row"><div class="summ-icon">✅</div><div>Sin novedades</div></div>`}
+          :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ Sin novedades</div>`}
         </div>`).join('')}
-
-      <!-- Email report -->
       <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Enviar reporte por correo</button>
     </div>`;
 }
 
-// ── SEND REPORT ────────────────────────────────────────────
 function sendReport(){
-  // Ask for email if not saved
   if(!st.reportEmail){
     const email=prompt('¿A qué correo enviar los reportes?\n(Se guardará para próximas veces)');
     if(!email)return;
-    st.reportEmail=email.trim();
-    save();
+    st.reportEmail=email.trim();save();
   }
   const d=new Date();
   const dateStr=d.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  let body=`REPORTE HOUSEKEEPING - ${st.hotel}\n${dateStr}\n`;
-  body+=`${'='.repeat(40)}\n\n`;
+  let body=`REPORTE HOUSEKEEPING - ${st.hotel}\n${dateStr}\n${'='.repeat(40)}\n\n`;
   const cnt=k=>st.rooms.filter(x=>x.status===k).length;
-  body+=`RESUMEN GENERAL\n`;
-  body+=`Total cuartos: ${st.rooms.length}\n`;
-  body+=`Total créditos asignados: ${totalCredits(st.rooms)}\n`;
-  body+=`VC (Listos): ${cnt('vc')}\n`;
-  body+=`VD (Pendientes): ${cnt('vd')}\n`;
-  body+=`OD COUT: ${cnt('odco')}\n`;
-  body+=`OD RFSH: ${cnt('odrf')} (×0.5 cr)\n`;
-  body+=`VP (Problema): ${cnt('vp')}\n\n`;
+  body+=`RESUMEN GENERAL\nTotal cuartos: ${st.rooms.length}\nTotal créditos: ${totalCredits(st.rooms)}\nVC: ${cnt('vc')}\nVD: ${cnt('vd')}\nOD COUT: ${cnt('odco')}\nOD RFSH: ${cnt('odrf')}\nVP: ${cnt('vp')}\n\n`;
   st.employees.forEach(e=>{
     const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
     const vc=rooms.filter(x=>x.status==='vc').length;
@@ -719,18 +941,10 @@ function sendReport(){
     const normalRooms=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu');
     const rfRooms=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd);
     const dndRooms=rooms.filter(x=>x.dnd);
-    body+=`${'─'.repeat(30)}\n`;
-    body+=`ASOCIADA: ${e.name}\n`;
-    body+=`Cuartos: ${rooms.length} total / ${vc} VC\n`;
-    body+=`CRÉDITOS: ${credits}/${MAX_CREDITS}\n`;
-    body+=`  • Normales (×1 cr): ${normalRooms.length} → ${normalRooms.length} cr\n`;
-    body+=`    ${normalRooms.map(r=>r.number).join(', ')||'ninguno'}\n`;
-    body+=`  • Refresh (×0.5 cr): ${rfRooms.length} → ${rfRooms.length*0.5} cr\n`;
-    body+=`    ${rfRooms.map(r=>r.number).join(', ')||'ninguno'}\n`;
-    if(dndRooms.length){
-      body+=`  • DND (×0 cr): ${dndRooms.length} cuartos\n`;
-      body+=`    ${dndRooms.map(r=>r.number).join(', ')}\n`;
-    }
+    body+=`${'─'.repeat(30)}\nASOCIADA: ${e.name}\nCuartos: ${rooms.length} / ${vc} VC\nCRÉDITOS: ${credits}/${MAX_CREDITS}\n`;
+    body+=`  Normales (×1): ${normalRooms.length} → ${normalRooms.map(r=>r.number).join(', ')||'ninguno'}\n`;
+    body+=`  Refresh (×0.5): ${rfRooms.length} → ${rfRooms.map(r=>r.number).join(', ')||'ninguno'}\n`;
+    if(dndRooms.length) body+=`  DND (×0): ${dndRooms.map(r=>r.number).join(', ')}\n`;
     const issues=rooms.filter(x=>x.missing?.length||x.note);
     if(issues.length){
       body+=`Novedades:\n`;
@@ -743,11 +957,9 @@ function sendReport(){
     body+='\n';
   });
   const subject=encodeURIComponent(`Reporte Housekeeping ${st.hotel} - ${d.toLocaleDateString('es-MX')}`);
-  const bodyEnc=encodeURIComponent(body);
-  window.location.href=`mailto:${st.reportEmail}?subject=${subject}&body=${bodyEnc}`;
+  window.location.href=`mailto:${st.reportEmail}?subject=${subject}&body=${encodeURIComponent(body)}`;
 }
 
-// ── SETUP ──────────────────────────────────────────────────
 function renderSetup(){
   document.getElementById('tab-setup').innerHTML=`
     <div style="padding:10px 12px 0;font-weight:700;font-size:1rem;margin-bottom:12px">Configuración</div>
@@ -762,7 +974,6 @@ function renderSetup(){
             <button onclick="delEmp('${e.id}')" style="background:none;border:none;color:#ef4444;font-size:.9rem;cursor:pointer;padding:4px 6px">🗑</button>
           </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
       </div>
-
       <div class="card">
         <div class="card-hdr">Cuartos del día <button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Cuarto</button></div>
         ${sorted(st.rooms).map(r=>{
@@ -773,12 +984,9 @@ function renderSetup(){
             <span style="font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:10px;background:${s.bg};color:${s.color}">${s.label}</span>
             <div style="flex:1;font-size:.78rem;color:var(--muted)">${emp?emp.name.split(' ')[0]:''}</div>
             <button onclick="delRoomSetup('${r.id}')" style="background:none;border:none;color:#ef4444;font-size:.85rem;cursor:pointer;padding:3px 5px">🗑</button>
-          </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📋 Importar.</div>'}
+          </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📄 PDF o 📋 Importar.</div>'}
       </div>
-
       <button class="btn btn-block" style="background:#fff3cd;color:#856404;border:none;font-size:.9rem;font-weight:700;margin-bottom:8px" onclick="newDay()">🔄 Reiniciar día</button>
-
-      <!-- Email config -->
       <div class="card" style="margin-top:4px">
         <div class="card-hdr">📧 Correo para reportes</div>
         <div style="padding:12px 14px;display:flex;gap:8px;align-items:center">
@@ -789,8 +997,6 @@ function renderSetup(){
     </div>`;
 }
 
-// ── IMPORT ─────────────────────────────────────────────────
-// Status mapping from import codes
 const statusMap={
   co:'odco',cout:'odco',odco:'odco',
   rf:'odrf',rfsh:'odrf',odrf:'odrf',
@@ -813,24 +1019,19 @@ function doImport(){
     }
     const items=roomStr.split(',').map(s=>s.trim()).filter(Boolean);
     if(!items.length)throw new Error('vacío');
-
     let empId=null;
     if(empName){
       let emp=st.employees.find(e=>e.name.toLowerCase()===empName.toLowerCase());
       if(!emp){emp={id:gid(),name:empName};st.employees.push(emp)}
       empId=emp.id;
     }
-
     const existing=new Set(st.rooms.map(r=>r.number));
     let added=0;
     for(const item of items){
       const[num,code='odco']=item.split('-');
       if(!num||existing.has(num.trim()))continue;
       const status=statusMap[code.trim().toLowerCase()]||'odco';
-      st.rooms.push({
-        id:gid(),number:num.trim(),status,
-        assignedTo:empId,note:'',missing:[],
-      });
+      st.rooms.push({id:gid(),number:num.trim(),status,assignedTo:empId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
       existing.add(num.trim());added++;
     }
     document.getElementById('pasteInput').value='';
@@ -839,15 +1040,12 @@ function doImport(){
   }catch(e){toast('⚠️ Código inválido')}
 }
 
-// ── ROOM MODAL ─────────────────────────────────────────────
 function openRoomModal(id){
   curRoomId=id;
   const r=st.rooms.find(x=>x.id===id);
   curStatus=r.status;
   const s=STATUS[r.status]||STATUS.vd;
   document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number}`;
-
-  // Valid transitions
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   document.getElementById('stOpts').innerHTML=Object.entries(STATUS).map(([k,v])=>{
     const isCurrent=k===r.status;
@@ -858,134 +1056,92 @@ function openRoomModal(id){
       <div class="st-opt-desc" style="color:${v.color}">${isAllowed?v.desc:'No disponible'}</div>
     </div>`;
   }).join('');
-
-  // Missing items - update checkboxes
-  MISSING.forEach(m=>{
-    const el=document.getElementById('mo-'+m.id);
-    if(el) el.classList.toggle('sel',(r.missing||[]).includes(m.id));
-  });
-
-  // Hangers counter
+  MISSING.forEach(m=>{const el=document.getElementById('mo-'+m.id);if(el)el.classList.toggle('sel',(r.missing||[]).includes(m.id))});
   const hangers=r.hangers!=null?r.hangers:4;
   document.getElementById('hangerCount').textContent=hangers;
   document.getElementById('hangerNote').textContent=hangers<4?`⚠️ Faltan ${4-hangers}`:'';
-
   document.getElementById('roomNote').value=r.note||'';
   const emp=st.employees.find(e=>e.id===r.assignedTo);
   document.getElementById('roomEmpLabel').textContent=emp?'👤 '+emp.name:'';
   document.getElementById('lsCheck').checked=!!st.lsDone[r.id];
-
-  // DND: only for refresh and full
   const isDndEligible=r.status==='odrf'||r.status==='odfu';
   document.getElementById('dndSection').style.display=isDndEligible?'flex':'none';
   document.getElementById('dndCheck').checked=!!r.dnd;
-
-  // Late: hide for VD/VP/VC
   const showLate=lateVisible(r.status);
   document.getElementById('lateOpts').style.display=showLate?'flex':'none';
-
   document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b.dataset.h===(r.lateCheckout||'')));
-
   openModal('modalRoom');
 }
 
 function selStatus(k){
-  // Instant save on tap
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!r)return;
+  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   if(k!==r.status&&!allowed.includes(k))return;
-  r.status=k;
-  curStatus=k;
-  // Show/hide DND based on new status
+  r.status=k;curStatus=k;
   const isDndEl=k==='odrf'||k==='odfu';
   document.getElementById('dndSection').style.display=isDndEl?'flex':'none';
   if(!isDndEl){r.dnd=false;document.getElementById('dndCheck').checked=false;}
-  // Show/hide late section
   document.getElementById('lateOpts').style.display=lateVisible(k)?'flex':'none';
-  document.querySelector('span[style*="Late:"]') && (document.querySelector('span[style*="Late:"]').style.display=lateVisible(k)?'':'none');
   save();
-  // Re-render status options with new current
   const allowed2=VALID_TRANSITIONS[k]||Object.keys(STATUS);
   document.querySelectorAll('.st-opt').forEach(o=>{
-    const sk=o.dataset.k;
-    const v=STATUS[sk];
-    if(!v)return;
-    const isCurrent=sk===k;
-    const isAllowed=isCurrent||allowed2.includes(sk);
+    const sk=o.dataset.k;const v=STATUS[sk];if(!v)return;
+    const isCurrent=sk===k;const isAllowed=isCurrent||allowed2.includes(sk);
     o.classList.toggle('sel',isCurrent);
     o.style.borderColor=isCurrent?'#1a5f7a':v.border;
     o.style.opacity=isAllowed?'1':'0.28';
     o.style.pointerEvents=isAllowed?'':'none';
     o.querySelector('.st-opt-desc').textContent=isAllowed?v.desc:'No disponible';
   });
-  // Update tile in background
   renderGrid();
-  if(curAssocId) refreshAssocModal();
+  if(curAssocId)refreshAssocModal();
   toast(`${STATUS[k]?.icon} Cuarto ${r.number} → ${STATUS[k]?.label}`);
-  // Auto-close when marked VC
-  if(k==='vc') setTimeout(()=>closeModal('modalRoom'),600);
+  if(k==='vc')setTimeout(()=>closeModal('modalRoom'),600);
 }
 
-function lateVisible(status){
-  return status==='odco'||status==='odrf'||status==='odfu';
-}
+function lateVisible(status){return status==='odco'||status==='odrf'||status==='odfu'}
 
 function setLate(btn){
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!r)return;
+  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   const h=btn.dataset.h;
   r.lateCheckout=h||null;
   document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&h));
   save();renderGrid();
-  if(curAssocId) refreshAssocModal();
-  if(h) toast(`🕐 Late checkout ${h} — Cuarto ${r.number}`);
+  if(curAssocId)refreshAssocModal();
+  if(h)toast(`🕐 Late checkout ${h} — Cuarto ${r.number}`);
 }
 
-function autoSaveNote(){
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!r)return;
-  r.note=document.getElementById('roomNote').value;
-  save();
-}
+function autoSaveNote(){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.note=document.getElementById('roomNote').value;save()}
 
 function saveLs(){
-  const lsEl=document.getElementById('lsCheck');
-  if(!lsEl||!curRoomId)return;
-  st.lsDone[curRoomId]=lsEl.checked;
-  save();renderGrid();
-  if(curAssocId) refreshAssocModal();
-  if(lsEl.checked){
-    toast('✅ Marcado en Lightspeed');
-    setTimeout(()=>closeModal('modalRoom'),600);
-  }
+  const lsEl=document.getElementById('lsCheck');if(!lsEl||!curRoomId)return;
+  st.lsDone[curRoomId]=lsEl.checked;save();renderGrid();
+  if(curAssocId)refreshAssocModal();
+  if(lsEl.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),600)}
 }
 
 function togMissing(id){
   document.getElementById('mo-'+id).classList.toggle('sel');
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!r)return;
+  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
   save();
 }
 
 function adjHangers(delta){
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!r)return;
+  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   const cur=r.hangers!=null?r.hangers:4;
   r.hangers=Math.max(0,Math.min(4,cur+delta));
   document.getElementById('hangerCount').textContent=r.hangers;
   document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';
   save();renderGrid();
-  if(curAssocId) refreshAssocModal();
+  if(curAssocId)refreshAssocModal();
 }
 
 function saveDnd(){
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!r)return;
+  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   r.dnd=document.getElementById('dndCheck').checked;
   save();renderGrid();
-  if(curAssocId) refreshAssocModal();
+  if(curAssocId)refreshAssocModal();
   toast(r.dnd?'🚫 DND — crédito descontado':'✅ DND removido');
 }
 
@@ -1003,29 +1159,17 @@ function doQuickAdd(){
   if(!num){toast('⚠️ Ingresa el número');return}
   if(st.rooms.find(r=>r.number===num)){toast('⚠️ Ya existe el cuarto '+num);return}
   const status=document.getElementById('qaStatus').value;
-  st.rooms.push({
-    id:gid(),number:num,status,
-    assignedTo:curAssocId==='__none__'?null:curAssocId,
-    note:'',missing:[],hangers:4,lateCheckout:null,dnd:false,
-  });
-  closeModal('modalQuickAdd');
-  save();renderAll();
-  refreshAssocModal();
+  st.rooms.push({id:gid(),number:num,status,assignedTo:curAssocId==='__none__'?null:curAssocId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
+  closeModal('modalQuickAdd');save();renderAll();refreshAssocModal();
   toast('🏠 Cuarto '+num+' agregado');
-  // Keep modal open for bulk adding - clear number field
   document.getElementById('qaNum').value='';
   setTimeout(()=>document.getElementById('qaNum').focus(),100);
 }
 
 function openTransfer(){
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!r)return;
+  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   document.getElementById('transferTitle').textContent=`Transferir cuarto ${r.number}`;
-  const currentEmp=st.employees.find(e=>e.id===r.assignedTo);
-  document.getElementById('transferList').innerHTML=[
-    {id:null,name:'Sin asignar'},
-    ...st.employees
-  ].map(e=>{
+  document.getElementById('transferList').innerHTML=[{id:null,name:'Sin asignar'},...st.employees].map(e=>{
     const isCurrent=e.id===r.assignedTo;
     const rooms=e.id?st.rooms.filter(x=>x.assignedTo===e.id):st.rooms.filter(x=>!x.assignedTo);
     const cr=totalCredits(rooms);
@@ -1043,29 +1187,22 @@ function openTransfer(){
 }
 
 function doTransfer(empId){
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!r)return;
+  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   const oldEmp=st.employees.find(e=>e.id===r.assignedTo);
   const newEmp=st.employees.find(e=>e.id===empId);
   r.assignedTo=empId||null;
-  save();renderAll();
-  closeModal('modalTransfer');
-  const toName=newEmp?newEmp.name:'Sin asignar';
-  const fromName=oldEmp?oldEmp.name:'Sin asignar';
-  toast(`🔄 ${r.number}: ${fromName} → ${toName}`);
-  // Update room emp label in modal
+  save();renderAll();closeModal('modalTransfer');
+  toast(`🔄 ${r.number}: ${oldEmp?oldEmp.name:'Sin asignar'} → ${newEmp?newEmp.name:'Sin asignar'}`);
   const empLabel=document.getElementById('roomEmpLabel');
-  if(empLabel) empLabel.textContent=newEmp?'👤 '+newEmp.name:'';
-  if(curAssocId) refreshAssocModal();
+  if(empLabel)empLabel.textContent=newEmp?'👤 '+newEmp.name:'';
+  if(curAssocId)refreshAssocModal();
 }
 
 function refreshAssocModal(){
-  if(!curAssocId) return;
-  // Refresh the grid inside the assoc modal without closing it
+  if(!curAssocId)return;
   const rooms=sorted(curAssocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===curAssocId));
   const bodyEl=document.getElementById('assocRoomsBody');
   if(!bodyEl||!document.getElementById('modalAssocRooms').classList.contains('on'))return;
-  // Rebuild just the grid content
   bodyEl.innerHTML=rooms.length
     ?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px">`+
       rooms.map(r=>{
@@ -1085,7 +1222,6 @@ function refreshAssocModal(){
     :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos</div>';
 }
 
-function saveRoom(){} // kept for compatibility
 function delRoom(){
   const r=st.rooms.find(x=>x.id===curRoomId);
   if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;
@@ -1093,24 +1229,12 @@ function delRoom(){
   closeModal('modalRoom');save();renderAll();toast('🗑 Cuarto eliminado');
 }
 
-// ── SETUP ACTIONS ──────────────────────────────────────────
 function saveHotel(){const n=document.getElementById('hotelInput').value.trim();if(n){st.hotel=n;save();renderAll()}closeModal('modalHotel')}
 function saveEmp(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada')}
 function delEmp(id){if(!confirm('¿Eliminar asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll()}
 function delRoomSetup(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll()}
-
-function saveEmail(){
-  const e=document.getElementById('emailInput')?.value.trim();
-  if(!e){toast('⚠️ Ingresa un correo');return}
-  st.reportEmail=e;save();toast('📧 Correo guardado');
-}
-
-function newDay(){
-  if(!confirm('¿Reiniciar día? Se eliminarán cuartos y asociadas.'))return;
-  st.rooms=[];st.employees=[];st.lsDone={};
-  curFilters=new Set(['all']);
-  save();renderAll();toast('🌅 Día reiniciado');
-}
+function saveEmail(){const e=document.getElementById('emailInput')?.value.trim();if(!e){toast('⚠️ Ingresa un correo');return}st.reportEmail=e;save();toast('📧 Correo guardado')}
+function newDay(){if(!confirm('¿Reiniciar día? Se eliminarán cuartos y asociadas.'))return;st.rooms=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Día reiniciado')}
 
 function openAddRoom(){
   document.getElementById('addNum').value='';document.getElementById('addNote').value='';
@@ -1125,11 +1249,10 @@ function saveAddRoom(){
   if(st.rooms.find(r=>r.number===num)){toast('⚠️ Ya existe '+num);return}
   st.rooms.push({id:gid(),number:num,status:document.getElementById('addStatus').value,
     assignedTo:document.getElementById('addEmp').value||null,
-    note:document.getElementById('addNote').value.trim(),missing:[]});
+    note:document.getElementById('addNote').value.trim(),missing:[],hangers:4,lateCheckout:null,dnd:false});
   closeModal('modalAddRoom');save();renderAll();toast('🏠 Cuarto '+num+' agregado');
 }
 
-// ── NAV / FILTER ───────────────────────────────────────────
 function showTab(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
@@ -1142,35 +1265,19 @@ function showTab(name,btn){
 
 function setFilter(f,btn){
   if(f==='all'){
-    // Reset to all
     curFilters=new Set(['all']);
-    document.querySelectorAll('.filt').forEach(b=>{
-      b.classList.remove('on');
-      resetFiltStyle(b);
-    });
-    btn.classList.add('on');
-    btn.style.background='var(--p)';btn.style.color='white';
+    document.querySelectorAll('.filt').forEach(b=>{b.classList.remove('on');resetFiltStyle(b)});
+    btn.classList.add('on');btn.style.background='var(--p)';btn.style.color='white';
   } else {
-    // Toggle this filter, remove 'all'
     curFilters.delete('all');
     document.querySelector('.filt[data-f="all"]').classList.remove('on');
     resetFiltStyle(document.querySelector('.filt[data-f="all"]'));
-    if(curFilters.has(f)){
-      curFilters.delete(f);
-      btn.classList.remove('on');
-      resetFiltStyle(btn);
-    } else {
-      curFilters.add(f);
-      btn.classList.add('on');
-      const s=STATUS[f];
-      btn.style.background=s.color;btn.style.color='white';
-    }
-    // If nothing selected, go back to all
+    if(curFilters.has(f)){curFilters.delete(f);btn.classList.remove('on');resetFiltStyle(btn);}
+    else{curFilters.add(f);btn.classList.add('on');const s=STATUS[f];btn.style.background=s.color;btn.style.color='white';}
     if(curFilters.size===0){
       curFilters=new Set(['all']);
       const allBtn=document.querySelector('.filt[data-f="all"]');
-      allBtn.classList.add('on');
-      allBtn.style.background='var(--p)';allBtn.style.color='white';
+      allBtn.classList.add('on');allBtn.style.background='var(--p)';allBtn.style.color='white';
     }
   }
   renderGrid();
