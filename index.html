@@ -7,9 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Housekeeping">
 <meta name="theme-color" content="#1a5f7a">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <title>Housekeeping</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -22,10 +20,16 @@
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:68px;max-width:480px;margin:0 auto}
 
+/* SYNC INDICATOR */
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#6ee7b7;display:inline-block;margin-left:6px;flex-shrink:0}
+.sync-dot.syncing{background:#fbbf24;animation:pulse .8s infinite}
+.sync-dot.error{background:#f87171}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
 /* HEADER */
 .hdr{background:linear-gradient(135deg,#1a5f7a,#0d3d52);color:white;padding:12px 16px 10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.2)}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
-.hotel{font-weight:700;font-size:1.05rem;cursor:pointer}
+.hotel{font-weight:700;font-size:1.05rem;cursor:pointer;display:flex;align-items:center}
 .hdate{font-size:.72rem;opacity:.7;margin-top:1px}
 .hbtns{display:flex;gap:6px;flex-shrink:0}
 .hbtn{background:rgba(255,255,255,.2);color:white;border:none;border-radius:8px;padding:7px 10px;font-size:.76rem;font-weight:600;cursor:pointer;white-space:nowrap}
@@ -42,7 +46,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .filt.on{color:white;border-color:transparent}
 
 /* NAV */
-.nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--bdr);display:flex;height:58px;z-index:100;}
+.nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--bdr);display:flex;height:58px;z-index:100}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:.6rem;color:#9ca3af;border:none;background:none;cursor:pointer;padding:4px 0;transition:color .15s}
 .nav-btn.on{color:var(--p)}
 .nav-btn .ni{font-size:1.2rem;transition:transform .15s}
@@ -62,14 +66,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tile-alert{position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700}
 
 /* STATUS COLORS */
-.s-vc  {border-color:var(--vc-bd) !important;background:var(--vc-bg) !important}
-.s-vd  {border-color:var(--vd-bd) !important;background:var(--vd-bg) !important}
-.s-vp  {border-color:var(--vp-bd) !important;background:var(--vp-bg) !important}
+.s-vc  {border-color:var(--vc-bd)!important;background:var(--vc-bg)!important}
+.s-vd  {border-color:var(--vd-bd)!important;background:var(--vd-bg)!important}
+.s-vp  {border-color:var(--vp-bd)!important;background:var(--vp-bg)!important}
 .s-odrf{border-color:var(--odrf-bd)!important;background:var(--odrf-bg)!important}
 .s-odfu{border-color:var(--odrf-bd)!important;background:var(--odrf-bg)!important}
 .s-odco{border-color:var(--odco-bd)!important;background:var(--odco-bg)!important}
 
-/* ASSOC LIST */
+/* ASSOC */
 .assoc-card{background:white;border-radius:12px;border:1px solid var(--bdr);margin-bottom:10px;overflow:hidden;cursor:pointer}
 .assoc-card:active{opacity:.85}
 .assoc-hdr{display:flex;align-items:center;gap:12px;padding:13px 14px}
@@ -109,7 +113,7 @@ textarea{min-height:60px;resize:none}
 .sheet-foot{padding:10px 16px 16px;display:flex;gap:8px}
 .sheet-foot .btn{flex:1}
 
-/* STATUS OPTIONS in modal */
+/* STATUS OPTIONS */
 .st-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
 .st-opt{padding:12px 10px;border-radius:10px;border:2px solid transparent;cursor:pointer;user-select:none;transition:all .15s;text-align:center}
 .st-opt:active{transform:scale(.96)}
@@ -119,7 +123,6 @@ textarea{min-height:60px;resize:none}
 .st-opt-desc{font-size:.62rem;opacity:.75;margin-top:2px}
 
 /* MISSING */
-.mg{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-bottom:14px}
 .mo{padding:8px 10px;border-radius:8px;border:1.5px solid var(--bdr);background:white;font-size:.76rem;cursor:pointer;display:flex;align-items:center;gap:5px;user-select:none;transition:all .15s}
 .mo.sel{border-color:#f59e0b;background:#fffbeb;color:#92400e}
 
@@ -129,7 +132,7 @@ textarea{min-height:60px;resize:none}
 .stat-val{font-size:1.6rem;font-weight:800}
 .stat-lbl{font-size:.7rem;color:var(--muted);margin-top:2px}
 
-/* LATE CHECKOUT */
+/* LATE */
 .late-btn{padding:7px 14px;border-radius:20px;border:1.5px solid var(--bdr);background:white;color:var(--muted);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .15s}
 .late-btn.on{background:#7c3aed;color:white;border-color:#7c3aed}
 .empty{text-align:center;padding:44px 20px;color:var(--muted)}
@@ -141,13 +144,10 @@ textarea{min-height:60px;resize:none}
 #toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(10px);background:#1a2332;color:white;padding:9px 18px;border-radius:20px;font-size:.82rem;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* PDF MODAL SPECIFIC */
+/* PDF MODAL */
 .pdf-drop{border:2px dashed #93c5fd;border-radius:12px;padding:32px 16px;text-align:center;cursor:pointer;transition:all .2s;background:#f0f7ff;position:relative;margin-bottom:14px}
 .pdf-drop:hover,.pdf-drop.dragging{border-color:var(--p);background:#e0effa}
 .pdf-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.pdf-drop-icon{font-size:2rem;margin-bottom:8px}
-.pdf-drop h3{font-size:.92rem;font-weight:700;color:var(--p);margin-bottom:4px}
-.pdf-drop p{font-size:.75rem;color:var(--muted)}
 .pdf-status{display:none;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:.82rem;margin-bottom:10px}
 .pdf-status.visible{display:flex}
 .pdf-status.processing{background:#fffbeb;border:1px solid #fcd34d;color:#92400e}
@@ -155,7 +155,6 @@ textarea{min-height:60px;resize:none}
 .pdf-status.error{background:#fee2e2;border:1px solid #fca5a5;color:#991b1b}
 .pdf-spinner{width:14px;height:14px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.pdf-att-list{max-height:320px;overflow-y:auto}
 .pdf-att-row{border:1px solid var(--bdr);border-radius:10px;margin-bottom:8px;overflow:hidden}
 .pdf-att-hdr{background:#f8fafc;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .pdf-att-name{font-weight:700;font-size:.88rem;color:var(--p)}
@@ -167,15 +166,30 @@ textarea{min-height:60px;resize:none}
 .pdf-room-chip.cout{border-color:#fcd34d;color:#d97706;background:#fffbeb}
 .pdf-room-chip.rfsh{border-color:#c4b5fd;color:#7c3aed;background:#f5f3ff}
 .pdf-summary-bar{background:#f0f7ff;border:1px solid #93c5fd;border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:.8rem;color:#1e40af;display:flex;gap:12px;flex-wrap:wrap}
+
+/* LOADING SCREEN */
+#loadScreen{position:fixed;inset:0;background:linear-gradient(135deg,#1a5f7a,#0d3d52);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:white}
+#loadScreen .ls-icon{font-size:3rem;margin-bottom:16px}
+#loadScreen .ls-title{font-size:1.3rem;font-weight:700;margin-bottom:8px}
+#loadScreen .ls-sub{font-size:.85rem;opacity:.7}
+#loadScreen .ls-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-top:24px}
 </style>
 </head>
 <body>
+
+<!-- LOADING SCREEN -->
+<div id="loadScreen">
+  <div class="ls-icon">🏨</div>
+  <div class="ls-title">Housekeeping</div>
+  <div class="ls-sub">Aloft Houston Shenandoah</div>
+  <div class="ls-spinner"></div>
+</div>
 
 <!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
     <div onclick="openModal('modalHotel')" style="cursor:pointer;flex:1;min-width:0">
-      <div class="hotel" id="hotelName">🏨 Mi Hotel</div>
+      <div class="hotel" id="hotelName">🏨 Mi Hotel <span class="sync-dot" id="syncDot"></span></div>
       <div class="hdate" id="hdate"></div>
     </div>
     <div class="hbtns">
@@ -205,17 +219,15 @@ textarea{min-height:60px;resize:none}
 
 <!-- NAV -->
 <nav class="nav">
-  <button class="nav-btn on" onclick="showTab('rooms',this)" id="nav-rooms"><span class="ni">🏠</span>Cuartos</button>
-  <button class="nav-btn" onclick="showTab('assoc',this)" id="nav-assoc"><span class="ni">👥</span>Asociadas</button>
-  <button class="nav-btn" onclick="showTab('progress',this)" id="nav-progress"><span class="ni">📊</span>Progreso</button>
-  <button class="nav-btn" onclick="showTab('setup',this)" id="nav-setup"><span class="ni">⚙️</span>Config</button>
+  <button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Cuartos</button>
+  <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Asociadas</button>
+  <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progreso</button>
+  <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Config</button>
 </nav>
 
 <div id="toast"></div>
 
-<!-- ══════════════════════════════════════════════════════════
-     MODAL: PDF IMPORT (NEW)
-═══════════════════════════════════════════════════════════ -->
+<!-- MODAL: PDF -->
 <div class="overlay" id="modalPDF">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -224,27 +236,20 @@ textarea{min-height:60px;resize:none}
       <button class="sheet-close" onclick="closePdfModal()">✕</button>
     </div>
     <div class="sheet-body" style="padding:12px 14px">
-
-      <!-- Drop zone -->
       <div class="pdf-drop" id="pdfDrop">
         <input type="file" id="pdfFileInput" accept=".pdf" multiple>
-        <div class="pdf-drop-icon">📄</div>
-        <h3>Subir hoja de Lightspeed</h3>
-        <p>Arrastra el PDF aquí o toca para seleccionar</p>
+        <div style="font-size:2rem;margin-bottom:8px">📄</div>
+        <h3 style="font-size:.92rem;font-weight:700;color:var(--p);margin-bottom:4px">Subir hoja de Lightspeed</h3>
+        <p style="font-size:.75rem;color:var(--muted)">Arrastra el PDF aquí o toca para seleccionar</p>
       </div>
-
-      <!-- Status -->
       <div class="pdf-status" id="pdfStatus">
         <div class="pdf-spinner" id="pdfSpinner"></div>
         <span id="pdfStatusText"></span>
       </div>
-
-      <!-- Results -->
       <div id="pdfResults" style="display:none">
         <div class="pdf-summary-bar" id="pdfSummaryBar"></div>
-        <div class="pdf-att-list" id="pdfAttList"></div>
+        <div style="max-height:300px;overflow-y:auto" id="pdfAttList"></div>
       </div>
-
     </div>
     <div class="sheet-foot" id="pdfFooter" style="display:none">
       <button class="btn btn-o" onclick="closePdfModal()">Cancelar</button>
@@ -253,7 +258,7 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 
-<!-- MODAL: IMPORT (manual) -->
+<!-- MODAL: IMPORT MANUAL -->
 <div class="overlay" id="modalPaste">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -261,7 +266,7 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-body">
       <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.82rem;color:#1e40af;line-height:1.6">
         <strong>Cómo importar:</strong><br>
-        1. Manda la foto de la hoja en el chat de Claude<br>
+        1. Manda la foto en el chat de Claude<br>
         2. Claude te da un código corto<br>
         3. Pégalo aquí y toca Importar
       </div>
@@ -277,7 +282,7 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 
-<!-- MODAL: ROOM STATUS -->
+<!-- MODAL: ROOM -->
 <div class="overlay" id="modalRoom">
   <div class="sheet">
     <div class="sheet-handle"></div>
@@ -302,7 +307,7 @@ textarea{min-height:60px;resize:none}
         </div>
         <div id="dndSection" style="display:none;margin-left:4px">
           <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.75rem;font-weight:600;color:#6b7280">
-            <input type="checkbox" id="dndCheck" onchange="saveDnd()" style="width:15px;height:15px;accent-color:#6b7280;cursor:pointer"> 🚫 DND
+            <input type="checkbox" id="dndCheck" onchange="saveDnd()" style="width:15px;height:15px;accent-color:#6b7280"> 🚫 DND
           </label>
         </div>
       </div>
@@ -348,12 +353,9 @@ textarea{min-height:60px;resize:none}
         <div class="fg"><label>Cuarto #</label><input type="text" id="qaNum" placeholder="201" onkeydown="if(event.key==='Enter')doQuickAdd()"></div>
         <div class="fg"><label>Estado</label>
           <select id="qaStatus">
-            <option value="odco">OD COUT</option>
-            <option value="odrf">OD RFSH</option>
-            <option value="odfu">FULL</option>
-            <option value="vd">VD</option>
-            <option value="vp">VP</option>
-            <option value="vc">VC</option>
+            <option value="odco">OD COUT</option><option value="odrf">OD RFSH</option>
+            <option value="odfu">FULL</option><option value="vd">VD</option>
+            <option value="vp">VP</option><option value="vc">VC</option>
           </select>
         </div>
       </div>
@@ -369,12 +371,9 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalTransfer">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr">
-      <span class="sheet-title" id="transferTitle">Transferir cuarto</span>
-      <button class="sheet-close" onclick="closeModal('modalTransfer')">✕</button>
-    </div>
+    <div class="sheet-hdr"><span class="sheet-title" id="transferTitle">Transferir cuarto</span><button class="sheet-close" onclick="closeModal('modalTransfer')">✕</button></div>
     <div class="sheet-body">
-      <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Selecciona a quién le vas a asignar este cuarto:</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Selecciona a quién asignar este cuarto:</div>
       <div id="transferList"></div>
     </div>
   </div>
@@ -410,11 +409,8 @@ textarea{min-height:60px;resize:none}
         <div class="fg"><label>Cuarto #</label><input type="text" id="addNum" placeholder="201"></div>
         <div class="fg"><label>Estado</label>
           <select id="addStatus">
-            <option value="odco">OD COUT</option>
-            <option value="odrf">OD RFSH</option>
-            <option value="vd">VD</option>
-            <option value="vc">VC</option>
-            <option value="vp">VP</option>
+            <option value="odco">OD COUT</option><option value="odrf">OD RFSH</option>
+            <option value="vd">VD</option><option value="vc">VC</option><option value="vp">VP</option>
           </select>
         </div>
       </div>
@@ -440,269 +436,261 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 
-<script>
-// ══════════════════════════════════════════════════════════════
-// PDF.JS SETUP
-// ══════════════════════════════════════════════════════════════
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+<!-- FIREBASE + PDF.JS -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-// ── PDF PARSER ────────────────────────────────────────────────
-// Lightspeed PDF structure: room entries appear BEFORE their attendant header.
-// The header is in the page footer: "...and Attendant NAME (CODE) Page X of Y"
+// ── FIREBASE CONFIG ───────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyDB4VRVq1TdQB6LjIjn8SkGB4mxpCCkr20",
+  authDomain: "housekeeping-aloft.firebaseapp.com",
+  projectId: "housekeeping-aloft",
+  storageBucket: "housekeeping-aloft.firebasestorage.app",
+  messagingSenderId: "706250496034",
+  appId: "1:706250496034:web:5cddac6c1d086c15b7d27b"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+const DOC = doc(db, 'housekeeping', 'aloft-shenandoah');
+
+// ── PDF.JS ────────────────────────────────────────────────
+const pdfScript = document.createElement('script');
+pdfScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+document.head.appendChild(pdfScript);
+pdfScript.onload = () => {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  window._pdfReady = true;
+};
+
+// ── STATE ─────────────────────────────────────────────────
+window.st = { hotel:'Aloft Houston Shenandoah', employees:[], rooms:[], lsDone:{}, reportEmail:'' };
+let curTab='rooms', curFilters=new Set(['all']), curRoomId=null, curAssocId=null;
+let saveTimeout=null, ignoreNextSnapshot=false;
+window.gid = () => Math.random().toString(36).substr(2,9);
+
+// ── SYNC STATUS ───────────────────────────────────────────
+function setSyncDot(state){
+  const d=document.getElementById('syncDot');
+  if(!d)return;
+  d.className='sync-dot'+(state==='syncing'?' syncing':state==='error'?' error':'');
+}
+
+// ── FIREBASE SAVE (debounced 600ms) ───────────────────────
+window.save = function(){
+  setSyncDot('syncing');
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(async()=>{
+    try{
+      ignoreNextSnapshot = true;
+      await setDoc(DOC, {
+        hotel: st.hotel,
+        employees: st.employees,
+        rooms: st.rooms,
+        lsDone: st.lsDone,
+        reportEmail: st.reportEmail,
+        updatedAt: Date.now()
+      });
+      setSyncDot('ok');
+    } catch(e){
+      console.error('Save error',e);
+      setSyncDot('error');
+      toast('⚠️ Error al guardar');
+    }
+  }, 600);
+};
+
+// ── FIREBASE REALTIME LISTENER ────────────────────────────
+onSnapshot(DOC, (snap)=>{
+  if(ignoreNextSnapshot){ ignoreNextSnapshot=false; return; }
+  if(snap.exists()){
+    const d = snap.data();
+    st.hotel       = d.hotel       || st.hotel;
+    st.employees   = d.employees   || [];
+    st.rooms       = d.rooms       || [];
+    st.lsDone      = d.lsDone      || {};
+    st.reportEmail = d.reportEmail || '';
+    renderAll();
+    setSyncDot('ok');
+  }
+  // Hide loading screen once we have data
+  const ls=document.getElementById('loadScreen');
+  if(ls) ls.style.display='none';
+});
+
+// Hide loading after 3s max even if no data
+setTimeout(()=>{ const ls=document.getElementById('loadScreen'); if(ls)ls.style.display='none'; },3000);
+
+// ── PDF PARSER ────────────────────────────────────────────
 const PDF_HEADER_RE = /For Schedule HK and Board \S+ and Attendant (.+?) \((\w+)\)\s+Page/i;
 const PDF_ROOM_RE   = /^(\d{3})\s+\S+\s+\d+\s+(VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP)\b/;
 const PDF_HKPKG_RE  = /HK Package Information:\s+(\w+)/i;
 
-function pdfResolveCode(hkStatus, pkgCode) {
-  if (hkStatus === 'VD') return 'vd';
-  if (hkStatus === 'OD') return pkgCode === 'RFSH' ? 'odrf' : 'odco';
-  if (hkStatus === 'VC') return 'vc';
-  if (hkStatus === 'VP') return 'vp';
-  if (hkStatus === 'OP') return 'odco';
+function pdfResolveCode(hkStatus, pkgCode){
+  if(hkStatus==='VD') return 'vd';
+  if(hkStatus==='OD') return pkgCode==='RFSH'?'odrf':'odco';
+  if(hkStatus==='VC') return 'vc';
+  if(hkStatus==='VP') return 'vp';
   return 'odco';
 }
 
-function parsePdfText(rawText) {
-  const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  const segments = [];
-  let currentLines = [];
-
-  for (const line of lines) {
-    const hm = PDF_HEADER_RE.exec(line);
-    if (hm) {
-      segments.push({ name: hm[1].trim(), code: hm[2].trim(), lines: currentLines });
-      currentLines = [];
-    } else {
-      currentLines.push(line);
+function parsePdfText(rawText){
+  const lines=rawText.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  const segments=[];
+  let currentLines=[];
+  for(const line of lines){
+    const hm=PDF_HEADER_RE.exec(line);
+    if(hm){ segments.push({name:hm[1].trim(),code:hm[2].trim(),lines:currentLines}); currentLines=[]; }
+    else currentLines.push(line);
+  }
+  const orderMap=new Map(), merged=[];
+  for(const seg of segments){
+    const key=seg.name+'|||'+seg.code;
+    if(!orderMap.has(key)){ orderMap.set(key,merged.length); merged.push({name:seg.name,code:seg.code,rooms:[]}); }
+    const att=merged[orderMap.get(key)];
+    let pending=null;
+    for(const line of seg.lines){
+      const rm=PDF_ROOM_RE.exec(line);
+      if(rm){ pending={number:rm[1],hkStatus:rm[3]}; continue; }
+      if(pending){ const hk=PDF_HKPKG_RE.exec(line); if(hk){ att.rooms.push({number:pending.number,status:pdfResolveCode(pending.hkStatus,hk[1].toUpperCase())}); pending=null; } }
     }
   }
-
-  // Merge segments with same attendant (multi-page boards)
-  const orderMap = new Map();
-  const merged = [];
-
-  for (const seg of segments) {
-    const key = seg.name + '|||' + seg.code;
-    if (!orderMap.has(key)) {
-      orderMap.set(key, merged.length);
-      merged.push({ name: seg.name, code: seg.code, rooms: [] });
-    }
-    const att = merged[orderMap.get(key)];
-    let pending = null;
-    for (const line of seg.lines) {
-      const rm = PDF_ROOM_RE.exec(line);
-      if (rm) { pending = { number: rm[1], hkStatus: rm[3] }; continue; }
-      if (pending) {
-        const hk = PDF_HKPKG_RE.exec(line);
-        if (hk) {
-          att.rooms.push({
-            number: pending.number,
-            status: pdfResolveCode(pending.hkStatus, hk[1].toUpperCase())
-          });
-          pending = null;
-        }
-      }
-    }
-  }
-  return merged.filter(a => a.rooms.length > 0);
+  return merged.filter(a=>a.rooms.length>0);
 }
 
-async function extractPdfText(file) {
-  const buf = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-  let text = '';
-  for (let p = 1; p <= pdf.numPages; p++) {
-    const page = await pdf.getPage(p);
-    const content = await page.getTextContent();
-    text += content.items.map(i => i.str).join(' ') + '\n';
+async function extractPdfText(file){
+  const buf=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+  let text='';
+  for(let p=1;p<=pdf.numPages;p++){
+    const page=await pdf.getPage(p);
+    const content=await page.getTextContent();
+    text+=content.items.map(i=>i.str).join(' ')+'\n';
   }
   return text;
 }
 
-// ── PDF UI STATE ──────────────────────────────────────────────
-let pdfParsedAttendants = [];
+let pdfParsedAttendants=[];
 
-function closePdfModal() {
+window.closePdfModal=function(){
   closeModal('modalPDF');
-  // Reset state
-  pdfParsedAttendants = [];
-  document.getElementById('pdfResults').style.display = 'none';
-  document.getElementById('pdfFooter').style.display = 'none';
-  document.getElementById('pdfStatus').className = 'pdf-status';
-  document.getElementById('pdfDrop').style.display = 'block';
-  document.getElementById('pdfFileInput').value = '';
+  pdfParsedAttendants=[];
+  document.getElementById('pdfResults').style.display='none';
+  document.getElementById('pdfFooter').style.display='none';
+  document.getElementById('pdfStatus').className='pdf-status';
+  document.getElementById('pdfDrop').style.display='block';
+  document.getElementById('pdfFileInput').value='';
+};
+
+function showPdfStatus(type,msg){
+  const el=document.getElementById('pdfStatus');
+  el.className='pdf-status visible '+type;
+  document.getElementById('pdfStatusText').textContent=msg;
+  document.getElementById('pdfSpinner').style.display=type==='processing'?'block':'none';
 }
 
-function showPdfStatus(type, msg) {
-  const el = document.getElementById('pdfStatus');
-  el.className = 'pdf-status visible ' + type;
-  document.getElementById('pdfStatusText').textContent = msg;
-  document.getElementById('pdfSpinner').style.display = type === 'processing' ? 'block' : 'none';
-}
-
-async function handlePdfFiles(files) {
-  const pdfs = [...files].filter(f => f.name.endsWith('.pdf') || f.type === 'application/pdf');
-  if (!pdfs.length) { showPdfStatus('error', 'No se encontraron archivos PDF.'); return; }
-
-  document.getElementById('pdfDrop').style.display = 'none';
-  showPdfStatus('processing', 'Leyendo PDF...');
-  document.getElementById('pdfResults').style.display = 'none';
-  document.getElementById('pdfFooter').style.display = 'none';
-  pdfParsedAttendants = [];
-
-  try {
-    for (const file of pdfs) {
-      const text = await extractPdfText(file);
-      pdfParsedAttendants.push(...parsePdfText(text));
-    }
-
-    if (!pdfParsedAttendants.length) {
-      showPdfStatus('error', 'No se encontraron datos. ¿Es un PDF de Lightspeed?');
-      document.getElementById('pdfDrop').style.display = 'block';
-      return;
-    }
-
-    const totalRooms = pdfParsedAttendants.reduce((s, a) => s + a.rooms.length, 0);
-    const totalCr = pdfParsedAttendants.reduce((s, a) => s + a.rooms.reduce((ss, r) => ss + (r.status === 'odrf' ? 0.5 : 1), 0), 0);
-    showPdfStatus('success', `✓ ${pdfParsedAttendants.length} asociada(s) · ${totalRooms} cuartos · ${totalCr} créditos`);
-
-    renderPdfResults();
-    document.getElementById('pdfResults').style.display = 'block';
-    document.getElementById('pdfFooter').style.display = 'flex';
-  } catch (err) {
-    showPdfStatus('error', 'Error: ' + err.message);
-    document.getElementById('pdfDrop').style.display = 'block';
-    console.error(err);
-  }
-}
-
-function renderPdfResults() {
-  const totalRooms = pdfParsedAttendants.reduce((s, a) => s + a.rooms.length, 0);
-  const totalCr = pdfParsedAttendants.reduce((s, a) => s + a.rooms.reduce((ss, r) => ss + (r.status === 'odrf' ? 0.5 : 1), 0), 0);
-
-  document.getElementById('pdfSummaryBar').innerHTML =
-    `<span>👤 <strong>${pdfParsedAttendants.length}</strong> asociadas</span>` +
-    `<span>🚪 <strong>${totalRooms}</strong> cuartos</span>` +
-    `<span>⭐ <strong>${totalCr}</strong> créditos</span>`;
-
-  document.getElementById('pdfAttList').innerHTML = pdfParsedAttendants.map(att => {
-    const vd   = att.rooms.filter(r => r.status === 'vd').length;
-    const cout = att.rooms.filter(r => r.status === 'odco').length;
-    const rfsh = att.rooms.filter(r => r.status === 'odrf').length;
-    const cr   = att.rooms.reduce((s, r) => s + (r.status === 'odrf' ? 0.5 : 1), 0);
-
-    // Check if already exists
-    const existingEmp = st.employees.find(e => e.name.toLowerCase() === att.name.toLowerCase());
-    const existingRooms = att.rooms.filter(r => st.rooms.find(x => x.number === r.number));
-    const newRooms = att.rooms.filter(r => !st.rooms.find(x => x.number === r.number));
-
-    return `<div class="pdf-att-row">
-      <div class="pdf-att-hdr">
-        <div>
-          <div class="pdf-att-name">${att.name} <span style="font-size:.72rem;color:var(--muted);font-weight:400">(${att.code})</span></div>
-          ${existingRooms.length ? `<div style="font-size:.68rem;color:#d97706;margin-top:2px">⚠️ ${existingRooms.length} cuarto(s) ya existen — se omitirán</div>` : ''}
-        </div>
-        <div class="pdf-att-badges">
-          ${vd   ? `<span class="pdf-att-badge" style="background:#eff6ff;color:#2563eb">VD ×${vd}</span>` : ''}
-          ${cout ? `<span class="pdf-att-badge" style="background:#fffbeb;color:#d97706">COUT ×${cout}</span>` : ''}
-          ${rfsh ? `<span class="pdf-att-badge" style="background:#f5f3ff;color:#7c3aed">RFSH ×${rfsh}</span>` : ''}
-          <span class="pdf-att-badge" style="background:#d1fae5;color:#065f46">${cr} cr</span>
-        </div>
-      </div>
-      <div class="pdf-att-rooms">
-        ${att.rooms.map(r => {
-          const cls = r.status === 'vd' ? 'vd' : r.status === 'odrf' ? 'rfsh' : 'cout';
-          const label = r.status === 'vd' ? 'VD' : r.status === 'odrf' ? 'RFSH' : 'COUT';
-          const dup = st.rooms.find(x => x.number === r.number);
-          return `<span class="pdf-room-chip ${cls}" style="${dup ? 'opacity:.4;text-decoration:line-through' : ''}">${r.number}·${label}</span>`;
-        }).join('')}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function confirmPdfImport() {
-  if (!pdfParsedAttendants.length) return;
-  let totalAdded = 0;
-  let empAdded = 0;
-
-  for (const att of pdfParsedAttendants) {
-    // Find or create employee
-    let emp = st.employees.find(e => e.name.toLowerCase() === att.name.toLowerCase());
-    if (!emp) {
-      emp = { id: gid(), name: att.name };
-      st.employees.push(emp);
-      empAdded++;
-    }
-
-    // Add new rooms only
-    const existing = new Set(st.rooms.map(r => r.number));
-    for (const r of att.rooms) {
-      if (existing.has(r.number)) continue;
-      st.rooms.push({
-        id: gid(),
-        number: r.number,
-        status: r.status,
-        assignedTo: emp.id,
-        note: '',
-        missing: [],
-        hangers: 4,
-        lateCheckout: null,
-        dnd: false
-      });
-      existing.add(r.number);
-      totalAdded++;
+window.confirmPdfImport=function(){
+  if(!pdfParsedAttendants.length)return;
+  let totalAdded=0;
+  for(const att of pdfParsedAttendants){
+    let emp=st.employees.find(e=>e.name.toLowerCase()===att.name.toLowerCase());
+    if(!emp){ emp={id:gid(),name:att.name}; st.employees.push(emp); }
+    const existing=new Set(st.rooms.map(r=>r.number));
+    for(const r of att.rooms){
+      if(existing.has(r.number))continue;
+      st.rooms.push({id:gid(),number:r.number,status:r.status,assignedTo:emp.id,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
+      existing.add(r.number); totalAdded++;
     }
   }
-
-  save();
-  renderAll();
-  closePdfModal();
+  save(); renderAll(); closePdfModal();
   toast(`✅ ${totalAdded} cuartos importados · ${pdfParsedAttendants.length} asociadas`);
+};
+
+async function handlePdfFiles(files){
+  const pdfs=[...files].filter(f=>f.name.endsWith('.pdf')||f.type==='application/pdf');
+  if(!pdfs.length){ showPdfStatus('error','No se encontraron PDFs.'); return; }
+  if(!window._pdfReady){ showPdfStatus('error','PDF.js cargando, intenta de nuevo.'); return; }
+  document.getElementById('pdfDrop').style.display='none';
+  showPdfStatus('processing','Leyendo PDF...');
+  document.getElementById('pdfResults').style.display='none';
+  document.getElementById('pdfFooter').style.display='none';
+  pdfParsedAttendants=[];
+  try{
+    for(const file of pdfs){ const text=await extractPdfText(file); pdfParsedAttendants.push(...parsePdfText(text)); }
+    if(!pdfParsedAttendants.length){ showPdfStatus('error','No se encontraron datos. ¿Es un PDF de Lightspeed?'); document.getElementById('pdfDrop').style.display='block'; return; }
+    const totalRooms=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.length,0);
+    const totalCr=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.reduce((ss,r)=>ss+(r.status==='odrf'?0.5:1),0),0);
+    showPdfStatus('success',`✓ ${pdfParsedAttendants.length} asociada(s) · ${totalRooms} cuartos · ${totalCr} créditos`);
+    // Render preview
+    document.getElementById('pdfSummaryBar').innerHTML=
+      `<span>👤 <strong>${pdfParsedAttendants.length}</strong> asociadas</span>`+
+      `<span>🚪 <strong>${totalRooms}</strong> cuartos</span>`+
+      `<span>⭐ <strong>${totalCr}</strong> créditos</span>`;
+    document.getElementById('pdfAttList').innerHTML=pdfParsedAttendants.map(att=>{
+      const vd=att.rooms.filter(r=>r.status==='vd').length;
+      const cout=att.rooms.filter(r=>r.status==='odco').length;
+      const rfsh=att.rooms.filter(r=>r.status==='odrf').length;
+      const cr=att.rooms.reduce((s,r)=>s+(r.status==='odrf'?0.5:1),0);
+      const dupRooms=att.rooms.filter(r=>st.rooms.find(x=>x.number===r.number));
+      return`<div class="pdf-att-row">
+        <div class="pdf-att-hdr">
+          <div>
+            <div class="pdf-att-name">${att.name} <span style="font-size:.72rem;color:var(--muted);font-weight:400">(${att.code})</span></div>
+            ${dupRooms.length?`<div style="font-size:.68rem;color:#d97706;margin-top:2px">⚠️ ${dupRooms.length} ya existen — se omitirán</div>`:''}
+          </div>
+          <div class="pdf-att-badges">
+            ${vd?`<span class="pdf-att-badge" style="background:#eff6ff;color:#2563eb">VD ×${vd}</span>`:''}
+            ${cout?`<span class="pdf-att-badge" style="background:#fffbeb;color:#d97706">COUT ×${cout}</span>`:''}
+            ${rfsh?`<span class="pdf-att-badge" style="background:#f5f3ff;color:#7c3aed">RFSH ×${rfsh}</span>`:''}
+            <span class="pdf-att-badge" style="background:#d1fae5;color:#065f46">${cr} cr</span>
+          </div>
+        </div>
+        <div class="pdf-att-rooms">
+          ${att.rooms.map(r=>{
+            const cls=r.status==='vd'?'vd':r.status==='odrf'?'rfsh':'cout';
+            const label=r.status==='vd'?'VD':r.status==='odrf'?'RFSH':'COUT';
+            const dup=st.rooms.find(x=>x.number===r.number);
+            return`<span class="pdf-room-chip ${cls}" style="${dup?'opacity:.4;text-decoration:line-through':''}">${r.number}·${label}</span>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('');
+    document.getElementById('pdfResults').style.display='block';
+    document.getElementById('pdfFooter').style.display='flex';
+  }catch(err){
+    showPdfStatus('error','Error: '+err.message);
+    document.getElementById('pdfDrop').style.display='block';
+  }
 }
 
-// Wire up PDF drop zone
-document.addEventListener('DOMContentLoaded', () => {
-  const drop = document.getElementById('pdfDrop');
-  const input = document.getElementById('pdfFileInput');
-  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragging'); });
-  drop.addEventListener('dragleave', () => drop.classList.remove('dragging'));
-  drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('dragging'); handlePdfFiles(e.dataTransfer.files); });
-  input.addEventListener('change', () => handlePdfFiles(input.files));
+document.addEventListener('DOMContentLoaded',()=>{
+  const drop=document.getElementById('pdfDrop');
+  const input=document.getElementById('pdfFileInput');
+  drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('dragging')});
+  drop.addEventListener('dragleave',()=>drop.classList.remove('dragging'));
+  drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('dragging');handlePdfFiles(e.dataTransfer.files)});
+  input.addEventListener('change',()=>handlePdfFiles(input.files));
 });
 
-// ══════════════════════════════════════════════════════════════
-// EXISTING APP CODE (unchanged)
-// ══════════════════════════════════════════════════════════════
-const LS={get:k=>{try{return JSON.parse(localStorage.getItem('hk9_'+k))}catch(_){return null}},set:(k,v)=>localStorage.setItem('hk9_'+k,JSON.stringify(v))};
-let st={hotel:'Mi Hotel',employees:[],rooms:[],lsDone:{},reportEmail:''};
-let curTab='rooms',curFilters=new Set(['all']),curRoomId=null,curStatus='odco',curAssocId=null;
-const gid=()=>Math.random().toString(36).substr(2,9);
-
-const STATUS={
-  vd:  {label:'VD',     desc:'Vacante sucio',          color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
-  vc:  {label:'VC',     desc:'Vacante limpio',          color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
-  odco:{label:'OD COUT',desc:'Ocupado — salida hoy',    color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
-  odrf:{label:'OD RFSH',desc:'Ocupado — pide refresh',  color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
-  odfu:{label:'FULL',   desc:'Full refresh con cambio', color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄✨'},
-  vp:  {label:'VP',     desc:'Vacante con problema',    color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
+// ── STATUS DEFINITIONS ────────────────────────────────────
+window.STATUS={
+  vd:  {label:'VD',     desc:'Vacante sucio',         color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
+  vc:  {label:'VC',     desc:'Vacante limpio',         color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
+  odco:{label:'OD COUT',desc:'Ocupado — salida hoy',   color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
+  odrf:{label:'OD RFSH',desc:'Ocupado — pide refresh', color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
+  odfu:{label:'FULL',   desc:'Full refresh con cambio',color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄✨'},
+  vp:  {label:'VP',     desc:'Vacante con problema',   color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
 };
-
 const VALID_TRANSITIONS={
-  odco:['vd','vp','odrf','odfu'],
-  odrf:['vd','vp','vc'],
-  odfu:['vd','vp','vc'],
-  vd:  ['vc','vp'],
-  vp:  ['vc','vd'],
-  vc:  ['vd','vp','odco','odrf','odfu'],
+  odco:['vd','vp','odrf','odfu'], odrf:['vd','vp','vc'], odfu:['vd','vp','vc'],
+  vd:['vc','vp'], vp:['vc','vd'], vc:['vd','vp','odco','odrf','odfu'],
 };
-
-const CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:0.5};
+window.CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:0.5};
 const MAX_CREDITS=16;
 function roomCredits(r){if(r.dnd)return 0;return CREDITS[r.status]||1}
 function totalCredits(rooms){return rooms.reduce((s,r)=>s+roomCredits(r),0)}
-
 const MISSING=[
   {id:'towels_pillows',label:'Toallas/Almohadas',icon:'🛁'},
   {id:'soap_tp_coffee',label:'Jabón/Papel/Café', icon:'🧴'},
@@ -711,30 +699,18 @@ const MISSING=[
   {id:'dirty',         label:'Sucio/manchado',    icon:'🔴'},
   {id:'damaged',       label:'Daño/desperfecto',  icon:'🔧'},
 ];
-const MAX_HANGERS=4;
 
-function save(){LS.set('hotel',st.hotel);LS.set('employees',st.employees);LS.set('rooms',st.rooms);LS.set('lsDone',st.lsDone);LS.set('reportEmail',st.reportEmail)}
-function load(){st.hotel=LS.get('hotel')||'Mi Hotel';st.employees=LS.get('employees')||[];st.rooms=LS.get('rooms')||[];st.lsDone=LS.get('lsDone')||{};st.reportEmail=LS.get('reportEmail')||''}
-
-function init(){
-  load();
-  const d=new Date();
-  const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-  const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-  document.getElementById('hdate').textContent=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
-  renderAll();
-}
-
-function renderAll(){
+// ── RENDER ────────────────────────────────────────────────
+window.renderAll=function(){
   renderPills();
   if(curTab==='rooms')    renderGrid();
   if(curTab==='assoc')    renderAssoc();
   if(curTab==='progress') renderProgress();
   if(curTab==='setup')    renderSetup();
-}
+};
 
 function renderPills(){
-  document.getElementById('hotelName').textContent='🏨 '+st.hotel;
+  document.getElementById('hotelName').innerHTML='🏨 '+st.hotel+' <span class="sync-dot" id="syncDot"></span>';
   const r=st.rooms,total=r.length;
   const cnt=k=>r.filter(x=>x.status===k).length;
   document.getElementById('pills').innerHTML=[
@@ -750,25 +726,25 @@ function renderPills(){
 }
 
 function sorted(arr){return[...arr].sort((a,b)=>a.number.localeCompare(b.number,undefined,{numeric:true}))}
-function getFloors(rooms){const floors=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));return[...floors].sort().map(f=>`P${f}`).join(', ')}
+function getFloors(rooms){const f=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));return[...f].sort().map(x=>`P${x}`).join(', ')}
 
 function renderGrid(){
   const isAll=curFilters.has('all');
   const rooms=sorted(st.rooms.filter(r=>isAll||curFilters.has(r.status)));
   if(!rooms.length){
-    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos${isAll?'':' con ese filtro'}.</p><small>${isAll?'Toca 📄 PDF o 📋 Importar.':'Prueba con otro filtro.'}</small></div>`;
+    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos.</p><small>Toca 📄 PDF para importar.</small></div>`;
     return;
   }
-  const sorted2=[...rooms.filter(r=>!st.lsDone[r.id]),...rooms.filter(r=>st.lsDone[r.id])];
-  document.getElementById('roomsGrid').innerHTML=sorted2.map(r=>{
+  const s2=[...rooms.filter(r=>!st.lsDone[r.id]),...rooms.filter(r=>st.lsDone[r.id])];
+  document.getElementById('roomsGrid').innerHTML=s2.map(r=>{
     const s=STATUS[r.status]||STATUS.vd;
     const emp=st.employees.find(e=>e.id===r.assignedTo);
-    const reported=st.lsDone[r.id];
-    return`<div class="tile s-${r.status}" onclick="openRoomModal('${r.id}')" style="${reported?'opacity:.45;':''}">
-      ${reported?`<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>`:''}
+    const rep=st.lsDone[r.id];
+    return`<div class="tile s-${r.status}" onclick="openRoomModal('${r.id}')" style="${rep?'opacity:.45;':''}">
+      ${rep?`<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>`:''}
       ${r.missing?.length?`<span class="tile-alert">${r.missing.length}</span>`:''}
-      <div class="tile-num" style="${reported?'text-decoration:line-through;color:#9ca3af;':''}">${r.number}</div>
-      <div class="tile-status" style="color:${reported?'#9ca3af':s.color}">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
+      <div class="tile-num" style="${rep?'text-decoration:line-through;color:#9ca3af;':''}">${r.number}</div>
+      <div class="tile-status" style="color:${rep?'#9ca3af':s.color}">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
       ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed;margin-top:1px">🕐 ${r.lateCheckout}</div>`:''}
       <div class="tile-emp">${emp?emp.name.split(' ')[0]:'—'}</div>
     </div>`;
@@ -781,120 +757,112 @@ function renderAssoc(){
     const rooms=sorted(st.rooms.filter(r=>r.assignedTo===e.id));
     const vc=rooms.filter(r=>r.status==='vc').length;
     const pct=rooms.length?Math.round(vc/rooms.length*100):0;
-    const floors=getFloors(rooms);
-    const issues=rooms.filter(r=>r.missing?.length||r.note);
     const credits=totalCredits(rooms);
     const creditPct=Math.min(Math.round(credits/MAX_CREDITS*100),100);
     const overLimit=credits>MAX_CREDITS;
-    return{...e,rooms,vc,pct,floors,issues,credits,creditPct,overLimit};
+    const issues=rooms.filter(r=>r.missing?.length||r.note);
+    return{...e,rooms,vc,pct,floors:getFloors(rooms),issues,credits,creditPct,overLimit};
   });
   const unassigned=sorted(st.rooms.filter(r=>!r.assignedTo));
-  if(!groups.length&&!unassigned.length){
-    el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>No hay asociadas.</p><small>Ve a ⚙️ Config para agregar.</small></div>`;
-    return;
-  }
-  el.innerHTML=[
-    ...groups.map(g=>`
-      <div class="assoc-card" onclick="openAssocModal('${g.id}')">
-        <div class="assoc-hdr">
-          <div class="assoc-av" style="${g.overLimit?'background:#dc2626':''}">${g.name[0].toUpperCase()}</div>
-          <div class="assoc-info">
-            <div class="assoc-name">${g.name}</div>
-            <div class="assoc-sub">${g.rooms.length} cuartos · ${g.vc} VC · ${g.pct}%</div>
-            ${g.floors?`<div class="assoc-floors">📍 ${g.floors}</div>`:''}
-            <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
-              <div style="flex:1;height:5px;background:var(--bdr);border-radius:3px;overflow:hidden">
-                <div style="height:100%;width:${g.creditPct}%;background:${g.overLimit?'#dc2626':'#f59e0b'};border-radius:3px;transition:width .4s"></div>
-              </div>
-              <span style="font-size:.7rem;font-weight:700;color:${g.overLimit?'#dc2626':'#d97706'};white-space:nowrap">${g.credits}/${MAX_CREDITS} cr${g.overLimit?' ⚠️':''}</span>
+  if(!groups.length&&!unassigned.length){el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>Sin asociadas.</p></div>`;return;}
+  el.innerHTML=[...groups.map(g=>`
+    <div class="assoc-card" onclick="openAssocModal('${g.id}')">
+      <div class="assoc-hdr">
+        <div class="assoc-av" style="${g.overLimit?'background:#dc2626':''}">${g.name[0].toUpperCase()}</div>
+        <div class="assoc-info">
+          <div class="assoc-name">${g.name}</div>
+          <div class="assoc-sub">${g.rooms.length} cuartos · ${g.vc} VC · ${g.pct}%</div>
+          ${g.floors?`<div class="assoc-floors">📍 ${g.floors}</div>`:''}
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+            <div style="flex:1;height:5px;background:var(--bdr);border-radius:3px;overflow:hidden">
+              <div style="height:100%;width:${g.creditPct}%;background:${g.overLimit?'#dc2626':'#f59e0b'};border-radius:3px;transition:width .4s"></div>
             </div>
-            ${g.issues.length?`<div style="font-size:.68rem;color:#dc2626;margin-top:2px">⚠️ ${g.issues.length} cuarto${g.issues.length>1?'s':''} con nota</div>`:''}
+            <span style="font-size:.7rem;font-weight:700;color:${g.overLimit?'#dc2626':'#d97706'};white-space:nowrap">${g.credits}/${MAX_CREDITS} cr${g.overLimit?' ⚠️':''}</span>
           </div>
-          <div style="font-size:1.2rem;color:#9ca3af">›</div>
+          ${g.issues.length?`<div style="font-size:.68rem;color:#dc2626;margin-top:2px">⚠️ ${g.issues.length} con nota</div>`:''}
         </div>
-        <div class="assoc-prog"><div class="assoc-prog-fill" style="width:${g.pct}%"></div></div>
-      </div>`),
-    unassigned.length?`
-      <div class="assoc-card" onclick="openAssocModal('__none__')">
-        <div class="assoc-hdr">
-          <div class="assoc-av" style="background:#6b7280">?</div>
-          <div class="assoc-info">
-            <div class="assoc-name">Sin asignar</div>
-            <div class="assoc-sub">${unassigned.length} cuartos · ${totalCredits(unassigned)} créditos</div>
-          </div>
-          <div style="font-size:1.2rem;color:#9ca3af">›</div>
-        </div>
-      </div>`:''
+        <div style="font-size:1.2rem;color:#9ca3af">›</div>
+      </div>
+      <div class="assoc-prog"><div class="assoc-prog-fill" style="width:${g.pct}%"></div></div>
+    </div>`),
+    unassigned.length?`<div class="assoc-card" onclick="openAssocModal('__none__')">
+      <div class="assoc-hdr">
+        <div class="assoc-av" style="background:#6b7280">?</div>
+        <div class="assoc-info"><div class="assoc-name">Sin asignar</div><div class="assoc-sub">${unassigned.length} cuartos</div></div>
+        <div style="font-size:1.2rem;color:#9ca3af">›</div>
+      </div></div>`:''
   ].join('');
 }
 
-function openAssocModal(assocId){
+window.openAssocModal=function(assocId){
   curAssocId=assocId;
   const emp=assocId==='__none__'?{name:'Sin asignar'}:st.employees.find(e=>e.id===assocId);
   const rooms=sorted(assocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===assocId));
-  const floors=getFloors(rooms);
   const credits=totalCredits(rooms);
-  document.getElementById('assocRoomsTitle').textContent=(emp?.name||'')+(floors?' · '+floors:'')+' · '+credits+' cr';
+  document.getElementById('assocRoomsTitle').textContent=(emp?.name||'')+(getFloors(rooms)?' · '+getFloors(rooms):'')+' · '+credits+' cr';
+  buildAssocGrid(rooms);
+  openModal('modalAssocRooms');
+};
+
+function buildAssocGrid(rooms){
   document.getElementById('assocRoomsBody').innerHTML=rooms.length
     ?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px">`+
       rooms.map(r=>{
         const s=STATUS[r.status]||STATUS.vd;
-        const bdr=r.status==='vd'?'var(--vd-bd)':r.status==='vc'?'var(--vc-bd)':r.status==='vp'?'var(--vp-bd)':r.status==='odco'?'var(--odco-bd)':'var(--odrf-bd)';
-        const bg=r.status==='vd'?'var(--vd-bg)':r.status==='vc'?'var(--vc-bg)':r.status==='vp'?'var(--vp-bg)':r.status==='odco'?'var(--odco-bg)':'var(--odrf-bg)';
-        const reported=st.lsDone[r.id];
-        return`<div onclick="closeModal('modalAssocRooms');openRoomModal('${r.id}')" style="background:${bg};border-radius:10px;border:2px solid ${bdr};padding:10px 6px;cursor:pointer;text-align:center;position:relative;user-select:none;opacity:${reported?'.5':'1'}">
-          ${reported?'<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>':''}
-          ${r.missing&&r.missing.length?'<span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700">'+r.missing.length+'</span>':''}
+        const rep=st.lsDone[r.id];
+        return`<div onclick="closeModal('modalAssocRooms');openRoomModal('${r.id}')" style="background:${s.bg};border-radius:10px;border:2px solid ${s.border};padding:10px 6px;cursor:pointer;text-align:center;position:relative;opacity:${rep?'.5':'1'}">
+          ${rep?'<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>':''}
+          ${r.missing?.length?`<span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700">${r.missing.length}</span>`:''}
           <div style="font-size:1.05rem;font-weight:800">${r.number}</div>
           <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
           ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed">🕐 ${r.lateCheckout}</div>`:''}
           <div style="font-size:.58rem;color:var(--muted);margin-top:2px">${r.dnd?'0':CREDITS[r.status]||1}cr</div>
         </div>`;
       }).join('')+'</div>'
-    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos asignados</div>';
-  openModal('modalAssocRooms');
+    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos</div>';
+}
+
+function refreshAssocModal(){
+  if(!curAssocId||!document.getElementById('modalAssocRooms').classList.contains('on'))return;
+  const rooms=sorted(curAssocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===curAssocId));
+  buildAssocGrid(rooms);
 }
 
 function renderProgress(){
-  const r=st.rooms,total=r.length||1;
-  const cnt=k=>r.filter(x=>x.status===k).length;
-  const vc=cnt('vc'),vd=cnt('vd'),vp=cnt('vp'),odco=cnt('odco'),odrf=cnt('odrf');
+  const cnt=k=>st.rooms.filter(x=>x.status===k).length;
   const summaries=st.employees.map(e=>{
     const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
-    const vcR=rooms.filter(x=>x.status==='vc').length;
-    const pct=rooms.length?Math.round(vcR/rooms.length*100):0;
-    const issues=rooms.filter(x=>x.missing?.length||x.note);
+    const vc=rooms.filter(x=>x.status==='vc').length;
     const credits=totalCredits(rooms);
-    const normalRooms=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu').length;
-    const rfRooms=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd).length;
-    const dndRooms=rooms.filter(x=>x.dnd).length;
-    return{name:e.name,total:rooms.length,vc:vcR,pct,issues,credits,normalRooms,rfRooms,dndRooms};
+    const norm=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu').length;
+    const rf=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd).length;
+    const issues=rooms.filter(x=>x.missing?.length||x.note);
+    return{name:e.name,total:rooms.length,vc,credits,norm,rf,issues,over:credits>MAX_CREDITS};
   });
   document.getElementById('tab-progress').innerHTML=`
     <div style="padding:10px 12px 0;font-weight:700;font-size:1rem;margin-bottom:10px">Progreso del día</div>
     <div style="padding:0 10px">
       <div class="stat-grid">
-        <div class="stat-card"><div class="stat-val" style="color:var(--vc)">${vc}</div><div class="stat-lbl">✅ VC Listos</div></div>
-        <div class="stat-card"><div class="stat-val" style="color:var(--vd)">${vd}</div><div class="stat-lbl">🛏️ VD Pendientes</div></div>
-        <div class="stat-card"><div class="stat-val" style="color:var(--odco)">${odco}</div><div class="stat-lbl">🚪 OD COUT</div></div>
-        <div class="stat-card"><div class="stat-val" style="color:var(--odrf)">${odrf}</div><div class="stat-lbl">🔄 OD RFSH</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--vc)">${cnt('vc')}</div><div class="stat-lbl">✅ VC Listos</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--vd)">${cnt('vd')}</div><div class="stat-lbl">🛏️ VD Pendientes</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--odco)">${cnt('odco')}</div><div class="stat-lbl">🚪 OD COUT</div></div>
+        <div class="stat-card"><div class="stat-val" style="color:var(--odrf)">${cnt('odrf')}</div><div class="stat-lbl">🔄 OD RFSH</div></div>
       </div>
       <div class="card">
-        <div class="card-hdr">Avance y créditos por asociada</div>
+        <div class="card-hdr">Créditos por asociada</div>
         <div style="padding:10px 14px">
           ${summaries.map(s=>{
-            const cPct=Math.min(Math.round(s.credits/MAX_CREDITS*100),100);
-            const over=s.credits>MAX_CREDITS;
+            const pct=Math.min(Math.round(s.credits/MAX_CREDITS*100),100);
             return`<div style="margin-bottom:12px">
               <div style="display:flex;justify-content:space-between;margin-bottom:3px">
                 <span style="font-size:.78rem;font-weight:600">${s.name.split(' ')[0]}</span>
-                <span style="font-size:.72rem;color:${over?'#dc2626':'#d97706'};font-weight:700">${s.credits}/${MAX_CREDITS} cr ${over?'⚠️':''}</span>
+                <span style="font-size:.72rem;color:${s.over?'#dc2626':'#d97706'};font-weight:700">${s.credits}/${MAX_CREDITS} cr${s.over?' ⚠️':''}</span>
               </div>
-              <div style="height:7px;background:var(--bdr);border-radius:10px;overflow:hidden;margin-bottom:2px">
-                <div style="height:100%;width:${cPct}%;background:${over?'#dc2626':'#f59e0b'};border-radius:10px;transition:width .4s"></div>
+              <div style="height:7px;background:var(--bdr);border-radius:10px;overflow:hidden">
+                <div style="height:100%;width:${pct}%;background:${s.over?'#dc2626':'#f59e0b'};border-radius:10px;transition:width .4s"></div>
               </div>
-              <div style="display:flex;justify-content:space-between">
-                <span style="font-size:.68rem;color:var(--muted)">${s.normalRooms} normales · ${s.rfRooms} refresh</span>
+              <div style="display:flex;justify-content:space-between;margin-top:2px">
+                <span style="font-size:.68rem;color:var(--muted)">${s.norm} normales · ${s.rf} refresh</span>
                 <span style="font-size:.68rem;color:var(--vc)">${s.vc}/${s.total} VC</span>
               </div>
             </div>`;
@@ -903,15 +871,12 @@ function renderProgress(){
       </div>
       ${summaries.map(s=>`
         <div class="card" style="margin-bottom:10px">
-          <div class="card-hdr" style="background:#f8fafc">
-            <span>${s.name}</span>
-            <span style="font-weight:400">${s.credits} cr · ${s.normalRooms}×1 + ${s.rfRooms}×0.5</span>
-          </div>
+          <div class="card-hdr"><span>${s.name}</span><span style="font-weight:400">${s.credits} cr</span></div>
           ${s.issues.length?s.issues.map(r=>{
             const st2=STATUS[r.status]||STATUS.vd;
             return`<div style="display:flex;align-items:flex-start;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px;font-size:.8rem">
               <div>${st2.icon}</div>
-              <div style="flex:1;min-width:0">
+              <div style="flex:1">
                 <strong>Cuarto ${r.number}</strong> — ${st2.label}
                 ${r.missing?.length?`<div style="font-size:.72rem;color:#92400e;margin-top:2px">⚠️ ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
                 ${r.note?`<div style="font-size:.72rem;color:#dc2626;margin-top:1px">📝 ${r.note}</div>`:''}
@@ -919,45 +884,8 @@ function renderProgress(){
             </div>`;}).join('')
           :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ Sin novedades</div>`}
         </div>`).join('')}
-      <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Enviar reporte por correo</button>
+      <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Enviar reporte</button>
     </div>`;
-}
-
-function sendReport(){
-  if(!st.reportEmail){
-    const email=prompt('¿A qué correo enviar los reportes?\n(Se guardará para próximas veces)');
-    if(!email)return;
-    st.reportEmail=email.trim();save();
-  }
-  const d=new Date();
-  const dateStr=d.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  let body=`REPORTE HOUSEKEEPING - ${st.hotel}\n${dateStr}\n${'='.repeat(40)}\n\n`;
-  const cnt=k=>st.rooms.filter(x=>x.status===k).length;
-  body+=`RESUMEN GENERAL\nTotal cuartos: ${st.rooms.length}\nTotal créditos: ${totalCredits(st.rooms)}\nVC: ${cnt('vc')}\nVD: ${cnt('vd')}\nOD COUT: ${cnt('odco')}\nOD RFSH: ${cnt('odrf')}\nVP: ${cnt('vp')}\n\n`;
-  st.employees.forEach(e=>{
-    const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
-    const vc=rooms.filter(x=>x.status==='vc').length;
-    const credits=totalCredits(rooms);
-    const normalRooms=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu');
-    const rfRooms=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd);
-    const dndRooms=rooms.filter(x=>x.dnd);
-    body+=`${'─'.repeat(30)}\nASOCIADA: ${e.name}\nCuartos: ${rooms.length} / ${vc} VC\nCRÉDITOS: ${credits}/${MAX_CREDITS}\n`;
-    body+=`  Normales (×1): ${normalRooms.length} → ${normalRooms.map(r=>r.number).join(', ')||'ninguno'}\n`;
-    body+=`  Refresh (×0.5): ${rfRooms.length} → ${rfRooms.map(r=>r.number).join(', ')||'ninguno'}\n`;
-    if(dndRooms.length) body+=`  DND (×0): ${dndRooms.map(r=>r.number).join(', ')}\n`;
-    const issues=rooms.filter(x=>x.missing?.length||x.note);
-    if(issues.length){
-      body+=`Novedades:\n`;
-      issues.forEach(r=>{
-        body+=`  • Cuarto ${r.number} (${STATUS[r.status]?.label||r.status})\n`;
-        if(r.missing?.length) body+=`    Faltante: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}\n`;
-        if(r.note) body+=`    Nota: ${r.note}\n`;
-      });
-    } else { body+=`Sin novedades\n`; }
-    body+='\n';
-  });
-  const subject=encodeURIComponent(`Reporte Housekeeping ${st.hotel} - ${d.toLocaleDateString('es-MX')}`);
-  window.location.href=`mailto:${st.reportEmail}?subject=${subject}&body=${encodeURIComponent(body)}`;
 }
 
 function renderSetup(){
@@ -984,7 +912,7 @@ function renderSetup(){
             <span style="font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:10px;background:${s.bg};color:${s.color}">${s.label}</span>
             <div style="flex:1;font-size:.78rem;color:var(--muted)">${emp?emp.name.split(' ')[0]:''}</div>
             <button onclick="delRoomSetup('${r.id}')" style="background:none;border:none;color:#ef4444;font-size:.85rem;cursor:pointer;padding:3px 5px">🗑</button>
-          </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📄 PDF o 📋 Importar.</div>'}
+          </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📄 PDF.</div>'}
       </div>
       <button class="btn btn-block" style="background:#fff3cd;color:#856404;border:none;font-size:.9rem;font-weight:700;margin-bottom:8px" onclick="newDay()">🔄 Reiniciar día</button>
       <div class="card" style="margin-top:4px">
@@ -997,32 +925,19 @@ function renderSetup(){
     </div>`;
 }
 
-const statusMap={
-  co:'odco',cout:'odco',odco:'odco',
-  rf:'odrf',rfsh:'odrf',odrf:'odrf',
-  full:'odfu',odfu:'odfu',
-  vd:'vd','vacant dirty':'vd',
-  vc:'vc','vacant clean':'vc',
-  vp:'vp','vacant pickup':'vp',
-  od:'odco',
-};
-
-function doImport(){
+// ── IMPORT MANUAL ─────────────────────────────────────────
+const statusMap={co:'odco',cout:'odco',odco:'odco',rf:'odrf',rfsh:'odrf',odrf:'odrf',full:'odfu',odfu:'odfu',vd:'vd',vc:'vc',vp:'vp',od:'odco'};
+window.doImport=function(){
   const raw=document.getElementById('pasteInput').value.trim();
   if(!raw){toast('⚠️ Pega un código primero');return}
   try{
     let empName='',roomStr=raw;
-    if(raw.includes('|')&&raw.startsWith('EMP:')){
-      const p=raw.split('|');
-      empName=p[0].replace('EMP:','').trim();
-      roomStr=p[1];
-    }
+    if(raw.includes('|')&&raw.startsWith('EMP:')){const p=raw.split('|');empName=p[0].replace('EMP:','').trim();roomStr=p[1];}
     const items=roomStr.split(',').map(s=>s.trim()).filter(Boolean);
-    if(!items.length)throw new Error('vacío');
     let empId=null;
     if(empName){
       let emp=st.employees.find(e=>e.name.toLowerCase()===empName.toLowerCase());
-      if(!emp){emp={id:gid(),name:empName};st.employees.push(emp)}
+      if(!emp){emp={id:gid(),name:empName};st.employees.push(emp);}
       empId=emp.id;
     }
     const existing=new Set(st.rooms.map(r=>r.number));
@@ -1030,258 +945,229 @@ function doImport(){
     for(const item of items){
       const[num,code='odco']=item.split('-');
       if(!num||existing.has(num.trim()))continue;
-      const status=statusMap[code.trim().toLowerCase()]||'odco';
-      st.rooms.push({id:gid(),number:num.trim(),status,assignedTo:empId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
+      st.rooms.push({id:gid(),number:num.trim(),status:statusMap[code.trim().toLowerCase()]||'odco',assignedTo:empId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
       existing.add(num.trim());added++;
     }
     document.getElementById('pasteInput').value='';
     closeModal('modalPaste');save();renderAll();
     toast(`✅ ${added} cuartos importados${empName?' → '+empName:''}`);
   }catch(e){toast('⚠️ Código inválido')}
-}
+};
 
-function openRoomModal(id){
+// ── ROOM MODAL ────────────────────────────────────────────
+window.openRoomModal=function(id){
   curRoomId=id;
-  const r=st.rooms.find(x=>x.id===id);
-  curStatus=r.status;
-  const s=STATUS[r.status]||STATUS.vd;
+  const r=st.rooms.find(x=>x.id===id);if(!r)return;
   document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number}`;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   document.getElementById('stOpts').innerHTML=Object.entries(STATUS).map(([k,v])=>{
-    const isCurrent=k===r.status;
-    const isAllowed=isCurrent||allowed.includes(k);
-    return`<div class="st-opt ${isCurrent?'sel':''}" data-k="${k}" style="background:${v.bg};border-color:${isCurrent?'#1a5f7a':v.border};opacity:${isAllowed?1:.28};${!isAllowed?'pointer-events:none':''}" ${isAllowed?`onclick="selStatus('${k}')"`:''}> 
+    const isCur=k===r.status,isOk=isCur||allowed.includes(k);
+    return`<div class="st-opt ${isCur?'sel':''}" data-k="${k}" style="background:${v.bg};border-color:${isCur?'#1a5f7a':v.border};opacity:${isOk?1:.28};${!isOk?'pointer-events:none':''}" ${isOk?`onclick="selStatus('${k}')"`:''}>
       <div class="st-opt-icon">${v.icon}</div>
       <div class="st-opt-label" style="color:${v.color}">${v.label}</div>
-      <div class="st-opt-desc" style="color:${v.color}">${isAllowed?v.desc:'No disponible'}</div>
+      <div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'No disponible'}</div>
     </div>`;
   }).join('');
   MISSING.forEach(m=>{const el=document.getElementById('mo-'+m.id);if(el)el.classList.toggle('sel',(r.missing||[]).includes(m.id))});
-  const hangers=r.hangers!=null?r.hangers:4;
-  document.getElementById('hangerCount').textContent=hangers;
-  document.getElementById('hangerNote').textContent=hangers<4?`⚠️ Faltan ${4-hangers}`:'';
+  const h=r.hangers!=null?r.hangers:4;
+  document.getElementById('hangerCount').textContent=h;
+  document.getElementById('hangerNote').textContent=h<4?`⚠️ Faltan ${4-h}`:'';
   document.getElementById('roomNote').value=r.note||'';
   const emp=st.employees.find(e=>e.id===r.assignedTo);
   document.getElementById('roomEmpLabel').textContent=emp?'👤 '+emp.name:'';
   document.getElementById('lsCheck').checked=!!st.lsDone[r.id];
-  const isDndEligible=r.status==='odrf'||r.status==='odfu';
-  document.getElementById('dndSection').style.display=isDndEligible?'flex':'none';
+  const isDnd=r.status==='odrf'||r.status==='odfu';
+  document.getElementById('dndSection').style.display=isDnd?'flex':'none';
   document.getElementById('dndCheck').checked=!!r.dnd;
-  const showLate=lateVisible(r.status);
-  document.getElementById('lateOpts').style.display=showLate?'flex':'none';
+  document.getElementById('lateOpts').style.display=lateVisible(r.status)?'flex':'none';
   document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b.dataset.h===(r.lateCheckout||'')));
   openModal('modalRoom');
-}
+};
 
-function selStatus(k){
+window.selStatus=function(k){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   if(k!==r.status&&!allowed.includes(k))return;
-  r.status=k;curStatus=k;
-  const isDndEl=k==='odrf'||k==='odfu';
-  document.getElementById('dndSection').style.display=isDndEl?'flex':'none';
-  if(!isDndEl){r.dnd=false;document.getElementById('dndCheck').checked=false;}
+  r.status=k;
+  const isDnd=k==='odrf'||k==='odfu';
+  document.getElementById('dndSection').style.display=isDnd?'flex':'none';
+  if(!isDnd){r.dnd=false;document.getElementById('dndCheck').checked=false;}
   document.getElementById('lateOpts').style.display=lateVisible(k)?'flex':'none';
   save();
   const allowed2=VALID_TRANSITIONS[k]||Object.keys(STATUS);
   document.querySelectorAll('.st-opt').forEach(o=>{
-    const sk=o.dataset.k;const v=STATUS[sk];if(!v)return;
-    const isCurrent=sk===k;const isAllowed=isCurrent||allowed2.includes(sk);
-    o.classList.toggle('sel',isCurrent);
-    o.style.borderColor=isCurrent?'#1a5f7a':v.border;
-    o.style.opacity=isAllowed?'1':'0.28';
-    o.style.pointerEvents=isAllowed?'':'none';
-    o.querySelector('.st-opt-desc').textContent=isAllowed?v.desc:'No disponible';
+    const sk=o.dataset.k,v=STATUS[sk];if(!v)return;
+    const isCur=sk===k,isOk=isCur||allowed2.includes(sk);
+    o.classList.toggle('sel',isCur);
+    o.style.borderColor=isCur?'#1a5f7a':v.border;
+    o.style.opacity=isOk?'1':'0.28';
+    o.style.pointerEvents=isOk?'':'none';
+    o.querySelector('.st-opt-desc').textContent=isOk?v.desc:'No disponible';
   });
-  renderGrid();
-  if(curAssocId)refreshAssocModal();
+  renderGrid();refreshAssocModal();
   toast(`${STATUS[k]?.icon} Cuarto ${r.number} → ${STATUS[k]?.label}`);
   if(k==='vc')setTimeout(()=>closeModal('modalRoom'),600);
-}
+};
 
-function lateVisible(status){return status==='odco'||status==='odrf'||status==='odfu'}
+function lateVisible(s){return s==='odco'||s==='odrf'||s==='odfu'}
 
-function setLate(btn){
+window.setLate=function(btn){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  const h=btn.dataset.h;
-  r.lateCheckout=h||null;
-  document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&h));
-  save();renderGrid();
-  if(curAssocId)refreshAssocModal();
-  if(h)toast(`🕐 Late checkout ${h} — Cuarto ${r.number}`);
-}
+  r.lateCheckout=btn.dataset.h||null;
+  document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&btn.dataset.h));
+  save();renderGrid();refreshAssocModal();
+  if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Cuarto ${r.number}`);
+};
 
-function autoSaveNote(){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.note=document.getElementById('roomNote').value;save()}
+window.autoSaveNote=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(r){r.note=document.getElementById('roomNote').value;save();}};
 
-function saveLs(){
-  const lsEl=document.getElementById('lsCheck');if(!lsEl||!curRoomId)return;
-  st.lsDone[curRoomId]=lsEl.checked;save();renderGrid();
-  if(curAssocId)refreshAssocModal();
-  if(lsEl.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),600)}
-}
+window.saveLs=function(){
+  const el=document.getElementById('lsCheck');if(!el||!curRoomId)return;
+  st.lsDone[curRoomId]=el.checked;save();renderGrid();refreshAssocModal();
+  if(el.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),600);}
+};
 
-function togMissing(id){
+window.togMissing=function(id){
   document.getElementById('mo-'+id).classList.toggle('sel');
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
   save();
-}
+};
 
-function adjHangers(delta){
+window.adjHangers=function(d){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  const cur=r.hangers!=null?r.hangers:4;
-  r.hangers=Math.max(0,Math.min(4,cur+delta));
+  r.hangers=Math.max(0,Math.min(4,(r.hangers!=null?r.hangers:4)+d));
   document.getElementById('hangerCount').textContent=r.hangers;
   document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';
-  save();renderGrid();
-  if(curAssocId)refreshAssocModal();
-}
+  save();renderGrid();refreshAssocModal();
+};
 
-function saveDnd(){
+window.saveDnd=function(){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   r.dnd=document.getElementById('dndCheck').checked;
-  save();renderGrid();
-  if(curAssocId)refreshAssocModal();
+  save();renderGrid();refreshAssocModal();
   toast(r.dnd?'🚫 DND — crédito descontado':'✅ DND removido');
-}
+};
 
-function openAddRoomToAssoc(){
+window.openAddRoomToAssoc=function(){
   const emp=curAssocId==='__none__'?null:st.employees.find(e=>e.id===curAssocId);
   document.getElementById('quickAddTitle').textContent='Agregar cuarto'+(emp?' → '+emp.name.split(' ')[0]:'');
-  document.getElementById('qaNum').value='';
-  document.getElementById('qaStatus').value='odco';
-  openModal('modalQuickAdd');
-  setTimeout(()=>document.getElementById('qaNum').focus(),200);
-}
+  document.getElementById('qaNum').value='';document.getElementById('qaStatus').value='odco';
+  openModal('modalQuickAdd');setTimeout(()=>document.getElementById('qaNum').focus(),200);
+};
 
-function doQuickAdd(){
+window.doQuickAdd=function(){
   const num=document.getElementById('qaNum').value.trim();
   if(!num){toast('⚠️ Ingresa el número');return}
   if(st.rooms.find(r=>r.number===num)){toast('⚠️ Ya existe el cuarto '+num);return}
-  const status=document.getElementById('qaStatus').value;
-  st.rooms.push({id:gid(),number:num,status,assignedTo:curAssocId==='__none__'?null:curAssocId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
+  st.rooms.push({id:gid(),number:num,status:document.getElementById('qaStatus').value,
+    assignedTo:curAssocId==='__none__'?null:curAssocId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
   closeModal('modalQuickAdd');save();renderAll();refreshAssocModal();
   toast('🏠 Cuarto '+num+' agregado');
-  document.getElementById('qaNum').value='';
-  setTimeout(()=>document.getElementById('qaNum').focus(),100);
-}
+};
 
-function openTransfer(){
+window.openTransfer=function(){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   document.getElementById('transferTitle').textContent=`Transferir cuarto ${r.number}`;
   document.getElementById('transferList').innerHTML=[{id:null,name:'Sin asignar'},...st.employees].map(e=>{
-    const isCurrent=e.id===r.assignedTo;
+    const isCur=e.id===r.assignedTo;
     const rooms=e.id?st.rooms.filter(x=>x.assignedTo===e.id):st.rooms.filter(x=>!x.assignedTo);
-    const cr=totalCredits(rooms);
-    return`<div onclick="${isCurrent?'':(`doTransfer('${e.id||''}')`)}"
-      style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f0f4f8;cursor:${isCurrent?'default':'pointer'};opacity:${isCurrent?.5:1}">
-      <div style="width:38px;height:38px;border-radius:50%;background:${isCurrent?'#e2e8f0':'linear-gradient(135deg,#1a5f7a,#0d3d52)'};color:${isCurrent?'#9ca3af':'white'};font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
-      <div style="flex:1">
-        <div style="font-weight:600;font-size:.9rem">${e.name}${isCurrent?' (actual)':''}</div>
-        <div style="font-size:.72rem;color:var(--muted);margin-top:2px">${rooms.length} cuartos · ${cr} cr</div>
-      </div>
-      ${!isCurrent?'<div style="font-size:1.1rem;color:#9ca3af">›</div>':''}
+    return`<div onclick="${isCur?'':(`doTransfer('${e.id||''}')`)}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f0f4f8;cursor:${isCur?'default':'pointer'};opacity:${isCur?.5:1}">
+      <div style="width:38px;height:38px;border-radius:50%;background:${isCur?'#e2e8f0':'linear-gradient(135deg,#1a5f7a,#0d3d52)'};color:${isCur?'#9ca3af':'white'};font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:.9rem">${e.name}${isCur?' (actual)':''}</div><div style="font-size:.72rem;color:var(--muted)">${rooms.length} cuartos · ${totalCredits(rooms)} cr</div></div>
+      ${!isCur?'<div style="font-size:1.1rem;color:#9ca3af">›</div>':''}
     </div>`;
   }).join('');
   openModal('modalTransfer');
-}
+};
 
-function doTransfer(empId){
+window.doTransfer=function(empId){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  const oldEmp=st.employees.find(e=>e.id===r.assignedTo);
-  const newEmp=st.employees.find(e=>e.id===empId);
+  const old=st.employees.find(e=>e.id===r.assignedTo);
+  const nw=st.employees.find(e=>e.id===empId);
   r.assignedTo=empId||null;
   save();renderAll();closeModal('modalTransfer');
-  toast(`🔄 ${r.number}: ${oldEmp?oldEmp.name:'Sin asignar'} → ${newEmp?newEmp.name:'Sin asignar'}`);
-  const empLabel=document.getElementById('roomEmpLabel');
-  if(empLabel)empLabel.textContent=newEmp?'👤 '+newEmp.name:'';
-  if(curAssocId)refreshAssocModal();
-}
+  toast(`🔄 ${r.number}: ${old?old.name:'Sin asignar'} → ${nw?nw.name:'Sin asignar'}`);
+  document.getElementById('roomEmpLabel').textContent=nw?'👤 '+nw.name:'';
+  refreshAssocModal();
+};
 
-function refreshAssocModal(){
-  if(!curAssocId)return;
-  const rooms=sorted(curAssocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===curAssocId));
-  const bodyEl=document.getElementById('assocRoomsBody');
-  if(!bodyEl||!document.getElementById('modalAssocRooms').classList.contains('on'))return;
-  bodyEl.innerHTML=rooms.length
-    ?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px">`+
-      rooms.map(r=>{
-        const s=STATUS[r.status]||STATUS.vd;
-        const bdr=r.status==='vd'?'var(--vd-bd)':r.status==='vc'?'var(--vc-bd)':r.status==='vp'?'var(--vp-bd)':r.status==='odco'?'var(--odco-bd)':'var(--odrf-bd)';
-        const bg=r.status==='vd'?'var(--vd-bg)':r.status==='vc'?'var(--vc-bg)':r.status==='vp'?'var(--vp-bg)':r.status==='odco'?'var(--odco-bg)':'var(--odrf-bg)';
-        const reported=st.lsDone[r.id];
-        return`<div onclick="openRoomModal('${r.id}')" style="background:${bg};border-radius:10px;border:2px solid ${bdr};padding:10px 6px;cursor:pointer;text-align:center;position:relative;user-select:none;opacity:${reported?'.5':'1'}">
-          ${reported?'<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>':''}
-          ${r.missing&&r.missing.length?'<span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700">'+r.missing.length+'</span>':''}
-          <div style="font-size:1.05rem;font-weight:800">${r.number}</div>
-          <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
-          ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed">🕐 ${r.lateCheckout}</div>`:''}
-          <div style="font-size:.58rem;color:var(--muted);margin-top:2px">${r.dnd?'0':CREDITS[r.status]||1}cr</div>
-        </div>`;
-      }).join('')+'</div>'
-    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos</div>';
-}
-
-function delRoom(){
+window.delRoom=function(){
   const r=st.rooms.find(x=>x.id===curRoomId);
   if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;
   st.rooms=st.rooms.filter(x=>x.id!==curRoomId);
-  closeModal('modalRoom');save();renderAll();toast('🗑 Cuarto eliminado');
-}
+  closeModal('modalRoom');save();renderAll();toast('🗑 Eliminado');
+};
 
-function saveHotel(){const n=document.getElementById('hotelInput').value.trim();if(n){st.hotel=n;save();renderAll()}closeModal('modalHotel')}
-function saveEmp(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada')}
-function delEmp(id){if(!confirm('¿Eliminar asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll()}
-function delRoomSetup(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll()}
-function saveEmail(){const e=document.getElementById('emailInput')?.value.trim();if(!e){toast('⚠️ Ingresa un correo');return}st.reportEmail=e;save();toast('📧 Correo guardado')}
-function newDay(){if(!confirm('¿Reiniciar día? Se eliminarán cuartos y asociadas.'))return;st.rooms=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Día reiniciado')}
-
-function openAddRoom(){
-  document.getElementById('addNum').value='';document.getElementById('addNote').value='';
-  document.getElementById('addStatus').value='odco';
-  document.getElementById('addEmp').innerHTML='<option value="">Sin asignar</option>'+
-    st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+// ── SETUP ─────────────────────────────────────────────────
+window.saveHotel=function(){const n=document.getElementById('hotelInput').value.trim();if(n){st.hotel=n;save();renderAll();}closeModal('modalHotel');};
+window.saveEmp=function(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada');};
+window.delEmp=function(id){if(!confirm('¿Eliminar asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll();};
+window.delRoomSetup=function(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll();};
+window.saveEmail=function(){const e=document.getElementById('emailInput')?.value.trim();if(!e)return;st.reportEmail=e;save();toast('📧 Correo guardado');};
+window.newDay=function(){if(!confirm('¿Reiniciar día?'))return;st.rooms=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Día reiniciado');};
+window.openAddRoom=function(){
+  document.getElementById('addNum').value='';document.getElementById('addNote').value='';document.getElementById('addStatus').value='odco';
+  document.getElementById('addEmp').innerHTML='<option value="">Sin asignar</option>'+st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
   openModal('modalAddRoom');
-}
-function saveAddRoom(){
+};
+window.saveAddRoom=function(){
   const num=document.getElementById('addNum').value.trim();
   if(!num){toast('⚠️ Ingresa número');return}
   if(st.rooms.find(r=>r.number===num)){toast('⚠️ Ya existe '+num);return}
   st.rooms.push({id:gid(),number:num,status:document.getElementById('addStatus').value,
     assignedTo:document.getElementById('addEmp').value||null,
     note:document.getElementById('addNote').value.trim(),missing:[],hangers:4,lateCheckout:null,dnd:false});
-  closeModal('modalAddRoom');save();renderAll();toast('🏠 Cuarto '+num+' agregado');
-}
+  closeModal('modalAddRoom');save();renderAll();toast('🏠 '+num+' agregado');
+};
 
-function showTab(name,btn){
+window.sendReport=function(){
+  if(!st.reportEmail){const e=prompt('¿Correo para reportes?');if(!e)return;st.reportEmail=e.trim();save();}
+  const d=new Date();
+  let body=`REPORTE HOUSEKEEPING - ${st.hotel}\n${d.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${'='.repeat(40)}\n\n`;
+  const cnt=k=>st.rooms.filter(x=>x.status===k).length;
+  body+=`RESUMEN\nTotal: ${st.rooms.length} cuartos · ${totalCredits(st.rooms)} créditos\nVC: ${cnt('vc')} · VD: ${cnt('vd')} · OD COUT: ${cnt('odco')} · OD RFSH: ${cnt('odrf')} · VP: ${cnt('vp')}\n\n`;
+  st.employees.forEach(e=>{
+    const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
+    const credits=totalCredits(rooms);
+    const norm=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu');
+    const rf=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd);
+    const dnd=rooms.filter(x=>x.dnd);
+    body+=`${'─'.repeat(30)}\n${e.name}\n${rooms.length} cuartos · ${rooms.filter(x=>x.status==='vc').length} VC · ${credits}/${MAX_CREDITS} cr\n`;
+    body+=`Normales: ${norm.map(r=>r.number).join(', ')||'ninguno'}\nRefresh: ${rf.map(r=>r.number).join(', ')||'ninguno'}\n`;
+    if(dnd.length)body+=`DND: ${dnd.map(r=>r.number).join(', ')}\n`;
+    const issues=rooms.filter(x=>x.missing?.length||x.note);
+    if(issues.length){issues.forEach(r=>{body+=`• ${r.number}: `;if(r.missing?.length)body+=r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ');if(r.note)body+=' — '+r.note;body+='\n';});}
+    body+='\n';
+  });
+  window.location.href=`mailto:${st.reportEmail}?subject=${encodeURIComponent('Reporte HK '+st.hotel+' '+d.toLocaleDateString('es-MX'))}&body=${encodeURIComponent(body)}`;
+};
+
+// ── NAV / FILTER / MODAL ──────────────────────────────────
+window.showTab=function(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById('tab-'+name).classList.add('on');
   document.getElementById('filterBar').style.display=name==='rooms'?'flex':'none';
-  curTab=name;
-  const nb=btn||document.getElementById('nav-'+name);if(nb)nb.classList.add('on');
+  curTab=name;if(btn)btn.classList.add('on');
   renderAll();
-}
+};
 
-function setFilter(f,btn){
+window.setFilter=function(f,btn){
   if(f==='all'){
     curFilters=new Set(['all']);
-    document.querySelectorAll('.filt').forEach(b=>{b.classList.remove('on');resetFiltStyle(b)});
+    document.querySelectorAll('.filt').forEach(b=>{b.classList.remove('on');resetFiltStyle(b);});
     btn.classList.add('on');btn.style.background='var(--p)';btn.style.color='white';
   } else {
     curFilters.delete('all');
-    document.querySelector('.filt[data-f="all"]').classList.remove('on');
-    resetFiltStyle(document.querySelector('.filt[data-f="all"]'));
+    const allBtn=document.querySelector('.filt[data-f="all"]');
+    allBtn.classList.remove('on');resetFiltStyle(allBtn);
     if(curFilters.has(f)){curFilters.delete(f);btn.classList.remove('on');resetFiltStyle(btn);}
     else{curFilters.add(f);btn.classList.add('on');const s=STATUS[f];btn.style.background=s.color;btn.style.color='white';}
-    if(curFilters.size===0){
-      curFilters=new Set(['all']);
-      const allBtn=document.querySelector('.filt[data-f="all"]');
-      allBtn.classList.add('on');allBtn.style.background='var(--p)';allBtn.style.color='white';
-    }
+    if(!curFilters.size){curFilters=new Set(['all']);allBtn.classList.add('on');allBtn.style.background='var(--p)';allBtn.style.color='white';}
   }
   renderGrid();
-}
+};
 
 function resetFiltStyle(btn){
   const f=btn.dataset.f;
@@ -1289,14 +1175,20 @@ function resetFiltStyle(btn){
   else{const s=STATUS[f];if(s){btn.style.background=s.bg;btn.style.color=s.color;}}
 }
 
-function openModal(id){document.getElementById(id).classList.add('on')}
-function closeModal(id){document.getElementById(id).classList.remove('on')}
-document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on')}));
+window.openModal=function(id){document.getElementById(id).classList.add('on');};
+window.closeModal=function(id){document.getElementById(id).classList.remove('on');};
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
 
 let tt;
-function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),2800)}
+window.toast=function(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),2800);};
 
-init();
+// ── INIT ──────────────────────────────────────────────────
+const d=new Date();
+const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+document.getElementById('hdate').textContent=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+renderAll();
+
 </script>
 </body>
 </html>
