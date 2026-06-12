@@ -18,8 +18,38 @@
   --odrf:#7c3aed;--odrf-bg:#f5f3ff;--odrf-bd:#c4b5fd;
   --odco:#d97706;--odco-bg:#fffbeb;--odco-bd:#fcd34d;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:68px;max-width:480px;margin:0 auto}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
+
+/* ── RESPONSIVE LAYOUT ───────────────────────────────────── */
+#appWrap{max-width:480px;margin:0 auto;position:relative;padding-bottom:68px}
+@media(min-width:768px){
+  #appWrap{max-width:768px}
+  .grid{grid-template-columns:repeat(5,1fr)!important}
+  .overlay{align-items:center;justify-content:center}
+  .sheet{max-width:580px;margin:0 auto;border-radius:16px;max-height:88vh}
+  .sheet-handle{display:none}
+}
+@media(min-width:1100px){
+  body{display:grid;grid-template-rows:auto 1fr;height:100vh;overflow:hidden;padding-bottom:0}
+  .hdr{grid-column:1/-1}
+  #appWrap{max-width:100%;width:100%;margin:0;display:flex;height:100%;overflow:hidden}
+  .nav{position:relative;width:210px;height:100%;flex-direction:column;border-top:none;border-right:1px solid var(--bdr);padding:12px 10px;gap:2px;align-items:stretch;flex-shrink:0;overflow-y:auto}
+  .nav-btn{flex-direction:row;justify-content:flex-start;align-items:center;padding:11px 14px;border-radius:10px;font-size:.88rem;font-weight:600;gap:10px;height:auto;color:var(--muted)}
+  .nav-btn.on{background:var(--pl);color:var(--p)}
+  .nav-btn:hover:not(.on){background:#f8fafc}
+  .nav-btn .ni{font-size:1.15rem;flex-shrink:0}
+  #contentWrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .filters{position:sticky;top:0;z-index:90}
+  .page{overflow-y:auto;padding:16px 20px}
+  .page.on{display:block}
+  .grid{grid-template-columns:repeat(7,1fr)!important;gap:10px}
+  #assocContent{display:grid!important;grid-template-columns:repeat(2,1fr);gap:14px;align-items:start}
+  .stat-grid{grid-template-columns:repeat(4,1fr)!important}
+  .overlay{align-items:center;justify-content:center}
+  .sheet{max-width:580px;width:100%;border-radius:16px;margin:0;max-height:88vh}
+  .sheet-handle{display:none}
+}
 /* SYNC INDICATOR */
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#6ee7b7;display:inline-block;margin-left:6px;flex-shrink:0}
 .sync-dot.syncing{background:#fbbf24;animation:pulse .8s infinite}
@@ -40,7 +70,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pill strong{font-size:.82rem}
 
 /* FILTER BAR */
-.filters{display:flex;gap:5px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;background:white;border-bottom:1px solid var(--bdr);position:sticky;top:100px;z-index:90}
+.filters{display:flex;gap:5px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;background:white;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:90}
 .filters::-webkit-scrollbar{display:none}
 .filt{padding:5px 11px;border-radius:20px;border:1px solid var(--bdr);background:white;color:var(--muted);font-size:.72rem;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0}
 .filt.on{color:white;border-color:transparent}
@@ -185,7 +215,7 @@ textarea{min-height:60px;resize:none}
   <div class="ls-spinner"></div>
 </div>
 
-<!-- HEADER -->
+<!-- HEADER (outside appWrap for desktop grid) -->
 <div class="hdr">
   <div class="hdr-top">
     <div onclick="openModal('modalHotel')" style="cursor:pointer;flex:1;min-width:0">
@@ -200,30 +230,39 @@ textarea{min-height:60px;resize:none}
   <div class="pills" id="pills"></div>
 </div>
 
-<!-- FILTER BAR -->
-<div class="filters" id="filterBar">
-  <button class="filt on" data-f="all" onclick="setFilter('all',this)">Todos</button>
-  <button class="filt" data-f="vd"   onclick="setFilter('vd',this)"   style="background:var(--vd-bg);color:var(--vd)">VD</button>
-  <button class="filt" data-f="vc"   onclick="setFilter('vc',this)"   style="background:var(--vc-bg);color:var(--vc)">VC</button>
-  <button class="filt" data-f="odco" onclick="setFilter('odco',this)" style="background:var(--odco-bg);color:var(--odco)">OD COUT</button>
-  <button class="filt" data-f="odrf" onclick="setFilter('odrf',this)" style="background:var(--odrf-bg);color:var(--odrf)">OD RFSH</button>
-  <button class="filt" data-f="odfu" onclick="setFilter('odfu',this)" style="background:var(--odrf-bg);color:var(--odrf)">FULL</button>
-  <button class="filt" data-f="vp"   onclick="setFilter('vp',this)"   style="background:var(--vp-bg);color:var(--vp)">VP</button>
-</div>
+<!-- APP WRAP: sidebar nav + content on desktop -->
+<div id="appWrap">
 
-<!-- PAGES -->
-<div class="page on" id="tab-rooms"><div class="grid" id="roomsGrid"></div></div>
-<div class="page" id="tab-assoc"><div id="assocContent"></div></div>
-<div class="page" id="tab-progress"></div>
-<div class="page" id="tab-setup"></div>
+  <!-- NAV: bottom on mobile, sidebar on desktop -->
+  <nav class="nav">
+    <button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Cuartos</button>
+    <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Asociadas</button>
+    <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progreso</button>
+    <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Config</button>
+  </nav>
 
-<!-- NAV -->
-<nav class="nav">
-  <button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Cuartos</button>
-  <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Asociadas</button>
-  <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progreso</button>
-  <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Config</button>
-</nav>
+  <!-- CONTENT WRAP -->
+  <div id="contentWrap">
+
+    <!-- FILTER BAR -->
+    <div class="filters" id="filterBar">
+      <button class="filt on" data-f="all" onclick="setFilter('all',this)">Todos</button>
+      <button class="filt" data-f="vd"   onclick="setFilter('vd',this)"   style="background:var(--vd-bg);color:var(--vd)">VD</button>
+      <button class="filt" data-f="vc"   onclick="setFilter('vc',this)"   style="background:var(--vc-bg);color:var(--vc)">VC</button>
+      <button class="filt" data-f="odco" onclick="setFilter('odco',this)" style="background:var(--odco-bg);color:var(--odco)">OD COUT</button>
+      <button class="filt" data-f="odrf" onclick="setFilter('odrf',this)" style="background:var(--odrf-bg);color:var(--odrf)">OD RFSH</button>
+      <button class="filt" data-f="odfu" onclick="setFilter('odfu',this)" style="background:var(--odrf-bg);color:var(--odrf)">FULL</button>
+      <button class="filt" data-f="vp"   onclick="setFilter('vp',this)"   style="background:var(--vp-bg);color:var(--vp)">VP</button>
+    </div>
+
+    <!-- PAGES -->
+    <div class="page on" id="tab-rooms"><div class="grid" id="roomsGrid"></div></div>
+    <div class="page" id="tab-assoc"><div id="assocContent"></div></div>
+    <div class="page" id="tab-progress"></div>
+    <div class="page" id="tab-setup"></div>
+
+  </div><!-- /contentWrap -->
+</div><!-- /appWrap -->
 
 <div id="toast"></div>
 
