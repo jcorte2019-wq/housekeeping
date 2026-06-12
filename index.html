@@ -524,40 +524,60 @@ onSnapshot(DOC, (snap)=>{
 setTimeout(()=>{ const ls=document.getElementById('loadScreen'); if(ls)ls.style.display='none'; },3000);
 
 // ── PDF PARSER ────────────────────────────────────────────
-const PDF_HEADER_RE = /For Schedule HK and Board \S+ and Attendant (.+?) \((\w+)\)\s+Page/i;
-const PDF_ROOM_RE   = /^(\d{3})\s+\S+\s+\d+\s+(VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP)\b/;
-const PDF_HKPKG_RE  = /HK Package Information:\s+(\w+)/i;
+// PDF parser — handles both line-by-line and single-line text (PDF.js output)
+const PDF_HEADER_RE  = /For Schedule HK and Board \S+ and Attendant (.+?) \((\w+)\)\s+Page/ig;
+const PDF_ROOM_PKG_RE = /(\d{3})\s+\S+\s+\d+\s+(?:VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP).*?HK Package Information:\s+(\w+)/ig;
 
 function pdfResolveCode(hkStatus, pkgCode){
-  if(hkStatus==='VD') return 'vd';
-  if(hkStatus==='OD') return pkgCode==='RFSH'?'odrf':'odco';
-  if(hkStatus==='VC') return 'vc';
-  if(hkStatus==='VP') return 'vp';
+  const hk=hkStatus.toUpperCase(), pk=pkgCode.toUpperCase();
+  if(hk==='VD') return 'vd';
+  if(hk==='OD') return pk==='RFSH'?'odrf':'odco';
+  if(hk==='VC') return 'vc';
+  if(hk==='VP') return 'vp';
   return 'odco';
 }
 
 function parsePdfText(rawText){
-  const lines=rawText.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
-  const segments=[];
-  let currentLines=[];
-  for(const line of lines){
-    const hm=PDF_HEADER_RE.exec(line);
-    if(hm){ segments.push({name:hm[1].trim(),code:hm[2].trim(),lines:currentLines}); currentLines=[]; }
-    else currentLines.push(line);
+  // Normalize: collapse newlines into spaces so regex works on single-line output
+  const text = rawText.replace(/\n/g,' ').replace(/\s+/g,' ');
+
+  // Find all header positions
+  const headerRe = /For Schedule HK and Board \S+ and Attendant (.+?) \((\w+)\)\s+Page/ig;
+  const headers = [];
+  let hm;
+  while((hm = headerRe.exec(text)) !== null){
+    headers.push({ name: hm[1].trim(), code: hm[2].trim(), pos: hm.index, end: hm.index + hm[0].length });
   }
-  const orderMap=new Map(), merged=[];
-  for(const seg of segments){
-    const key=seg.name+'|||'+seg.code;
-    if(!orderMap.has(key)){ orderMap.set(key,merged.length); merged.push({name:seg.name,code:seg.code,rooms:[]}); }
-    const att=merged[orderMap.get(key)];
-    let pending=null;
-    for(const line of seg.lines){
-      const rm=PDF_ROOM_RE.exec(line);
-      if(rm){ pending={number:rm[1],hkStatus:rm[3]}; continue; }
-      if(pending){ const hk=PDF_HKPKG_RE.exec(line); if(hk){ att.rooms.push({number:pending.number,status:pdfResolveCode(pending.hkStatus,hk[1].toUpperCase())}); pending=null; } }
+  if(!headers.length) return [];
+
+  // Each attendant's rooms are in the text BEFORE their header
+  const result = new Map();
+  const order  = [];
+
+  headers.forEach((hdr, idx) => {
+    const key  = hdr.name + '|||' + hdr.code;
+    const segStart = idx === 0 ? 0 : headers[idx-1].end;
+    const segEnd   = hdr.pos;
+    const segText  = text.slice(segStart, segEnd);
+
+    if(!result.has(key)){
+      result.set(key, { name: hdr.name, code: hdr.code, rooms: [] });
+      order.push(key);
     }
-  }
-  return merged.filter(a=>a.rooms.length>0);
+    const att = result.get(key);
+    const existing = new Set(att.rooms.map(r=>r.number));
+
+    const roomRe = /(\d{3})\s+\S+\s+\d+\s+(?:VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP).*?HK Package Information:\s+(\w+)/ig;
+    let rm;
+    while((rm = roomRe.exec(segText)) !== null){
+      if(!existing.has(rm[1])){
+        att.rooms.push({ number: rm[1], status: pdfResolveCode(rm[2], rm[3]) });
+        existing.add(rm[1]);
+      }
+    }
+  });
+
+  return order.map(k => result.get(k)).filter(a => a.rooms.length > 0);
 }
 
 async function extractPdfText(file){
