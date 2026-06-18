@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+      <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -664,11 +664,7 @@ setTimeout(()=>{ const ls=document.getElementById('loadScreen'); if(ls)ls.style.
 
 // ── PDF PARSER ────────────────────────────────────────────
 // PDF parser — position-based, handles PDF.js single-line output per page
-// FIX 1: name regex uses [^(]+? to stop before the (CODE), avoiding "Juan Cortes For Schedule..."
-// FIX 2: pages joined with separator so multi-page attendants are merged correctly
-const PDF_HEADER_RE = /For Schedule HK and Board \S+ and Attendant ([^(]+?)\s*\((\w+)\)\s+Page\s+(\d+)\s+of\s+(\d+)/ig;
-const PDF_ROOM_RE   = /(\d{3})\s+\S+\s+\d+\s+(?:VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP).*?HK Package Information:\s+(\w+)/ig;
-
+// IMPORTANT: regex objects are created INSIDE functions to avoid JS /g flag lastIndex bug
 function pdfResolveCode(hk, pkg){
   hk=hk.toUpperCase(); pkg=pkg.toUpperCase();
   if(hk==='VD') return 'vd';
@@ -679,11 +675,11 @@ function pdfResolveCode(hk, pkg){
 }
 
 function parsePdfText(rawText){
-  // Normalize whitespace — PDF.js may output each page as one long line
-  const text = rawText.replace(/\r/g,'').replace(/\n/g,' ').replace(/\s+/g,' ');
+  // Normalize: collapse all whitespace to single spaces
+  const text = rawText.replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
 
-  // Find all header occurrences with positions
-  const headerRe = /For Schedule HK and Board \S+ and Attendant ([^(]+?)\s*\((\w+)\)\s+Page\s+(\d+)\s+of\s+(\d+)/ig;
+  // Create fresh regex each call — avoids JS /g lastIndex bug
+  const headerRe = /For Schedule HK and Board \S+ and Attendant ([^(]+?)\s*\((\w+)\)\s+Page\s+(\d+)\s+of\s+(\d+)/gi;
   const headers = [];
   let hm;
   while((hm = headerRe.exec(text)) !== null){
@@ -691,7 +687,6 @@ function parsePdfText(rawText){
   }
   if(!headers.length) return [];
 
-  // Rooms for each attendant appear BEFORE their header in the text
   const result = new Map();
   const order  = [];
 
@@ -708,7 +703,8 @@ function parsePdfText(rawText){
     const att      = result.get(key);
     const existing = new Set(att.rooms.map(r => r.number));
 
-    const roomRe = /(\d{3})\s+\S+\s+\d+\s+(?:VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP).*?HK Package Information:\s+(\w+)/ig;
+    // Fresh regex per segment — critical for correct /g behavior
+    const roomRe = /(\d{3})\s+\S+\s+\d+\s+(?:VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP)[^H]*HK Package Information:\s+(\w+)/gi;
     let rm;
     while((rm = roomRe.exec(segText)) !== null){
       if(!existing.has(rm[1])){
@@ -779,17 +775,8 @@ async function handlePdfFiles(files){
   document.getElementById('pdfFooter').style.display='none';
   pdfParsedAttendants=[];
   try{
-    let debugText='';
-    for(const file of pdfs){ const text=await extractPdfText(file); debugText=text; pdfParsedAttendants.push(...parsePdfText(text)); }
-    if(!pdfParsedAttendants.length){
-      // Show first 300 chars of extracted text for debugging
-      const preview=debugText.substring(0,300).replace(/</g,'&lt;');
-      document.getElementById('pdfStatusText').innerHTML='No se encontraron datos.<br><small style="font-family:monospace;font-size:.7rem;word-break:break-all;opacity:.8">TEXTO: '+preview+'...</small>';
-      document.getElementById('pdfSpinner').style.display='none';
-      document.getElementById('pdfStatus').className='pdf-status visible error';
-      document.getElementById('pdfDrop').style.display='block';
-      return;
-    }
+    for(const file of pdfs){ const text=await extractPdfText(file); pdfParsedAttendants.push(...parsePdfText(text)); }
+    if(!pdfParsedAttendants.length){ showPdfStatus('error','No se encontraron datos. ¿Es un PDF de Lightspeed?'); document.getElementById('pdfDrop').style.display='block'; return; }
     const totalRooms=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.length,0);
     const totalCr=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.reduce((ss,r)=>ss+(r.status==='odrf'?0.5:1),0),0);
     showPdfStatus('success',`✓ ${pdfParsedAttendants.length} asociada(s) · ${totalRooms} cuartos · ${totalCr} créditos`);
