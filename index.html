@@ -779,8 +779,17 @@ async function handlePdfFiles(files){
   document.getElementById('pdfFooter').style.display='none';
   pdfParsedAttendants=[];
   try{
-    for(const file of pdfs){ const text=await extractPdfText(file); pdfParsedAttendants.push(...parsePdfText(text)); }
-    if(!pdfParsedAttendants.length){ showPdfStatus('error','No se encontraron datos. ¿Es un PDF de Lightspeed?'); document.getElementById('pdfDrop').style.display='block'; return; }
+    let debugText='';
+    for(const file of pdfs){ const text=await extractPdfText(file); debugText=text; pdfParsedAttendants.push(...parsePdfText(text)); }
+    if(!pdfParsedAttendants.length){
+      // Show first 300 chars of extracted text for debugging
+      const preview=debugText.substring(0,300).replace(/</g,'&lt;');
+      document.getElementById('pdfStatusText').innerHTML='No se encontraron datos.<br><small style="font-family:monospace;font-size:.7rem;word-break:break-all;opacity:.8">TEXTO: '+preview+'...</small>';
+      document.getElementById('pdfSpinner').style.display='none';
+      document.getElementById('pdfStatus').className='pdf-status visible error';
+      document.getElementById('pdfDrop').style.display='block';
+      return;
+    }
     const totalRooms=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.length,0);
     const totalCr=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.reduce((ss,r)=>ss+(r.status==='odrf'?0.5:1),0),0);
     showPdfStatus('success',`✓ ${pdfParsedAttendants.length} asociada(s) · ${totalRooms} cuartos · ${totalCr} créditos`);
