@@ -687,6 +687,12 @@ function parsePdfText(rawText){
     headers.push({ name: hm[1].trim(), code: hm[2].trim(), start: hm.index, end: hm.index + hm[0].length });
   }
   console.log('[PDF] Headers found:', headers.length, headers.map(h=>h.name));
+  // Debug: find what's near "Attendant" in the text
+  const attIdx = text.indexOf('Attendant');
+  if(attIdx >= 0) console.log('[PDF] Near Attendant:', JSON.stringify(text.substring(attIdx-20, attIdx+120)));
+  const schedIdx = text.indexOf('For Schedule');
+  if(schedIdx >= 0) console.log('[PDF] Near Schedule:', JSON.stringify(text.substring(schedIdx, schedIdx+150)));
+  else console.log('[PDF] No "For Schedule" found in text');
   if(!headers.length) return [];
 
   const result = new Map();
