@@ -1019,19 +1019,8 @@ window.selStatus=function(k){
   });
   renderGrid();refreshAssocModal();
   toast(`${STATUS[k]?.icon} Cuarto ${r.number} → ${STATUS[k]?.label}`);
-  // Switch modal mode if going to/from VC
-  if(k==='vc'){
-    document.getElementById('vcMode').style.display='block';
-    document.getElementById('normalMode').style.display='none';
-    document.querySelector('.sheet-foot').style.display='none';
-    // Rebuild VC status options
-    const allowed2vc=VALID_TRANSITIONS['vc']||[];
-    document.getElementById('stOptsVC').innerHTML=Object.entries(STATUS).map(([sk,v])=>{
-      const isCur=sk==='vc',isOk=isCur||allowed2vc.includes(sk);
-      return`<div class="st-opt ${isCur?'sel':''}" data-k="${sk}" style="background:${v.bg};border-color:${isCur?'#1a5f7a':v.border};opacity:${isOk?1:.28};${!isOk?'pointer-events:none':''}" ${isOk?`onclick="selStatus('${sk}')"`:''}><div class="st-opt-icon">${v.icon}</div><div class="st-opt-label" style="color:${v.color}">${v.label}</div><div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'No disponible'}</div></div>`;
-    }).join('');
-  } else if(k==='vd'||k==='vp'){
-    // Auto-cerrar VD y VP
+  // Auto-cerrar siempre al llegar a VC, VD o VP
+  if(k==='vc'||k==='vd'||k==='vp'){
     setTimeout(()=>closeModal('modalRoom'),200);
   }
 };
