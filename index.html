@@ -6,33 +6,33 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Housekeeping">
-<meta name="theme-color" content="#0f1520">
+<meta name="theme-color" content="#080f1a">
 <title>Housekeeping</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 
 :root{
-  /* Dark palette */
-  --bg:#0f1520;
-  --bg2:#161d2e;
-  --bg3:#1e2840;
-  --surface:#1a2235;
-  --surface2:#202b42;
-  --bdr:#2a3550;
-  --bdr2:#344060;
-  --text:#e8edf8;
-  --text2:#a8b4cc;
-  --muted:#5a6a8a;
-  --accent:#6c8ef5;
-  --accent2:#4f6de0;
-  --accent-glow:rgba(108,142,245,.15);
+  /* Ocean theme */
+  --bg:#080f1a;
+  --bg2:#0d1824;
+  --bg3:#112030;
+  --surface:#0f1e2e;
+  --surface2:#162638;
+  --bdr:#1e3448;
+  --bdr2:#274460;
+  --text:#d6eaf8;
+  --text2:#7fb3d3;
+  --muted:#3d6880;
+  --accent:#00c8e0;
+  --accent2:#0099b8;
+  --accent-glow:rgba(0,200,224,.12);
 
-  /* Status colors - vivid on dark */
-  --vc:#10d98a;    --vc-bg:rgba(16,217,138,.12);  --vc-bd:rgba(16,217,138,.35);
-  --vd:#4d9fff;    --vd-bg:rgba(77,159,255,.12);   --vd-bd:rgba(77,159,255,.35);
-  --vp:#ff5c5c;    --vp-bg:rgba(255,92,92,.12);    --vp-bd:rgba(255,92,92,.35);
-  --odrf:#b47cff;  --odrf-bg:rgba(180,124,255,.12);--odrf-bd:rgba(180,124,255,.35);
-  --odco:#ffb547;  --odco-bg:rgba(255,181,71,.12); --odco-bd:rgba(255,181,71,.35);
+  /* Status colors - ocean vivid */
+  --vc:#00e5a0;    --vc-bg:rgba(0,229,160,.1);    --vc-bd:rgba(0,229,160,.3);
+  --vd:#38bdf8;    --vd-bg:rgba(56,189,248,.1);   --vd-bd:rgba(56,189,248,.3);
+  --vp:#ff6b8a;    --vp-bg:rgba(255,107,138,.1);  --vp-bd:rgba(255,107,138,.3);
+  --odrf:#a78bfa;  --odrf-bg:rgba(167,139,250,.1);--odrf-bd:rgba(167,139,250,.3);
+  --odco:#fbbf24;  --odco-bg:rgba(251,191,36,.1); --odco-bd:rgba(251,191,36,.3);
 
   --radius:12px;
   --radius-sm:8px;
@@ -183,7 +183,7 @@ body{
 .assoc-hdr{display:flex;align-items:center;gap:12px;padding:14px}
 .assoc-av{
   width:42px;height:42px;border-radius:50%;
-  background:linear-gradient(135deg,var(--accent2),#7c3aed);
+  background:linear-gradient(135deg,var(--accent2),#0099b8);
   color:white;font-weight:800;font-size:1rem;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
   box-shadow:0 0 0 3px var(--accent-glow);
@@ -363,7 +363,7 @@ textarea{min-height:60px;resize:none}
     padding:20px 10px!important;gap:4px!important;align-items:stretch!important;
     flex-shrink:0;overflow-y:auto;backdrop-filter:none;max-width:none;
   }
-  .nav::before{content:"MENÚ";display:block;font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.1em;padding:0 14px 10px;border-bottom:1px solid var(--bdr);margin-bottom:8px}
+  .nav::before{content:"MENU";display:block;font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.1em;padding:0 14px 10px;border-bottom:1px solid var(--bdr);margin-bottom:8px}
   .nav-btn{flex-direction:row!important;justify-content:flex-start!important;align-items:center!important;width:100%;padding:12px 14px!important;border-radius:10px;font-size:.84rem!important;font-weight:600;gap:10px!important;height:auto!important;text-transform:none;letter-spacing:0;color:var(--muted)}
   .nav-btn.on{background:var(--accent-glow);color:var(--accent)}
   .nav-btn:hover:not(.on){background:var(--bg3)}
@@ -396,12 +396,12 @@ textarea{min-height:60px;resize:none}
 <div class="hdr">
   <div class="hdr-top">
     <div onclick="openModal('modalHotel')" style="cursor:pointer;flex:1;min-width:0">
-      <div class="hotel" id="hotelName">🏨 Mi Hotel <span class="sync-dot" id="syncDot"></span></div>
+      <div class="hotel" id="hotelName">🏨 My Hotel <span class="sync-dot" id="syncDot"></span></div>
       <div class="hdate" id="hdate"></div>
     </div>
     <div class="hbtns">
       <button class="hbtn-pdf" onclick="openModal('modalPDF')">📄 PDF</button>
-      <button class="hbtn" onclick="openModal('modalPaste')">📋 Importar</button>
+      <button class="hbtn" onclick="openModal('modalPaste')">📋 Import</button>
     </div>
   </div>
   <div class="hdr-progress"><div class="hdr-progress-fill" id="hdrProgress" style="width:0%"></div></div>
@@ -413,10 +413,10 @@ textarea{min-height:60px;resize:none}
 
   <!-- NAV -->
   <nav class="nav">
-    <button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Cuartos</button>
-    <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Asociadas</button>
-    <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progreso</button>
-    <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Config</button>
+    <button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Rooms</button>
+    <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Staff</button>
+    <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progress</button>
+    <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Settings</button>
   </nav>
 
   <!-- CONTENT -->
@@ -424,7 +424,7 @@ textarea{min-height:60px;resize:none}
 
     <!-- FILTER BAR -->
     <div class="filters" id="filterBar">
-      <button class="filt on" data-f="all" onclick="setFilter('all',this)">Todos</button>
+      <button class="filt on" data-f="all" onclick="setFilter('all',this)">All</button>
       <button class="filt" data-f="vd"   onclick="setFilter('vd',this)"   style="color:var(--vd)">VD</button>
       <button class="filt" data-f="vc"   onclick="setFilter('vc',this)"   style="color:var(--vc)">VC</button>
       <button class="filt" data-f="odco" onclick="setFilter('odco',this)" style="color:var(--odco)">OD COUT</button>
@@ -450,13 +450,13 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalPDF">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">📄 Importar desde PDF</span><button class="sheet-close" onclick="closePdfModal()">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">📄 Import from PDF</span><button class="sheet-close" onclick="closePdfModal()">✕</button></div>
     <div class="sheet-body" style="padding:12px 14px">
       <div class="pdf-drop" id="pdfDrop">
         <input type="file" id="pdfFileInput" accept=".pdf" multiple>
         <div style="font-size:2rem;margin-bottom:8px">📄</div>
-        <h3 style="font-size:.9rem;font-weight:700;color:var(--accent);margin-bottom:4px">Subir hoja de Lightspeed</h3>
-        <p style="font-size:.74rem;color:var(--muted)">Arrastra el PDF aquí o toca para seleccionar</p>
+        <h3 style="font-size:.9rem;font-weight:700;color:var(--accent);margin-bottom:4px">Upload Lightspeed Sheet</h3>
+        <p style="font-size:.74rem;color:var(--muted)">Drag PDF here or tap to select</p>
       </div>
       <div class="pdf-status" id="pdfStatus"><div class="pdf-spinner" id="pdfSpinner"></div><span id="pdfStatusText"></span></div>
       <div id="pdfResults" style="display:none">
@@ -465,8 +465,8 @@ textarea{min-height:60px;resize:none}
       </div>
     </div>
     <div class="sheet-foot" id="pdfFooter" style="display:none">
-      <button class="btn btn-o" onclick="closePdfModal()">Cancelar</button>
-      <button class="btn btn-p" onclick="confirmPdfImport()">✅ Importar todo</button>
+      <button class="btn btn-o" onclick="closePdfModal()">Cancel</button>
+      <button class="btn btn-p" onclick="confirmPdfImport()">✅ Import All</button>
     </div>
   </div>
 </div>
@@ -475,14 +475,14 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalPaste">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">📋 Importar hoja</span><button class="sheet-close" onclick="closeModal('modalPaste')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">📋 Import Sheet</span><button class="sheet-close" onclick="closeModal('modalPaste')">✕</button></div>
     <div class="sheet-body">
       <div style="background:var(--accent-glow);border:1px solid rgba(108,142,245,.3);border-radius:var(--radius-sm);padding:12px;margin-bottom:14px;font-size:.8rem;color:var(--accent);line-height:1.6">
-        <strong>Cómo importar:</strong><br>1. Manda la foto en el chat de Claude<br>2. Claude te da un código corto<br>3. Pégalo aquí y toca Importar
+        <strong>How to import:</strong><br>1. Send the photo in the Claude chat<br>2. Claude gives you a short code<br>3. Paste it here and tap Import
       </div>
       <div class="fg"><label>Código</label><textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco,212-odrf" style="min-height:80px;font-family:monospace;font-size:.83rem"></textarea></div>
     </div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalPaste')">Cancelar</button><button class="btn btn-p" onclick="doImport()">✅ Importar</button></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalPaste')">Cancel</button><button class="btn btn-p" onclick="doImport()">✅ Import</button></div>
   </div>
 </div>
 
@@ -494,7 +494,7 @@ textarea{min-height:60px;resize:none}
       <span class="sheet-title" id="roomModalTitle">Cuarto</span>
       <div style="display:flex;gap:6px;align-items:center">
         <span id="roomEmpLabel" style="font-size:.68rem;color:var(--muted)"></span>
-        <button onclick="openTransfer()" style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--radius-sm);padding:5px 8px;font-size:.7rem;cursor:pointer;color:var(--text2)">🔄 Trans.</button>
+        <button onclick="openTransfer()" style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--radius-sm);padding:5px 8px;font-size:.7rem;cursor:pointer;color:var(--text2)">🔄 Transfer</button>
         <button class="sheet-close" onclick="closeModal('modalRoom')">✕</button>
       </div>
     </div>
@@ -515,17 +515,17 @@ textarea{min-height:60px;resize:none}
           </label>
         </div>
       </div>
-      <div style="font-size:.66rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Faltantes</div>
+      <div style="font-size:.66rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Missing</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:10px">
-        <div class="mo" id="mo-towels_pillows" onclick="togMissing('towels_pillows')" style="padding:6px 7px;font-size:.68rem">🛁 Toallas/Alm.</div>
-        <div class="mo" id="mo-soap_tp_coffee" onclick="togMissing('soap_tp_coffee')" style="padding:6px 7px;font-size:.68rem">🧴 Jabón/Papel</div>
-        <div class="mo" id="mo-remote" onclick="togMissing('remote')" style="padding:6px 7px;font-size:.68rem">📺 Control TV</div>
-        <div class="mo" id="mo-hairdryer" onclick="togMissing('hairdryer')" style="padding:6px 7px;font-size:.68rem">💨 Secadora</div>
-        <div class="mo" id="mo-dirty" onclick="togMissing('dirty')" style="padding:6px 7px;font-size:.68rem">🔴 Sucio</div>
-        <div class="mo" id="mo-damaged" onclick="togMissing('damaged')" style="padding:6px 7px;font-size:.68rem">🔧 Daño</div>
+        <div class="mo" id="mo-towels_pillows" onclick="togMissing('towels_pillows')" style="padding:6px 7px;font-size:.68rem">🛁 Towels/Pillows</div>
+        <div class="mo" id="mo-soap_tp_coffee" onclick="togMissing('soap_tp_coffee')" style="padding:6px 7px;font-size:.68rem">🧴 Soap/Paper/Coffee</div>
+        <div class="mo" id="mo-remote" onclick="togMissing('remote')" style="padding:6px 7px;font-size:.68rem">📺 TV Remote</div>
+        <div class="mo" id="mo-hairdryer" onclick="togMissing('hairdryer')" style="padding:6px 7px;font-size:.68rem">💨 Hair Dryer</div>
+        <div class="mo" id="mo-dirty" onclick="togMissing('dirty')" style="padding:6px 7px;font-size:.68rem">🔴 Dirty</div>
+        <div class="mo" id="mo-damaged" onclick="togMissing('damaged')" style="padding:6px 7px;font-size:.68rem">🔧 Damage</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;background:var(--bg3);border-radius:var(--radius-sm);padding:8px 10px;border:1px solid var(--bdr)">
-        <span style="font-size:.76rem;font-weight:600">🪝 Ganchos:</span>
+        <span style="font-size:.76rem;font-weight:600">🪝 Hangers:</span>
         <button onclick="adjHangers(-1)" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--bdr);background:var(--bg2);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
         <span id="hangerCount" style="font-size:1rem;font-weight:800;min-width:18px;text-align:center">4</span>
         <button onclick="adjHangers(1)" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--bdr);background:var(--bg2);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
@@ -533,7 +533,7 @@ textarea{min-height:60px;resize:none}
         <span id="hangerNote" style="font-size:.7rem;color:var(--vp);font-weight:600;margin-left:4px"></span>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="roomNote" placeholder="Nota..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:8px 10px">
+        <input type="text" id="roomNote" placeholder="Note..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:8px 10px">
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap">
           <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:17px;height:17px;accent-color:var(--vc);cursor:pointer">
           <span style="font-size:.76rem;font-weight:700;color:var(--vc)">LS</span>
@@ -542,7 +542,7 @@ textarea{min-height:60px;resize:none}
     </div>
     <div class="sheet-foot" style="padding:8px 14px 14px">
       <button class="btn btn-r" style="flex:0;padding:8px 12px;font-size:.82rem" onclick="delRoom()">🗑</button>
-      <button class="btn btn-o btn-block" onclick="closeModal('modalRoom')">Cerrar</button>
+      <button class="btn btn-o btn-block" onclick="closeModal('modalRoom')">Close</button>
     </div>
   </div>
 </div>
@@ -551,11 +551,11 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalQuickAdd" style="z-index:600">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title" id="quickAddTitle">Agregar cuarto</span><button class="sheet-close" onclick="closeModal('modalQuickAdd')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title" id="quickAddTitle">Add Room</span><button class="sheet-close" onclick="closeModal('modalQuickAdd')">✕</button></div>
     <div class="sheet-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        <div class="fg"><label>Cuarto #</label><input type="text" id="qaNum" placeholder="201" onkeydown="if(event.key==='Enter')doQuickAdd()"></div>
-        <div class="fg"><label>Estado</label>
+        <div class="fg"><label>Room #</label><input type="text" id="qaNum" placeholder="201" onkeydown="if(event.key==='Enter')doQuickAdd()"></div>
+        <div class="fg"><label>Status</label>
           <select id="qaStatus">
             <option value="odco">OD COUT</option><option value="odrf">OD RFSH</option>
             <option value="odfu">FULL</option><option value="vd">VD</option>
@@ -564,7 +564,7 @@ textarea{min-height:60px;resize:none}
         </div>
       </div>
     </div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalQuickAdd')">Cancelar</button><button class="btn btn-p" onclick="doQuickAdd()">Agregar</button></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalQuickAdd')">Cancel</button><button class="btn btn-p" onclick="doQuickAdd()">Add</button></div>
   </div>
 </div>
 
@@ -572,8 +572,8 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalTransfer">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title" id="transferTitle">Transferir cuarto</span><button class="sheet-close" onclick="closeModal('modalTransfer')">✕</button></div>
-    <div class="sheet-body"><div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Selecciona a quién asignar este cuarto:</div><div id="transferList"></div></div>
+    <div class="sheet-hdr"><span class="sheet-title" id="transferTitle">Transfer Room</span><button class="sheet-close" onclick="closeModal('modalTransfer')">✕</button></div>
+    <div class="sheet-body"><div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Select who to assign this room to:</div><div id="transferList"></div></div>
   </div>
 </div>
 
@@ -581,9 +581,9 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalHotel">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">Nombre del hotel</span><button class="sheet-close" onclick="closeModal('modalHotel')">✕</button></div>
-    <div class="sheet-body"><div class="fg"><label>Nombre</label><input type="text" id="hotelInput" onkeydown="if(event.key==='Enter')saveHotel()"></div></div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalHotel')">Cancelar</button><button class="btn btn-p" onclick="saveHotel()">Guardar</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">Hotel Name</span><button class="sheet-close" onclick="closeModal('modalHotel')">✕</button></div>
+    <div class="sheet-body"><div class="fg"><label>Name</label><input type="text" id="hotelInput" onkeydown="if(event.key==='Enter')saveHotel()"></div></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalHotel')">Cancel</button><button class="btn btn-p" onclick="saveHotel()">Save</button></div>
   </div>
 </div>
 
@@ -591,9 +591,9 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalAddEmp">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">Agregar asociada</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
-    <div class="sheet-body"><div class="fg"><label>Nombre</label><input type="text" id="empInput" placeholder="Nombre completo" onkeydown="if(event.key==='Enter')saveEmp()"></div></div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddEmp')">Cancelar</button><button class="btn btn-p" onclick="saveEmp()">Agregar</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">Add Attendant</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
+    <div class="sheet-body"><div class="fg"><label>Name</label><input type="text" id="empInput" placeholder="Name completo" onkeydown="if(event.key==='Enter')saveEmp()"></div></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddEmp')">Cancel</button><button class="btn btn-p" onclick="saveEmp()">Add</button></div>
   </div>
 </div>
 
@@ -601,16 +601,16 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalAddRoom">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">Agregar cuarto</span><button class="sheet-close" onclick="closeModal('modalAddRoom')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">Add Room</span><button class="sheet-close" onclick="closeModal('modalAddRoom')">✕</button></div>
     <div class="sheet-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="fg"><label>Cuarto #</label><input type="text" id="addNum" placeholder="201"></div>
-        <div class="fg"><label>Estado</label><select id="addStatus"><option value="odco">OD COUT</option><option value="odrf">OD RFSH</option><option value="vd">VD</option><option value="vc">VC</option><option value="vp">VP</option></select></div>
+        <div class="fg"><label>Room #</label><input type="text" id="addNum" placeholder="201"></div>
+        <div class="fg"><label>Status</label><select id="addStatus"><option value="odco">OD COUT</option><option value="odrf">OD RFSH</option><option value="vd">VD</option><option value="vc">VC</option><option value="vp">VP</option></select></div>
       </div>
-      <div class="fg"><label>Asignar a</label><select id="addEmp"><option value="">Sin asignar</option></select></div>
-      <div class="fg"><label>Nota</label><input type="text" id="addNote" placeholder="Opcional"></div>
+      <div class="fg"><label>Assign to</label><select id="addEmp"><option value="">Unassigned</option></select></div>
+      <div class="fg"><label>Nota</label><input type="text" id="addNote" placeholder="Optional"></div>
     </div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddRoom')">Cancelar</button><button class="btn btn-p" onclick="saveAddRoom()">Agregar</button></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddRoom')">Cancel</button><button class="btn btn-p" onclick="saveAddRoom()">Add</button></div>
   </div>
 </div>
 
@@ -619,9 +619,9 @@ textarea{min-height:60px;resize:none}
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-hdr">
-      <span class="sheet-title" id="assocRoomsTitle">Cuartos</span>
+      <span class="sheet-title" id="assocRoomsTitle">Rooms</span>
       <div style="display:flex;gap:6px;align-items:center">
-        <button onclick="openAddRoomToAssoc()" style="background:var(--accent2);color:white;border:none;border-radius:var(--radius-sm);padding:5px 10px;font-size:.74rem;font-weight:600;cursor:pointer">+ Cuarto</button>
+        <button onclick="openAddRoomToAssoc()" style="background:var(--accent2);color:white;border:none;border-radius:var(--radius-sm);padding:5px 10px;font-size:.74rem;font-weight:600;cursor:pointer">+ Room</button>
         <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
       </div>
     </div>
@@ -669,7 +669,7 @@ window.save = function(){
       ignoreNextSnapshot=true;
       await setDoc(DOC,{hotel:st.hotel,employees:st.employees,rooms:st.rooms,lsDone:st.lsDone,reportEmail:st.reportEmail,updatedAt:Date.now()});
       setSyncDot('ok');
-    }catch(e){ console.error(e); setSyncDot('error'); toast('⚠️ Error al guardar'); }
+    }catch(e){ console.error(e); setSyncDot('error'); toast('⚠️ Error saving data'); }
   },600);
 };
 
@@ -687,12 +687,12 @@ setTimeout(()=>{const ls=document.getElementById('loadScreen');if(ls)ls.style.di
 
 // ── STATUS DEFS ──────────────────────────────────────────
 window.STATUS={
-  vd:  {label:'VD',     desc:'Vacante sucio',         color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
-  vc:  {label:'VC',     desc:'Vacante limpio',         color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
-  odco:{label:'OD COUT',desc:'Ocupado — salida hoy',   color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
-  odrf:{label:'OD RFSH',desc:'Ocupado — pide refresh', color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
-  odfu:{label:'FULL',   desc:'Full refresh con cambio',color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄✨'},
-  vp:  {label:'VP',     desc:'Vacante con problema',   color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
+  vd:  {label:'VD',     desc:'Vacant Dirty',         color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
+  vc:  {label:'VC',     desc:'Vacant Clean',         color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
+  odco:{label:'OD COUT',desc:'Occupied — checkout today',   color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
+  odrf:{label:'OD RFSH',desc:'Occupied — refresh requested', color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
+  odfu:{label:'FULL',   desc:'Full refresh with linen change',color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄✨'},
+  vp:  {label:'VP',     desc:'Vacant — issue reported',   color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
 };
 const VALID_TRANSITIONS={odco:['vd','vp','odrf','odfu'],odrf:['vd','vp','vc'],odfu:['vd','vp','vc'],vd:['vc','vp'],vp:['vc','vd'],vc:['vd','vp','odco','odrf','odfu']};
 window.CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:0.5};
@@ -700,18 +700,23 @@ const MAX_CREDITS=16;
 function roomCredits(r){if(r.dnd)return 0;return CREDITS[r.status]||1}
 function totalCredits(rooms){return rooms.reduce((s,r)=>s+roomCredits(r),0)}
 const MISSING=[
-  {id:'towels_pillows',label:'Toallas/Almohadas'},{id:'soap_tp_coffee',label:'Jabón/Papel/Café'},
-  {id:'remote',label:'Control TV'},{id:'hairdryer',label:'Secadora'},
-  {id:'dirty',label:'Sucio/manchado'},{id:'damaged',label:'Daño'},
+  {id:'towels_pillows',label:'Towels/Pillows'},{id:'soap_tp_coffee',label:'Soap/Paper/Coffee'},
+  {id:'remote',label:'TV Remote'},{id:'hairdryer',label:'Hair Dryer'},
+  {id:'dirty',label:'Dirty/stained'},{id:'damaged',label:'Damage'},
 ];
 
 // ── PDF PARSER ───────────────────────────────────────────
 function pdfResolveCode(hk,pkg){
   hk=hk.toUpperCase();pkg=pkg.toUpperCase();
   if(hk==='VD')return'vd';
-  if(hk==='OD')return pkg==='RFSH'?'odrf':'odco';
+  if(hk==='OD'){
+    if(pkg==='RFSH')return'odrf';
+    if(pkg==='FULL')return'odfu';
+    return'odco';
+  }
   if(hk==='VC')return'vc';
   if(hk==='VP')return'vp';
+  if(hk==='OP')return'odfu'; // Occupied Pickup = Full
   return'odco';
 }
 function parsePdfText(rawText){
@@ -775,24 +780,24 @@ window.confirmPdfImport=function(){
     }
   }
   save();renderAll();closePdfModal();
-  toast(`✅ ${added} cuartos importados · ${pdfParsedAttendants.length} asociadas`);
+  toast(`✅ ${added} rooms importados · ${pdfParsedAttendants.length} attendants`);
 };
 async function handlePdfFiles(files){
   const pdfs=[...files].filter(f=>f.name.endsWith('.pdf')||f.type==='application/pdf');
-  if(!pdfs.length){showPdfStatus('error','No se encontraron PDFs.');return;}
-  if(!window._pdfReady){showPdfStatus('error','PDF.js cargando, intenta de nuevo.');return;}
+  if(!pdfs.length){showPdfStatus('error','No PDF files found.');return;}
+  if(!window._pdfReady){showPdfStatus('error','PDF.js loading, please try again.');return;}
   document.getElementById('pdfDrop').style.display='none';
-  showPdfStatus('processing','Leyendo PDF...');
+  showPdfStatus('processing','Reading PDF...');
   document.getElementById('pdfResults').style.display='none';
   document.getElementById('pdfFooter').style.display='none';
   pdfParsedAttendants=[];
   try{
     for(const file of pdfs){const text=await extractPdfText(file);pdfParsedAttendants.push(...parsePdfText(text));}
-    if(!pdfParsedAttendants.length){showPdfStatus('error','No se encontraron datos. ¿Es un PDF de Lightspeed?');document.getElementById('pdfDrop').style.display='block';return;}
+    if(!pdfParsedAttendants.length){showPdfStatus('error','No data found. Is this a Lightspeed PDF?');document.getElementById('pdfDrop').style.display='block';return;}
     const totalRooms=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.length,0);
     const totalCr=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.reduce((ss,r)=>ss+(r.status==='odrf'?0.5:1),0),0);
-    showPdfStatus('success',`✓ ${pdfParsedAttendants.length} asociada(s) · ${totalRooms} cuartos · ${totalCr} créditos`);
-    document.getElementById('pdfSummaryBar').innerHTML=`<span>👤 <strong>${pdfParsedAttendants.length}</strong> asociadas</span><span>🚪 <strong>${totalRooms}</strong> cuartos</span><span>⭐ <strong>${totalCr}</strong> créditos</span>`;
+    showPdfStatus('success',`✓ ${pdfParsedAttendants.length} attendant(s) · ${totalRooms} rooms · ${totalCr} credits`);
+    document.getElementById('pdfSummaryBar').innerHTML=`<span>👤 <strong>${pdfParsedAttendants.length}</strong> attendants</span><span>🚪 <strong>${totalRooms}</strong> rooms</span><span>⭐ <strong>${totalCr}</strong> credits</span>`;
     document.getElementById('pdfAttList').innerHTML=pdfParsedAttendants.map(att=>{
       const vd=att.rooms.filter(r=>r.status==='vd').length,cout=att.rooms.filter(r=>r.status==='odco').length,rfsh=att.rooms.filter(r=>r.status==='odrf').length,vp=att.rooms.filter(r=>r.status==='vp').length;
       const cr=att.rooms.reduce((s,r)=>s+(r.status==='odrf'?0.5:1),0);
@@ -800,7 +805,7 @@ async function handlePdfFiles(files){
       return`<div class="pdf-att-row">
         <div class="pdf-att-hdr">
           <div><div class="pdf-att-name">${att.name} <span style="font-size:.7rem;color:var(--muted);font-weight:400">(${att.code})</span></div>
-          ${dup.length?`<div style="font-size:.66rem;color:var(--odco);margin-top:2px">⚠️ ${dup.length} ya existen</div>`:''}</div>
+          ${dup.length?`<div style="font-size:.66rem;color:var(--odco);margin-top:2px">⚠️ ${dup.length} already exist</div>`:''}</div>
           <div class="pdf-att-badges">
             ${vd?`<span class="pdf-att-badge" style="background:var(--vd-bg);color:var(--vd)">VD×${vd}</span>`:''}
             ${cout?`<span class="pdf-att-badge" style="background:var(--odco-bg);color:var(--odco)">COUT×${cout}</span>`:''}
@@ -867,7 +872,7 @@ function renderGrid(){
   const isAll=curFilters.has('all');
   const rooms=sorted(st.rooms.filter(r=>isAll||curFilters.has(r.status)));
   if(!rooms.length){
-    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay cuartos.</p><small>Toca 📄 PDF para importar.</small></div>`;
+    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No hay rooms.</p><small>Tap 📄 PDF to import.</small></div>`;
     return;
   }
   const s2=[...rooms.filter(r=>!st.lsDone[r.id]),...rooms.filter(r=>st.lsDone[r.id])];
@@ -900,20 +905,20 @@ function renderAssoc(){
     return{...e,rooms,vc,pct,floors:getFloors(rooms),credits,over,crPct,issues:rooms.filter(r=>r.missing?.length||r.note)};
   });
   const unassigned=sorted(st.rooms.filter(r=>!r.assignedTo));
-  if(!groups.length&&!unassigned.length){el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>Sin asociadas.</p></div>`;return;}
+  if(!groups.length&&!unassigned.length){el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>Sin attendants.</p></div>`;return;}
   el.innerHTML=[...groups.map(g=>`
     <div class="assoc-card" onclick="openAssocModal('${g.id}')">
       <div class="assoc-hdr">
         <div class="assoc-av" style="${g.over?'background:linear-gradient(135deg,var(--vp),#991b1b)':''}">${g.name[0].toUpperCase()}</div>
         <div class="assoc-info">
           <div class="assoc-name">${g.name}</div>
-          <div class="assoc-sub">${g.rooms.length} cuartos · ${g.vc} VC · ${g.pct}%</div>
+          <div class="assoc-sub">${g.rooms.length} rooms · ${g.vc} VC · ${g.pct}%</div>
           ${g.floors?`<div class="assoc-floors">📍 ${g.floors}</div>`:''}
           <div style="display:flex;align-items:center;gap:8px;margin-top:5px">
             <div class="cr-bar"><div class="cr-bar-fill" style="width:${g.crPct}%;background:${g.over?'var(--vp)':g.crPct>80?'var(--odco)':'var(--accent)'}"></div></div>
             <span style="font-size:.68rem;font-weight:700;color:${g.over?'var(--vp)':g.crPct>80?'var(--odco)':'var(--text2)'};white-space:nowrap">${g.credits}/${MAX_CREDITS}${g.over?' ⚠️':''}</span>
           </div>
-          ${g.issues.length?`<div style="font-size:.65rem;color:var(--vp);margin-top:3px">⚠️ ${g.issues.length} con nota</div>`:''}
+          ${g.issues.length?`<div style="font-size:.65rem;color:var(--vp);margin-top:3px">⚠️ ${g.issues.length} with notes</div>`:''}
         </div>
         <div style="font-size:1.1rem;color:var(--muted)">›</div>
       </div>
@@ -922,7 +927,7 @@ function renderAssoc(){
     unassigned.length?`<div class="assoc-card" onclick="openAssocModal('__none__')">
       <div class="assoc-hdr">
         <div class="assoc-av" style="background:var(--bg3);color:var(--muted)">?</div>
-        <div class="assoc-info"><div class="assoc-name" style="color:var(--text2)">Sin asignar</div><div class="assoc-sub">${unassigned.length} cuartos</div></div>
+        <div class="assoc-info"><div class="assoc-name" style="color:var(--text2)">Unassigned</div><div class="assoc-sub">${unassigned.length} rooms</div></div>
         <div style="font-size:1.1rem;color:var(--muted)">›</div>
       </div></div>`:''
   ].join('');
@@ -930,7 +935,7 @@ function renderAssoc(){
 
 window.openAssocModal=function(assocId){
   curAssocId=assocId;
-  const emp=assocId==='__none__'?{name:'Sin asignar'}:st.employees.find(e=>e.id===assocId);
+  const emp=assocId==='__none__'?{name:'Unassigned'}:st.employees.find(e=>e.id===assocId);
   const rooms=sorted(assocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===assocId));
   const credits=totalCredits(rooms);
   document.getElementById('assocRoomsTitle').textContent=(emp?.name||'')+(getFloors(rooms)?' · '+getFloors(rooms):'')+' · '+credits+'cr';
@@ -951,7 +956,7 @@ function buildAssocGrid(rooms){
           <div style="font-size:.56rem;color:${s.color};opacity:.7;margin-top:2px">${r.dnd?'0':CREDITS[r.status]||1}cr</div>
         </div>`;
       }).join('')+'</div>'
-    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos</div>';
+    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin rooms</div>';
 }
 
 function refreshAssocModal(){
@@ -977,7 +982,7 @@ function renderProgress(){
   document.getElementById('tab-progress').innerHTML=`
     <div style="margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div style="font-weight:800;font-size:1.1rem">Progreso del día</div>
+        <div style="font-weight:800;font-size:1.1rem">Today's Progress</div>
         <div style="font-size:.8rem;color:var(--vc);font-weight:700">${vcTotal}/${total} VC · ${dayPct}%</div>
       </div>
       <div style="height:8px;background:var(--bg3);border-radius:10px;overflow:hidden">
@@ -985,13 +990,13 @@ function renderProgress(){
       </div>
     </div>
     <div class="stat-grid">
-      <div class="stat-card"><div class="stat-val" style="color:var(--vc)">${cnt('vc')}</div><div class="stat-lbl">✅ VC Listos</div></div>
-      <div class="stat-card"><div class="stat-val" style="color:var(--vd)">${cnt('vd')}</div><div class="stat-lbl">🛏️ VD Pend.</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--vc)">${cnt('vc')}</div><div class="stat-lbl">✅ VC Done</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--vd)">${cnt('vd')}</div><div class="stat-lbl">🛏️ VD Pending</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--odco)">${cnt('odco')}</div><div class="stat-lbl">🚪 OD COUT</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--odrf)">${cnt('odrf')}</div><div class="stat-lbl">🔄 OD RFSH</div></div>
     </div>
     <div class="card">
-      <div class="card-hdr">Créditos por asociada</div>
+      <div class="card-hdr">Credits by Attendant</div>
       <div style="padding:12px 14px">
         ${summaries.map(s=>`<div style="margin-bottom:14px">
           <div style="display:flex;justify-content:space-between;margin-bottom:4px">
@@ -1005,7 +1010,7 @@ function renderProgress(){
             <span style="font-size:.66rem;color:var(--muted)">${s.norm} norm · ${s.rf} rfsh</span>
             <span style="font-size:.66rem;color:var(--vc)">${s.vc}/${s.total} VC</span>
           </div>
-        </div>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">Sin asociadas</p>'}
+        </div>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">Sin attendants</p>'}
       </div>
     </div>
     ${summaries.map(s=>`
@@ -1017,26 +1022,26 @@ function renderProgress(){
             ${r.missing?.length?`<div style="font-size:.7rem;color:var(--odco);margin-top:2px">⚠️ ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
             ${r.note?`<div style="font-size:.7rem;color:var(--vp);margin-top:1px">📝 ${r.note}</div>`:''}
           </div></div>`;}).join('')
-        :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ Sin novedades</div>`}
+        :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ No issues</div>`}
       </div>`).join('')}
-    <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Enviar reporte</button>`;
+    <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Send Report</button>`;
 }
 
 function renderSetup(){
   document.getElementById('tab-setup').innerHTML=`
-    <div style="font-weight:800;font-size:1.05rem;margin-bottom:14px;color:var(--text)">Configuración</div>
+    <div style="font-weight:800;font-size:1.05rem;margin-bottom:14px;color:var(--text)">Settings</div>
     <div class="card">
-      <div class="card-hdr">Asociadas <button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Agregar</button></div>
+      <div class="card-hdr">Attendants <button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Add</button></div>
       ${st.employees.map(e=>`
         <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--bdr)">
-          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),#7c3aed);color:white;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),#0099b8);color:white;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
           <div style="flex:1;font-weight:600;font-size:.88rem">${e.name}</div>
-          <div style="font-size:.7rem;color:var(--muted)">${st.rooms.filter(r=>r.assignedTo===e.id).length} cuartos</div>
+          <div style="font-size:.7rem;color:var(--muted)">${st.rooms.filter(r=>r.assignedTo===e.id).length} rooms</div>
           <button onclick="delEmp('${e.id}')" style="background:none;border:none;color:var(--vp);font-size:.9rem;cursor:pointer;padding:4px 6px">🗑</button>
-        </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
+        </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin attendants</div>'}
     </div>
     <div class="card">
-      <div class="card-hdr">Cuartos del día <button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Cuarto</button></div>
+      <div class="card-hdr">Today's Rooms <button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Room</button></div>
       ${sorted(st.rooms).map(r=>{
         const s=STATUS[r.status]||STATUS.vd;
         const emp=st.employees.find(e=>e.id===r.assignedTo);
@@ -1045,14 +1050,14 @@ function renderSetup(){
           <span style="font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${s.bg};color:${s.color};border:1px solid ${s.border}">${s.label}</span>
           <div style="flex:1;font-size:.76rem;color:var(--muted)">${emp?emp.name.split(' ')[0]:''}</div>
           <button onclick="delRoomSetup('${r.id}')" style="background:none;border:none;color:var(--vp);font-size:.85rem;cursor:pointer;padding:3px 5px">🗑</button>
-        </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📄 PDF.</div>'}
+        </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin rooms. Usa 📄 PDF.</div>'}
     </div>
-    <button class="btn btn-block" style="background:rgba(255,181,71,.12);color:var(--odco);border:1px solid var(--odco-bd)!important;font-size:.9rem;font-weight:700;margin-bottom:10px" onclick="newDay()">🔄 Reiniciar día</button>
+    <button class="btn btn-block" style="background:rgba(255,181,71,.12);color:var(--odco);border:1px solid var(--odco-bd)!important;font-size:.9rem;font-weight:700;margin-bottom:10px" onclick="newDay()">🔄 Reset Day</button>
     <div class="card">
-      <div class="card-hdr">📧 Correo para reportes</div>
+      <div class="card-hdr">📧 Report Email</div>
       <div style="padding:12px 14px;display:flex;gap:8px;align-items:center">
-        <input type="text" id="emailInput" value="${st.reportEmail}" placeholder="ejemplo@hotel.com" style="flex:1;font-size:.85rem">
-        <button class="btn btn-p btn-sm" onclick="saveEmail()">Guardar</button>
+        <input type="text" id="emailInput" value="${st.reportEmail}" placeholder="example@hotel.com" style="flex:1;font-size:.85rem">
+        <button class="btn btn-p btn-sm" onclick="saveEmail()">Save</button>
       </div>
     </div>`;
 }
@@ -1061,7 +1066,7 @@ function renderSetup(){
 const statusMap={co:'odco',cout:'odco',odco:'odco',rf:'odrf',rfsh:'odrf',odrf:'odrf',full:'odfu',odfu:'odfu',vd:'vd',vc:'vc',vp:'vp',od:'odco'};
 window.doImport=function(){
   const raw=document.getElementById('pasteInput').value.trim();
-  if(!raw){toast('⚠️ Pega un código primero');return}
+  if(!raw){toast('⚠️ Paste a code first');return}
   try{
     let empName='',roomStr=raw;
     if(raw.includes('|')&&raw.startsWith('EMP:')){const p=raw.split('|');empName=p[0].replace('EMP:','').trim();roomStr=p[1];}
@@ -1071,8 +1076,8 @@ window.doImport=function(){
     const ex=new Set(st.rooms.map(r=>r.number));let added=0;
     for(const item of items){const[num,code='odco']=item.split('-');if(!num||ex.has(num.trim()))continue;st.rooms.push({id:gid(),number:num.trim(),status:statusMap[code.trim().toLowerCase()]||'odco',assignedTo:empId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});ex.add(num.trim());added++;}
     document.getElementById('pasteInput').value='';closeModal('modalPaste');save();renderAll();
-    toast(`✅ ${added} cuartos importados${empName?' → '+empName:''}`);
-  }catch(e){toast('⚠️ Código inválido')}
+    toast(`✅ ${added} rooms importados${empName?' → '+empName:''}`);
+  }catch(e){toast('⚠️ Invalid code')}
 };
 
 // ── ROOM MODAL ───────────────────────────────────────────
@@ -1092,7 +1097,7 @@ window.openRoomModal=function(id){
   MISSING.forEach(m=>{const el=document.getElementById('mo-'+m.id);if(el)el.classList.toggle('sel',(r.missing||[]).includes(m.id))});
   const h=r.hangers!=null?r.hangers:4;
   document.getElementById('hangerCount').textContent=h;
-  document.getElementById('hangerNote').textContent=h<4?`⚠️ Faltan ${4-h}`:'';
+  document.getElementById('hangerNote').textContent=h<4?`⚠️ Missing ${4-h}`:'';
   document.getElementById('roomNote').value=r.note||'';
   const emp=st.employees.find(e=>e.id===r.assignedTo);
   document.getElementById('roomEmpLabel').textContent=emp?'👤 '+emp.name:'';
@@ -1142,7 +1147,7 @@ window.autoSaveNote=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(r){
 window.saveLs=function(){
   const el=document.getElementById('lsCheck');if(!el||!curRoomId)return;
   st.lsDone[curRoomId]=el.checked;save();renderGrid();refreshAssocModal();
-  if(el.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),500);}
+  if(el.checked){toast('✅ Marked in Lightspeed');setTimeout(()=>closeModal('modalRoom'),500);}
 };
 window.togMissing=function(id){
   document.getElementById('mo-'+id).classList.toggle('sel');
@@ -1154,37 +1159,37 @@ window.adjHangers=function(d){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   r.hangers=Math.max(0,Math.min(4,(r.hangers!=null?r.hangers:4)+d));
   document.getElementById('hangerCount').textContent=r.hangers;
-  document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';
+  document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Missing ${4-r.hangers}`:'';
   save();renderGrid();refreshAssocModal();
 };
 window.saveDnd=function(){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   r.dnd=document.getElementById('dndCheck').checked;
   save();renderGrid();refreshAssocModal();
-  toast(r.dnd?'🚫 DND — sin crédito':'✅ DND removido');
+  toast(r.dnd?'🚫 DND — no credit':'✅ DND removed');
 };
 window.openAddRoomToAssoc=function(){
   const emp=curAssocId==='__none__'?null:st.employees.find(e=>e.id===curAssocId);
-  document.getElementById('quickAddTitle').textContent='Agregar cuarto'+(emp?' → '+emp.name.split(' ')[0]:'');
+  document.getElementById('quickAddTitle').textContent='Add Room'+(emp?' → '+emp.name.split(' ')[0]:'');
   document.getElementById('qaNum').value='';document.getElementById('qaStatus').value='odco';
   openModal('modalQuickAdd');setTimeout(()=>document.getElementById('qaNum').focus(),200);
 };
 window.doQuickAdd=function(){
   const num=document.getElementById('qaNum').value.trim();
-  if(!num){toast('⚠️ Ingresa el número');return}
-  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Ya existe '+num);return}
+  if(!num){toast('⚠️ Enter the number');return}
+  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Already exists '+num);return}
   st.rooms.push({id:gid(),number:num,status:document.getElementById('qaStatus').value,assignedTo:curAssocId==='__none__'?null:curAssocId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
-  closeModal('modalQuickAdd');save();renderAll();refreshAssocModal();toast('🏠 Cuarto '+num+' agregado');
+  closeModal('modalQuickAdd');save();renderAll();refreshAssocModal();toast('🏠 Room '+num+' added');
 };
 window.openTransfer=function(){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  document.getElementById('transferTitle').textContent=`Transferir cuarto ${r.number}`;
-  document.getElementById('transferList').innerHTML=[{id:null,name:'Sin asignar'},...st.employees].map(e=>{
+  document.getElementById('transferTitle').textContent=`Transfer Room ${r.number}`;
+  document.getElementById('transferList').innerHTML=[{id:null,name:'Unassigned'},...st.employees].map(e=>{
     const isCur=e.id===r.assignedTo;
     const rooms=e.id?st.rooms.filter(x=>x.assignedTo===e.id):st.rooms.filter(x=>!x.assignedTo);
     return`<div onclick="${isCur?'':(`doTransfer('${e.id||''}')`)}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--bdr);cursor:${isCur?'default':'pointer'};opacity:${isCur?.5:1}">
       <div style="width:38px;height:38px;border-radius:50%;background:${isCur?'var(--bg3)':'linear-gradient(135deg,var(--accent2),#7c3aed)'};color:${isCur?'var(--muted)':'white'};font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:.9rem">${e.name}${isCur?' (actual)':''}</div><div style="font-size:.7rem;color:var(--muted)">${rooms.length} cuartos · ${totalCredits(rooms)}cr</div></div>
+      <div style="flex:1"><div style="font-weight:600;font-size:.9rem">${e.name}${isCur?' (current)':''}</div><div style="font-size:.7rem;color:var(--muted)">${rooms.length} rooms · ${totalCredits(rooms)}cr</div></div>
       ${!isCur?'<div style="font-size:1rem;color:var(--muted)">›</div>':''}
     </div>`;
   }).join('');
@@ -1194,39 +1199,39 @@ window.doTransfer=function(empId){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   const old=st.employees.find(e=>e.id===r.assignedTo),nw=st.employees.find(e=>e.id===empId);
   r.assignedTo=empId||null;save();renderAll();closeModal('modalTransfer');
-  toast(`🔄 ${r.number}: ${old?old.name:'Sin asignar'} → ${nw?nw.name:'Sin asignar'}`);
+  toast(`🔄 ${r.number}: ${old?old.name:'Unassigned'} → ${nw?nw.name:'Unassigned'}`);
   document.getElementById('roomEmpLabel').textContent=nw?'👤 '+nw.name:'';
   refreshAssocModal();
 };
 window.delRoom=function(){
   const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;
-  st.rooms=st.rooms.filter(x=>x.id!==curRoomId);closeModal('modalRoom');save();renderAll();toast('🗑 Eliminado');
+  if(!confirm(`¿Eliminar room ${r?.number}?`))return;
+  st.rooms=st.rooms.filter(x=>x.id!==curRoomId);closeModal('modalRoom');save();renderAll();toast('🗑 Deleted');
 };
 
 // ── SETUP ────────────────────────────────────────────────
 window.saveHotel=function(){const n=document.getElementById('hotelInput').value.trim();if(n){st.hotel=n;save();renderAll();}closeModal('modalHotel');};
-window.saveEmp=function(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada');};
-window.delEmp=function(id){if(!confirm('¿Eliminar asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll();};
-window.delRoomSetup=function(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll();};
-window.saveEmail=function(){const e=document.getElementById('emailInput')?.value.trim();if(!e)return;st.reportEmail=e;save();toast('📧 Correo guardado');};
-window.newDay=function(){if(!confirm('¿Reiniciar día?'))return;st.rooms=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Día reiniciado');};
+window.saveEmp=function(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' added');};
+window.delEmp=function(id){if(!confirm('Remove this attendant?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll();};
+window.delRoomSetup=function(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar room ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll();};
+window.saveEmail=function(){const e=document.getElementById('emailInput')?.value.trim();if(!e)return;st.reportEmail=e;save();toast('📧 Email saved');};
+window.newDay=function(){if(!confirm('Reset the day? All rooms and staff will be removed.'))return;st.rooms=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Day reset');};
 window.openAddRoom=function(){
   document.getElementById('addNum').value='';document.getElementById('addNote').value='';document.getElementById('addStatus').value='odco';
-  document.getElementById('addEmp').innerHTML='<option value="">Sin asignar</option>'+st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  document.getElementById('addEmp').innerHTML='<option value="">Unassigned</option>'+st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
   openModal('modalAddRoom');
 };
 window.saveAddRoom=function(){
   const num=document.getElementById('addNum').value.trim();
-  if(!num){toast('⚠️ Ingresa número');return}
-  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Ya existe '+num);return}
+  if(!num){toast('⚠️ Enter room number');return}
+  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Already exists '+num);return}
   st.rooms.push({id:gid(),number:num,status:document.getElementById('addStatus').value,assignedTo:document.getElementById('addEmp').value||null,note:document.getElementById('addNote').value.trim(),missing:[],hangers:4,lateCheckout:null,dnd:false});
-  closeModal('modalAddRoom');save();renderAll();toast('🏠 '+num+' agregado');
+  closeModal('modalAddRoom');save();renderAll();toast('🏠 Room '+num+' added');
 };
 window.sendReport=function(){
   if(!st.reportEmail){const e=prompt('¿Correo para reportes?');if(!e)return;st.reportEmail=e.trim();save();}
   const d=new Date();
-  let body=`REPORTE HOUSEKEEPING - ${st.hotel}\n${d.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${'='.repeat(40)}\n\n`;
+  let body=`HOUSEKEEPING REPORT - ${st.hotel}\n${d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${'='.repeat(40)}\n\n`;
   const cnt=k=>st.rooms.filter(x=>x.status===k).length;
   body+=`RESUMEN\nTotal: ${st.rooms.length} · ${totalCredits(st.rooms)} cr\nVC: ${cnt('vc')} · VD: ${cnt('vd')} · OD COUT: ${cnt('odco')} · OD RFSH: ${cnt('odrf')} · VP: ${cnt('vp')}\n\n`;
   st.employees.forEach(e=>{
@@ -1235,14 +1240,14 @@ window.sendReport=function(){
     const norm=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu');
     const rf=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd);
     const dnd=rooms.filter(x=>x.dnd);
-    body+=`${'─'.repeat(30)}\n${e.name}\n${rooms.length} cuartos · ${rooms.filter(x=>x.status==='vc').length} VC · ${credits}/${MAX_CREDITS}cr\n`;
-    body+=`Normales: ${norm.map(r=>r.number).join(', ')||'ninguno'}\nRefresh: ${rf.map(r=>r.number).join(', ')||'ninguno'}\n`;
+    body+=`${'─'.repeat(30)}\n${e.name}\n${rooms.length} rooms · ${rooms.filter(x=>x.status==='vc').length} VC · ${credits}/${MAX_CREDITS}cr\n`;
+    body+=`Standard: ${norm.map(r=>r.number).join(', ')||'ninguno'}\nRefresh: ${rf.map(r=>r.number).join(', ')||'ninguno'}\n`;
     if(dnd.length)body+=`DND: ${dnd.map(r=>r.number).join(', ')}\n`;
     const issues=rooms.filter(x=>x.missing?.length||x.note);
     if(issues.length){issues.forEach(r=>{body+=`• ${r.number}: `;if(r.missing?.length)body+=r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ');if(r.note)body+=' — '+r.note;body+='\n';});}
     body+='\n';
   });
-  window.location.href=`mailto:${st.reportEmail}?subject=${encodeURIComponent('Reporte HK '+st.hotel+' '+d.toLocaleDateString('es-MX'))}&body=${encodeURIComponent(body)}`;
+  window.location.href=`mailto:${st.reportEmail}?subject=${encodeURIComponent('Reporte HK '+st.hotel+' '+d.toLocaleDateString('en-US'))}&body=${encodeURIComponent(body)}`;
 };
 
 // ── NAV / FILTER / MODAL ─────────────────────────────────
@@ -1283,8 +1288,8 @@ window.toast=function(msg){const el=document.getElementById('toast');el.textCont
 
 // ── INIT ─────────────────────────────────────────────────
 const d=new Date();
-const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 document.getElementById('hdate').textContent=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
 renderAll();
 
