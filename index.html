@@ -775,8 +775,23 @@ async function handlePdfFiles(files){
   document.getElementById('pdfFooter').style.display='none';
   pdfParsedAttendants=[];
   try{
-    for(const file of pdfs){ const text=await extractPdfText(file); pdfParsedAttendants.push(...parsePdfText(text)); }
-    if(!pdfParsedAttendants.length){ showPdfStatus('error','No se encontraron datos. ¿Es un PDF de Lightspeed?'); document.getElementById('pdfDrop').style.display='block'; return; }
+    let _dbgText='';
+    for(const file of pdfs){ const text=await extractPdfText(file); _dbgText+=text; pdfParsedAttendants.push(...parsePdfText(text)); }
+    if(!pdfParsedAttendants.length){
+      const _clean=_dbgText.replace(/[\r\n]+/g,' ').replace(/\s+/g,' ');
+      const _hasHdr=_clean.includes('For Schedule HK');
+      const _hasHK=_clean.includes('HK Package');
+      const _preview=_clean.substring(0,400).replace(/</g,'&lt;');
+      const _last200=_clean.slice(-200).replace(/</g,'&lt;');
+      document.getElementById('pdfStatusText').innerHTML=
+        'Headers encontrados: '+_hasHdr+' | HK Package: '+_hasHK+'<br>'+
+        '<small style="font-family:monospace;font-size:.65rem;word-break:break-all;line-height:1.4">'+
+        'INICIO: '+_preview+'<br><br>FINAL: '+_last200+'</small>';
+      document.getElementById('pdfSpinner').style.display='none';
+      document.getElementById('pdfStatus').className='pdf-status visible error';
+      document.getElementById('pdfDrop').style.display='block';
+      return;
+    }
     const totalRooms=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.length,0);
     const totalCr=pdfParsedAttendants.reduce((s,a)=>s+a.rooms.reduce((ss,r)=>ss+(r.status==='odrf'?0.5:1),0),0);
     showPdfStatus('success',`✓ ${pdfParsedAttendants.length} asociada(s) · ${totalRooms} cuartos · ${totalCr} créditos`);
