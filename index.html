@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -13,104 +13,63 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  /* Brand */
   --p:#0f6b8a;--p2:#0a4f66;--pl:#e6f4f9;--p-light:#38a3c4;
-  /* Layout */
   --bg:#f4f7fa;--surface:#ffffff;--text:#0f1923;--muted:#64748b;--bdr:#e1e8ef;
-  /* Status — unified, professional */
   --vc:#0d9467;--vc-bg:#ecfdf5;--vc-bd:#6ee7b7;
   --vd:#1d6fd4;--vd-bg:#eff6ff;--vd-bd:#93c5fd;
   --vp:#d63b3b;--vp-bg:#fff1f1;--vp-bd:#fca5a5;
   --odrf:#6d28d9;--odrf-bg:#f4f0ff;--odrf-bd:#c4b5fd;
   --odco:#c77b08;--odco-bg:#fffbeb;--odco-bd:#fcd34d;
-  /* Shadows */
   --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
   --shadow-md:0 4px 12px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.05);
-  --shadow-lg:0 10px 30px rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.06);
 }
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
 
-/* SYNC */
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#6ee7b7;display:inline-block;margin-left:6px;flex-shrink:0}
 .sync-dot.syncing{background:#fbbf24;animation:pulse .8s infinite}
 .sync-dot.error{background:#f87171}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes flashIn{0%{transform:scale(1.07)}100%{transform:scale(1)}}
 
-/* LOADING */
 #loadScreen{position:fixed;inset:0;background:linear-gradient(135deg,#1a5f7a,#0d3d52);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:white}
 #loadScreen .ls-icon{font-size:3rem;margin-bottom:16px}
 #loadScreen .ls-title{font-size:1.3rem;font-weight:700;margin-bottom:6px}
 #loadScreen .ls-sub{font-size:.82rem;opacity:.7}
 #loadScreen .ls-spinner{width:30px;height:30px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-top:24px}
-@keyframes spin{to{transform:rotate(360deg)}}
 
-/* LAYOUT */
 #appWrap{max-width:480px;margin:0 auto;padding-bottom:66px}
 
 /* HEADER */
-.hdr{
-  background:linear-gradient(135deg,var(--p) 0%,var(--p2) 100%);
-  color:white;padding:0;position:sticky;top:0;z-index:100;
-  box-shadow:0 2px 16px rgba(15,107,138,.35);
-}
+.hdr{background:linear-gradient(135deg,var(--p) 0%,var(--p2) 100%);color:white;padding:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(15,107,138,.35)}
 .hdr-inner{padding:14px 16px 10px}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
 .hdr-brand{display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;min-width:0}
-.hdr-logo{
-  width:36px;height:36px;border-radius:10px;
-  background:rgba(255,255,255,.18);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.2rem;flex-shrink:0;
-  border:1px solid rgba(255,255,255,.25);
-}
+.hdr-logo{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;border:1px solid rgba(255,255,255,.25)}
 .hdr-text{min-width:0}
 .hotel{font-weight:700;font-size:1rem;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
 .hdate{font-size:.7rem;opacity:.65;margin-top:1px;font-weight:400}
 .hbtns{display:flex;gap:6px;flex-shrink:0}
-.hbtn{
-  background:rgba(255,255,255,.15);color:white;
-  border:1px solid rgba(255,255,255,.25);
-  border-radius:8px;padding:7px 11px;
-  font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;
-  transition:all .15s;letter-spacing:.01em;
-}
+.hbtn{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 11px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
 .hbtn:hover{background:rgba(255,255,255,.25)}
-.hbtn-pdf{
-  background:rgba(255,255,255,.2);color:white;
-  border:1px solid rgba(255,255,255,.35);
-  border-radius:8px;padding:7px 11px;
-  font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;
-  transition:all .15s;
-}
+.hbtn-pdf{background:rgba(255,255,255,.2);color:white;border:1px solid rgba(255,255,255,.35);border-radius:8px;padding:7px 11px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s}
 .hbtn-pdf:hover{background:rgba(255,255,255,.3)}
-/* Progress bar inside header */
-.hdr-progress-wrap{padding:0 16px 12px}
+.hdr-progress-wrap{padding:0 16px 10px}
 .hdr-progress-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
 .hdr-progress-label{font-size:.68rem;opacity:.75;font-weight:500}
 .hdr-progress-pct{font-size:.68rem;font-weight:700;opacity:.9}
 .hdr-progress{height:5px;background:rgba(255,255,255,.2);border-radius:10px;overflow:hidden}
 .hdr-progress-fill{height:100%;background:rgba(255,255,255,.85);border-radius:10px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-/* Pills */
 .pills{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding:0 16px 12px}
 .pills::-webkit-scrollbar{display:none}
-.pill{
-  border-radius:20px;padding:4px 10px;
-  font-size:.68rem;font-weight:600;white-space:nowrap;
-  display:flex;align-items:center;gap:3px;flex-shrink:0;
-  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);
-}
+.pill{border-radius:20px;padding:4px 10px;font-size:.68rem;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:3px;flex-shrink:0;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2)}
 .pill strong{font-size:.78rem;font-weight:700}
 
-/* FILTER BAR */
-.filters{display:flex;gap:5px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;background:white;border-bottom:1px solid var(--bdr);position:sticky;top:96px;z-index:90}
+/* FILTER */
+.filters{display:flex;gap:5px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;background:white;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:90}
 .filters::-webkit-scrollbar{display:none}
-.filt{
-  padding:5px 13px;border-radius:20px;
-  border:1.5px solid var(--bdr);background:white;
-  color:var(--muted);font-size:.72rem;font-weight:600;
-  white-space:nowrap;cursor:pointer;flex-shrink:0;
-  transition:all .15s;box-shadow:var(--shadow-sm);
-}
+.filt{padding:5px 13px;border-radius:20px;border:1.5px solid var(--bdr);background:white;color:var(--muted);font-size:.72rem;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .15s;box-shadow:var(--shadow-sm)}
 .filt:hover{border-color:var(--p-light);color:var(--p)}
 .filt.on{color:white;border-color:transparent;box-shadow:var(--shadow-md)}
 
@@ -123,38 +82,20 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 
 /* PAGES */
 .page{display:none;padding:10px}
-.page.on{display:block}
+.page.on{display:block;animation:fadeIn .18s ease}
 
 /* ROOM GRID */
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.tile{
-  border-radius:14px;border:1.5px solid var(--bdr);
-  padding:12px 8px 10px;cursor:pointer;text-align:center;
-  position:relative;user-select:none;background:white;
-  transition:transform .12s ease,box-shadow .12s ease;
-  box-shadow:var(--shadow-sm);
-}
+.tile{border-radius:14px;border:1.5px solid var(--bdr);padding:12px 8px 10px;cursor:pointer;text-align:center;position:relative;user-select:none;background:white;transition:transform .12s ease,box-shadow .12s ease;box-shadow:var(--shadow-sm)}
 .tile:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .tile:active{transform:scale(.93);box-shadow:none}
-.tile-icon{font-size:1.3rem;margin-bottom:3px;line-height:1}
+.tile.flash{animation:flashIn .25s ease}
 .tile-num{font-size:1.15rem;font-weight:800;letter-spacing:-.02em}
 .tile-status{font-size:.6rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-top:3px;line-height:1.2}
 .tile-emp{font-size:.56rem;color:var(--muted);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .tile-cr{font-size:.54rem;font-weight:700;margin-top:2px;opacity:.65}
-.tile-alert{
-  position:absolute;top:-5px;right:-5px;
-  background:#ef4444;color:white;border-radius:50%;
-  width:17px;height:17px;font-size:.52rem;
-  display:flex;align-items:center;justify-content:center;font-weight:700;
-  box-shadow:0 0 0 2px white;
-}
-.tile-done{
-  position:absolute;top:-5px;left:-5px;
-  background:#0d9467;color:white;border-radius:50%;
-  width:17px;height:17px;font-size:.55rem;
-  display:flex;align-items:center;justify-content:center;font-weight:700;
-  box-shadow:0 0 0 2px white;
-}
+.tile-alert{position:absolute;top:-5px;right:-5px;background:#ef4444;color:white;border-radius:50%;width:17px;height:17px;font-size:.52rem;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 0 0 2px white}
+.tile-done{position:absolute;top:-5px;left:-5px;background:#0d9467;color:white;border-radius:50%;width:17px;height:17px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 0 0 2px white}
 
 .s-vc  {border-color:var(--vc-bd)!important;background:linear-gradient(135deg,#f0fdf9,var(--vc-bg))!important}
 .s-vd  {border-color:var(--vd-bd)!important;background:linear-gradient(135deg,#f5f9ff,var(--vd-bg))!important}
@@ -164,21 +105,11 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .s-odco{border-color:var(--odco-bd)!important;background:linear-gradient(135deg,#fffdf0,var(--odco-bg))!important}
 
 /* ASSOC */
-.assoc-card{
-  background:white;border-radius:14px;border:1px solid var(--bdr);
-  margin-bottom:12px;overflow:hidden;cursor:pointer;
-  transition:all .18s ease;box-shadow:var(--shadow-sm);
-}
+.assoc-card{background:white;border-radius:14px;border:1px solid var(--bdr);margin-bottom:12px;overflow:hidden;cursor:pointer;transition:all .18s ease;box-shadow:var(--shadow-sm)}
 .assoc-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .assoc-card:active{opacity:.9;transform:scale(.99)}
 .assoc-hdr{display:flex;align-items:center;gap:12px;padding:14px 16px}
-.assoc-av{
-  width:42px;height:42px;border-radius:12px;
-  background:linear-gradient(135deg,var(--p),var(--p2));
-  color:white;font-weight:700;font-size:1rem;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 2px 8px rgba(15,107,138,.3);
-}
+.assoc-av{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--p),var(--p2));color:white;font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(15,107,138,.3)}
 .assoc-info{flex:1;min-width:0}
 .assoc-name{font-weight:700;font-size:.95rem}
 .assoc-sub{font-size:.72rem;color:var(--muted);margin-top:2px}
@@ -186,7 +117,7 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .assoc-prog{height:4px;background:var(--bdr);margin:0 14px 12px;border-radius:2px}
 .assoc-prog-fill{height:100%;background:#059669;border-radius:2px;transition:width .4s}
 
-/* CARD & FORMS */
+/* CARDS & FORMS */
 .card{background:white;border-radius:14px;border:1px solid var(--bdr);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-sm)}
 .card-hdr{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f4f8;background:#f8fafc;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-size:.88rem;font-weight:600;transition:opacity .15s;gap:6px}
@@ -243,10 +174,10 @@ textarea{min-height:60px;resize:none}
 .empty small{font-size:.76rem;opacity:.7;margin-top:4px;display:block}
 
 /* TOAST */
-#toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(12px);background:#0f1923;color:white;padding:10px 20px;border-radius:24px;font-size:.82rem;font-weight:500;z-index:999;opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3),0 2px 6px rgba(0,0,0,.2)}
+#toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(12px);background:#0f1923;color:white;padding:10px 20px;border-radius:24px;font-size:.82rem;font-weight:500;z-index:999;opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* PDF MODAL */
+/* PDF */
 .pdf-drop{border:2px dashed #93c5fd;border-radius:12px;padding:32px 16px;text-align:center;cursor:pointer;transition:all .2s;background:#f0f7ff;position:relative;margin-bottom:14px}
 .pdf-drop:hover,.pdf-drop.dragging{border-color:var(--p);background:#e0effa}
 .pdf-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
@@ -284,7 +215,7 @@ textarea{min-height:60px;resize:none}
   .hdr{grid-column:1/-1;position:relative}
   #appWrap{max-width:100%;width:100%;margin:0;padding-bottom:0;display:flex;flex-direction:row;height:100%;overflow:hidden}
   .nav{position:relative!important;bottom:auto!important;left:auto!important;right:auto!important;width:200px!important;height:100%!important;flex-direction:column!important;justify-content:flex-start!important;border-top:none!important;border-right:1px solid var(--bdr);border-bottom:none!important;padding:20px 10px!important;gap:4px!important;align-items:stretch!important;flex-shrink:0;overflow-y:auto;background:white;z-index:10;max-width:none}
-  .nav::before{content:"MENU";display:block;font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.1em;padding:0 14px 10px;border-bottom:1px solid var(--bdr);margin-bottom:8px}
+  .nav::before{content:"MENÚ";display:block;font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.1em;padding:0 14px 10px;border-bottom:1px solid var(--bdr);margin-bottom:8px}
   .nav-btn{flex-direction:row!important;justify-content:flex-start!important;align-items:center!important;width:100%;padding:12px 14px!important;border-radius:10px;font-size:.86rem!important;font-weight:600;gap:10px!important;height:auto!important;color:var(--muted)}
   .nav-btn.on{background:var(--pl);color:var(--p)}
   .nav-btn:hover:not(.on){background:#f8fafc}
@@ -300,6 +231,7 @@ textarea{min-height:60px;resize:none}
   .overlay{align-items:center!important;justify-content:center!important}
   .sheet{max-width:580px;width:100%;border-radius:16px!important;margin:0;max-height:88vh}
   .sheet-handle{display:none}
+  #toast{bottom:20px}
 }
 </style>
 </head>
@@ -312,32 +244,43 @@ textarea{min-height:60px;resize:none}
   <div class="ls-spinner"></div>
 </div>
 
+<!-- HEADER -->
 <div class="hdr">
-  <div class="hdr-top">
-    <div onclick="openModal('modalHotel')" style="cursor:pointer;flex:1;min-width:0">
-      <div class="hotel" id="hotelName">🏨 My Hotel <span class="sync-dot" id="syncDot"></span></div>
-      <div class="hdate" id="hdate"></div>
-    </div>
-    <div class="hbtns">
-      <button class="hbtn-pdf" onclick="openModal('modalPDF')">📄 PDF</button>
-      <button class="hbtn" onclick="openModal('modalPaste')">📋 Import</button>
+  <div class="hdr-inner">
+    <div class="hdr-top">
+      <div class="hdr-brand" onclick="openModal('modalHotel')">
+        <div class="hdr-logo">🏨</div>
+        <div class="hdr-text">
+          <div class="hotel" id="hotelName">Aloft Houston Shenandoah <span class="sync-dot" id="syncDot"></span></div>
+          <div class="hdate" id="hdate"></div>
+        </div>
+      </div>
+      <div class="hbtns">
+        <button class="hbtn-pdf" onclick="openModal('modalPDF')">📄 PDF</button>
+        <button class="hbtn" onclick="openModal('modalPaste')">📋 Importar</button>
+      </div>
     </div>
   </div>
-  <div class="hdr-progress"><div class="hdr-progress-fill" id="hdrProgress" style="width:0%"></div></div>
+  <div class="hdr-progress-wrap">
+    <div class="hdr-progress-row">
+      <span class="hdr-progress-label">Progreso del día</span>
+      <span class="hdr-progress-pct" id="hdrPct">0%</span>
+    </div>
+    <div class="hdr-progress"><div class="hdr-progress-fill" id="hdrBar" style="width:0%"></div></div>
+  </div>
   <div class="pills" id="pills"></div>
 </div>
 
 <div id="appWrap">
   <nav class="nav">
-    <button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Rooms</button>
-    <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Staff</button>
-    <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progress</button>
-    <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Settings</button>
+    <button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Cuartos</button>
+    <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Asociadas</button>
+    <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progreso</button>
+    <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Config</button>
   </nav>
-
   <div id="contentWrap">
     <div class="filters" id="filterBar">
-      <button class="filt on" data-f="all" onclick="setFilter('all',this)">All</button>
+      <button class="filt on" data-f="all" onclick="setFilter('all',this)">Todos</button>
       <button class="filt" data-f="vd"   onclick="setFilter('vd',this)"   style="background:var(--vd-bg);color:var(--vd)">VD</button>
       <button class="filt" data-f="vc"   onclick="setFilter('vc',this)"   style="background:var(--vc-bg);color:var(--vc)">VC</button>
       <button class="filt" data-f="odco" onclick="setFilter('odco',this)" style="background:var(--odco-bg);color:var(--odco)">OD COUT</button>
@@ -358,13 +301,13 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalPDF">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">📄 Import from PDF</span><button class="sheet-close" onclick="closePdfModal()">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">📄 Importar desde PDF</span><button class="sheet-close" onclick="closePdfModal()">✕</button></div>
     <div class="sheet-body" style="padding:12px 14px">
       <div class="pdf-drop" id="pdfDrop">
         <input type="file" id="pdfFileInput" accept=".pdf" multiple>
         <div style="font-size:2rem;margin-bottom:8px">📄</div>
-        <h3 style="font-size:.92rem;font-weight:700;color:var(--p);margin-bottom:4px">Upload Lightspeed Sheet</h3>
-        <p style="font-size:.75rem;color:var(--muted)">Drag PDF here or tap to select</p>
+        <h3 style="font-size:.92rem;font-weight:700;color:var(--p);margin-bottom:4px">Subir hoja de Lightspeed</h3>
+        <p style="font-size:.75rem;color:var(--muted)">Arrastra el PDF aquí o toca para seleccionar</p>
       </div>
       <div class="pdf-status" id="pdfStatus"><div class="pdf-spinner" id="pdfSpinner"></div><span id="pdfStatusText"></span></div>
       <div id="pdfResults" style="display:none">
@@ -373,24 +316,24 @@ textarea{min-height:60px;resize:none}
       </div>
     </div>
     <div class="sheet-foot" id="pdfFooter" style="display:none">
-      <button class="btn btn-o" onclick="closePdfModal()">Cancel</button>
-      <button class="btn btn-p" onclick="confirmPdfImport()">✅ Import All</button>
+      <button class="btn btn-o" onclick="closePdfModal()">Cancelar</button>
+      <button class="btn btn-p" onclick="confirmPdfImport()">✅ Importar todo</button>
     </div>
   </div>
 </div>
 
-<!-- IMPORT MANUAL -->
+<!-- IMPORTAR MANUAL -->
 <div class="overlay" id="modalPaste">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">📋 Import Sheet</span><button class="sheet-close" onclick="closeModal('modalPaste')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">📋 Importar hoja</span><button class="sheet-close" onclick="closeModal('modalPaste')">✕</button></div>
     <div class="sheet-body">
       <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.82rem;color:#1e40af;line-height:1.6">
-        <strong>How to import:</strong><br>1. Send the photo in the Claude chat<br>2. Claude gives you a short code<br>3. Paste it here and tap Import
+        <strong>Cómo importar:</strong><br>1. Manda la foto en el chat de Claude<br>2. Claude te da un código corto<br>3. Pégalo aquí y toca Importar
       </div>
-      <div class="fg"><label>Code</label><textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco,212-odrf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea></div>
+      <div class="fg"><label>Código</label><textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco,212-odrf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea></div>
     </div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalPaste')">Cancel</button><button class="btn btn-p" onclick="doImport()">✅ Import</button></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalPaste')">Cancelar</button><button class="btn btn-p" onclick="doImport()">✅ Importar</button></div>
   </div>
 </div>
 
@@ -399,16 +342,16 @@ textarea{min-height:60px;resize:none}
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-hdr">
-      <span class="sheet-title" id="roomModalTitle">Room</span>
+      <span class="sheet-title" id="roomModalTitle">Cuarto</span>
       <div style="display:flex;gap:6px;align-items:center">
         <span id="roomEmpLabel" style="font-size:.7rem;color:var(--muted)"></span>
-        <button onclick="openTransfer()" style="background:#f0f4f8;border:none;border-radius:8px;padding:5px 8px;font-size:.72rem;cursor:pointer">🔄 Transfer</button>
+        <button onclick="openTransfer()" style="background:#f0f4f8;border:none;border-radius:8px;padding:5px 8px;font-size:.72rem;cursor:pointer">🔄 Trans.</button>
         <button class="sheet-close" onclick="closeModal('modalRoom')">✕</button>
       </div>
     </div>
     <div class="sheet-body" style="padding:10px 14px">
       <div class="st-opts" id="stOpts" style="gap:5px;margin-bottom:9px"></div>
-      <div style="display:flex;gap:5px;align-items:center;margin-bottom:9px;flex-wrap:wrap">
+      <div style="display:flex;gap:5px;align-items:center;margin-bottom:9px;flex-wrap:wrap" id="lateRow">
         <span style="font-size:.68rem;font-weight:700;color:var(--muted)">LATE:</span>
         <div style="display:flex;gap:3px" id="lateOpts">
           <button class="late-btn" data-h="" onclick="setLate(this)">—</button>
@@ -423,17 +366,17 @@ textarea{min-height:60px;resize:none}
           </label>
         </div>
       </div>
-      <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Missing Items</div>
+      <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Faltantes</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
-        <div class="mo" id="mo-towels_pillows" onclick="togMissing('towels_pillows')" style="padding:6px 7px;font-size:.7rem">🛁 Towels/Pillows</div>
-        <div class="mo" id="mo-soap_tp_coffee" onclick="togMissing('soap_tp_coffee')" style="padding:6px 7px;font-size:.7rem">🧴 Soap/Paper/Coffee</div>
-        <div class="mo" id="mo-remote" onclick="togMissing('remote')" style="padding:6px 7px;font-size:.7rem">📺 TV Remote</div>
-        <div class="mo" id="mo-hairdryer" onclick="togMissing('hairdryer')" style="padding:6px 7px;font-size:.7rem">💨 Hair Dryer</div>
-        <div class="mo" id="mo-dirty" onclick="togMissing('dirty')" style="padding:6px 7px;font-size:.7rem">🔴 Dirty</div>
-        <div class="mo" id="mo-damaged" onclick="togMissing('damaged')" style="padding:6px 7px;font-size:.7rem">🔧 Damage</div>
+        <div class="mo" id="mo-towels_pillows" onclick="togMissing('towels_pillows')" style="padding:6px 7px;font-size:.7rem">🛁 Toallas/Alm.</div>
+        <div class="mo" id="mo-soap_tp_coffee" onclick="togMissing('soap_tp_coffee')" style="padding:6px 7px;font-size:.7rem">🧴 Jabón/Papel/Café</div>
+        <div class="mo" id="mo-remote" onclick="togMissing('remote')" style="padding:6px 7px;font-size:.7rem">📺 Control</div>
+        <div class="mo" id="mo-hairdryer" onclick="togMissing('hairdryer')" style="padding:6px 7px;font-size:.7rem">💨 Secadora</div>
+        <div class="mo" id="mo-dirty" onclick="togMissing('dirty')" style="padding:6px 7px;font-size:.7rem">🔴 Sucio</div>
+        <div class="mo" id="mo-damaged" onclick="togMissing('damaged')" style="padding:6px 7px;font-size:.7rem">🔧 Daño</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;background:#f8fafc;border-radius:8px;padding:7px 10px">
-        <span style="font-size:.78rem;font-weight:600">🪝 Hangers:</span>
+        <span style="font-size:.78rem;font-weight:600">🪝 Ganchos:</span>
         <button onclick="adjHangers(-1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
         <span id="hangerCount" style="font-size:1rem;font-weight:800;min-width:18px;text-align:center">4</span>
         <button onclick="adjHangers(1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
@@ -441,7 +384,7 @@ textarea{min-height:60px;resize:none}
         <span id="hangerNote" style="font-size:.72rem;color:#dc2626;font-weight:600;margin-left:4px"></span>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input type="text" id="roomNote" placeholder="Note..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:7px 10px;border:1.5px solid var(--bdr);border-radius:8px">
+        <input type="text" id="roomNote" placeholder="Nota..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:7px 10px;border:1.5px solid var(--bdr);border-radius:8px">
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap">
           <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:17px;height:17px;accent-color:#059669;cursor:pointer">
           <span style="font-size:.75rem;font-weight:600;color:#059669">LS</span>
@@ -450,7 +393,7 @@ textarea{min-height:60px;resize:none}
     </div>
     <div class="sheet-foot" style="padding:8px 14px 14px">
       <button class="btn btn-r" style="flex:0;padding:8px 12px;font-size:.82rem" onclick="delRoom()">🗑</button>
-      <button class="btn btn-o btn-block" onclick="closeModal('modalRoom')">Close</button>
+      <button class="btn btn-o btn-block" onclick="closeModal('modalRoom')">Cerrar</button>
     </div>
   </div>
 </div>
@@ -459,11 +402,11 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalQuickAdd" style="z-index:600">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title" id="quickAddTitle">Add Room</span><button class="sheet-close" onclick="closeModal('modalQuickAdd')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title" id="quickAddTitle">Agregar cuarto</span><button class="sheet-close" onclick="closeModal('modalQuickAdd')">✕</button></div>
     <div class="sheet-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        <div class="fg"><label>Room #</label><input type="text" id="qaNum" placeholder="201" onkeydown="if(event.key==='Enter')doQuickAdd()"></div>
-        <div class="fg"><label>Status</label>
+        <div class="fg"><label>Cuarto #</label><input type="text" id="qaNum" placeholder="201" onkeydown="if(event.key==='Enter')doQuickAdd()"></div>
+        <div class="fg"><label>Estado</label>
           <select id="qaStatus">
             <option value="odco">OD COUT</option><option value="odrf">OD RFSH</option>
             <option value="odfu">FULL</option><option value="vd">VD</option>
@@ -472,7 +415,7 @@ textarea{min-height:60px;resize:none}
         </div>
       </div>
     </div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalQuickAdd')">Cancel</button><button class="btn btn-p" onclick="doQuickAdd()">Add</button></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalQuickAdd')">Cancelar</button><button class="btn btn-p" onclick="doQuickAdd()">Agregar</button></div>
   </div>
 </div>
 
@@ -480,8 +423,8 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalTransfer">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title" id="transferTitle">Transfer Room</span><button class="sheet-close" onclick="closeModal('modalTransfer')">✕</button></div>
-    <div class="sheet-body"><div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Select who to assign this room to:</div><div id="transferList"></div></div>
+    <div class="sheet-hdr"><span class="sheet-title" id="transferTitle">Transferir cuarto</span><button class="sheet-close" onclick="closeModal('modalTransfer')">✕</button></div>
+    <div class="sheet-body"><div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Selecciona a quién asignar este cuarto:</div><div id="transferList"></div></div>
   </div>
 </div>
 
@@ -489,9 +432,9 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalHotel">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">Hotel Name</span><button class="sheet-close" onclick="closeModal('modalHotel')">✕</button></div>
-    <div class="sheet-body"><div class="fg"><label>Name</label><input type="text" id="hotelInput" onkeydown="if(event.key==='Enter')saveHotel()"></div></div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalHotel')">Cancel</button><button class="btn btn-p" onclick="saveHotel()">Save</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">Nombre del hotel</span><button class="sheet-close" onclick="closeModal('modalHotel')">✕</button></div>
+    <div class="sheet-body"><div class="fg"><label>Nombre</label><input type="text" id="hotelInput" onkeydown="if(event.key==='Enter')saveHotel()"></div></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalHotel')">Cancelar</button><button class="btn btn-p" onclick="saveHotel()">Guardar</button></div>
   </div>
 </div>
 
@@ -499,9 +442,9 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalAddEmp">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">Add Attendant</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
-    <div class="sheet-body"><div class="fg"><label>Name</label><input type="text" id="empInput" placeholder="Full name" onkeydown="if(event.key==='Enter')saveEmp()"></div></div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddEmp')">Cancel</button><button class="btn btn-p" onclick="saveEmp()">Add</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">Agregar asociada</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
+    <div class="sheet-body"><div class="fg"><label>Nombre</label><input type="text" id="empInput" placeholder="Nombre completo" onkeydown="if(event.key==='Enter')saveEmp()"></div></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddEmp')">Cancelar</button><button class="btn btn-p" onclick="saveEmp()">Agregar</button></div>
   </div>
 </div>
 
@@ -509,16 +452,16 @@ textarea{min-height:60px;resize:none}
 <div class="overlay" id="modalAddRoom">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">Add Room</span><button class="sheet-close" onclick="closeModal('modalAddRoom')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">Agregar cuarto</span><button class="sheet-close" onclick="closeModal('modalAddRoom')">✕</button></div>
     <div class="sheet-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="fg"><label>Room #</label><input type="text" id="addNum" placeholder="201"></div>
-        <div class="fg"><label>Status</label><select id="addStatus"><option value="odco">OD COUT</option><option value="odrf">OD RFSH</option><option value="odfu">FULL</option><option value="vd">VD</option><option value="vc">VC</option><option value="vp">VP</option></select></div>
+        <div class="fg"><label>Cuarto #</label><input type="text" id="addNum" placeholder="201"></div>
+        <div class="fg"><label>Estado</label><select id="addStatus"><option value="odco">OD COUT</option><option value="odrf">OD RFSH</option><option value="odfu">FULL</option><option value="vd">VD</option><option value="vc">VC</option><option value="vp">VP</option></select></div>
       </div>
-      <div class="fg"><label>Assign to</label><select id="addEmp"><option value="">Unassigned</option></select></div>
-      <div class="fg"><label>Note</label><input type="text" id="addNote" placeholder="Optional"></div>
+      <div class="fg"><label>Asignar a</label><select id="addEmp"><option value="">Sin asignar</option></select></div>
+      <div class="fg"><label>Nota</label><input type="text" id="addNote" placeholder="Opcional"></div>
     </div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddRoom')">Cancel</button><button class="btn btn-p" onclick="saveAddRoom()">Add</button></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddRoom')">Cancelar</button><button class="btn btn-p" onclick="saveAddRoom()">Agregar</button></div>
   </div>
 </div>
 
@@ -527,9 +470,9 @@ textarea{min-height:60px;resize:none}
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-hdr">
-      <span class="sheet-title" id="assocRoomsTitle">Rooms</span>
+      <span class="sheet-title" id="assocRoomsTitle">Cuartos</span>
       <div style="display:flex;gap:6px;align-items:center">
-        <button onclick="openAddRoomToAssoc()" style="background:#1a5f7a;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:.75rem;font-weight:600;cursor:pointer">+ Room</button>
+        <button onclick="openAddRoomToAssoc()" style="background:#1a5f7a;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:.75rem;font-weight:600;cursor:pointer">+ Cuarto</button>
         <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
       </div>
     </div>
@@ -553,7 +496,6 @@ const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 const DOC = doc(db, 'housekeeping', 'aloft-shenandoah');
 
-// PDF.js
 const pdfScript = document.createElement('script');
 pdfScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 document.head.appendChild(pdfScript);
@@ -572,7 +514,7 @@ window.save = function(){
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(async()=>{
     try{ ignoreNextSnapshot=true; await setDoc(DOC,{hotel:st.hotel,employees:st.employees,rooms:st.rooms,lsDone:st.lsDone,reportEmail:st.reportEmail,updatedAt:Date.now()}); setSyncDot('ok'); }
-    catch(e){ console.error(e); setSyncDot('error'); toast('⚠️ Error saving'); }
+    catch(e){ console.error(e); setSyncDot('error'); toast('⚠️ Error al guardar'); }
   },600);
 };
 
@@ -588,24 +530,35 @@ onSnapshot(DOC,(snap)=>{
 });
 setTimeout(()=>{const ls=document.getElementById('loadScreen');if(ls)ls.style.display='none';},3000);
 
-// ── STATUS DEFS
+// ── STATUS
 window.STATUS={
-  vd:  {label:'VD',     desc:'Vacant Dirty',              color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
-  vc:  {label:'VC',     desc:'Vacant Clean',               color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
-  odco:{label:'OD COUT',desc:'Occupied — checkout today',  color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
-  odrf:{label:'OD RFSH',desc:'Occupied — refresh requested',color:'var(--odrf)',bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
-  odfu:{label:'FULL',   desc:'Full refresh + linen change', color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄✨'},
-  vp:  {label:'VP',     desc:'Vacant — issue reported',    color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
+  vd:  {label:'VD',     desc:'Vacante sucio',          color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
+  vc:  {label:'VC',     desc:'Vacante limpio',          color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
+  odco:{label:'OD COUT',desc:'Ocupado — salida hoy',    color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
+  odrf:{label:'OD RFSH',desc:'Ocupado — pide refresh',  color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
+  odfu:{label:'FULL',   desc:'Full refresh + cambio ropa',color:'var(--odrf)',bg:'var(--odrf-bg)',border:'var(--odrf-bd)', icon:'🔄✨'},
+  vp:  {label:'VP',     desc:'Vacante con problema',    color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
 };
-const VALID_TRANSITIONS={odco:['vd','vp','odrf','odfu'],odrf:['vd','vp','vc'],odfu:['vd','vp','vc'],vd:['vc','vp'],vp:['vc','vd'],vc:['vd','vp','odco','odrf','odfu']};
-window.CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:0.5};
+const VALID_TRANSITIONS={
+  odco:['vd','vp','odrf','odfu'],
+  odrf:['vd','vp','vc'],
+  odfu:['vd','vp','vc'],
+  vd:['vc','vp'],
+  vp:['vc','vd'],
+  vc:['vd','vp','odco','odrf','odfu']
+};
+
+// ── CREDITS
+// FULL = 1 crédito completo, OD RFSH = 0.5
+window.CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:1};
 const MAX_CREDITS=16;
 function roomCredits(r){if(r.dnd)return 0;return CREDITS[r.status]||1}
 function totalCredits(rooms){return rooms.reduce((s,r)=>s+roomCredits(r),0)}
+
 const MISSING=[
-  {id:'towels_pillows',label:'Towels/Pillows'},{id:'soap_tp_coffee',label:'Soap/Paper/Coffee'},
-  {id:'remote',label:'TV Remote'},{id:'hairdryer',label:'Hair Dryer'},
-  {id:'dirty',label:'Dirty/stained'},{id:'damaged',label:'Damage'},
+  {id:'towels_pillows',label:'Toallas/Almohadas'},{id:'soap_tp_coffee',label:'Jabón/Papel/Café'},
+  {id:'remote',label:'Control TV'},{id:'hairdryer',label:'Secadora'},
+  {id:'dirty',label:'Sucio/manchado'},{id:'damaged',label:'Daño'},
 ];
 
 // ── PDF PARSER
@@ -681,32 +634,32 @@ window.confirmPdfImport=function(){
     }
   }
   save();renderAll();closePdfModal();
-  toast(`✅ ${added} rooms imported · ${pdfParsed.length} attendants`);
+  toast(`✅ ${added} cuartos importados · ${pdfParsed.length} asociadas`);
 };
 async function handlePdfFiles(files){
   const pdfs=[...files].filter(f=>f.name.endsWith('.pdf')||f.type==='application/pdf');
-  if(!pdfs.length){showPdfStatus('error','No PDF files found.');return;}
-  if(!window._pdfReady){showPdfStatus('error','PDF.js loading, try again.');return;}
+  if(!pdfs.length){showPdfStatus('error','No se encontraron PDFs.');return;}
+  if(!window._pdfReady){showPdfStatus('error','PDF.js cargando, intenta de nuevo.');return;}
   document.getElementById('pdfDrop').style.display='none';
-  showPdfStatus('processing','Reading PDF...');
+  showPdfStatus('processing','Leyendo PDF...');
   document.getElementById('pdfResults').style.display='none';
   document.getElementById('pdfFooter').style.display='none';
   pdfParsed=[];
   try{
     for(const file of pdfs){const text=await extractPdfText(file);pdfParsed.push(...parsePdfText(text));}
-    if(!pdfParsed.length){showPdfStatus('error','No data found. Is this a Lightspeed PDF?');document.getElementById('pdfDrop').style.display='block';return;}
+    if(!pdfParsed.length){showPdfStatus('error','No se encontraron datos. ¿Es un PDF de Lightspeed?');document.getElementById('pdfDrop').style.display='block';return;}
     const totalRooms=pdfParsed.reduce((s,a)=>s+a.rooms.length,0);
-    const totalCr=pdfParsed.reduce((s,a)=>s+a.rooms.reduce((ss,r)=>ss+(r.status==='odrf'||r.status==='odfu'?0.5:1),0),0);
-    showPdfStatus('success',`✓ ${pdfParsed.length} attendant(s) · ${totalRooms} rooms · ${totalCr} credits`);
-    document.getElementById('pdfSummaryBar').innerHTML=`<span>👤 <strong>${pdfParsed.length}</strong> attendants</span><span>🚪 <strong>${totalRooms}</strong> rooms</span><span>⭐ <strong>${totalCr}</strong> credits</span>`;
+    const totalCr=pdfParsed.reduce((s,a)=>s+a.rooms.reduce((ss,r)=>ss+roomCredits(r),0),0);
+    showPdfStatus('success',`✓ ${pdfParsed.length} asociada(s) · ${totalRooms} cuartos · ${totalCr} créditos`);
+    document.getElementById('pdfSummaryBar').innerHTML=`<span>👤 <strong>${pdfParsed.length}</strong> asociadas</span><span>🚪 <strong>${totalRooms}</strong> cuartos</span><span>⭐ <strong>${totalCr}</strong> créditos</span>`;
     document.getElementById('pdfAttList').innerHTML=pdfParsed.map(att=>{
       const vd=att.rooms.filter(r=>r.status==='vd').length,cout=att.rooms.filter(r=>r.status==='odco').length,rfsh=att.rooms.filter(r=>r.status==='odrf').length,full=att.rooms.filter(r=>r.status==='odfu').length,vp=att.rooms.filter(r=>r.status==='vp').length;
-      const cr=att.rooms.reduce((s,r)=>s+(r.status==='odrf'||r.status==='odfu'?0.5:1),0);
+      const cr=att.rooms.reduce((s,r)=>s+roomCredits(r),0);
       const dup=att.rooms.filter(r=>st.rooms.find(x=>x.number===r.number));
       return`<div class="pdf-att-row">
         <div class="pdf-att-hdr">
           <div><div class="pdf-att-name">${att.name} <span style="font-size:.72rem;color:var(--muted);font-weight:400">(${att.code})</span></div>
-          ${dup.length?`<div style="font-size:.68rem;color:#d97706;margin-top:2px">⚠️ ${dup.length} already exist</div>`:''}</div>
+          ${dup.length?`<div style="font-size:.68rem;color:#d97706;margin-top:2px">⚠️ ${dup.length} ya existen</div>`:''}</div>
           <div class="pdf-att-badges">
             ${vd?`<span class="pdf-att-badge" style="background:var(--vd-bg);color:var(--vd)">VD×${vd}</span>`:''}
             ${cout?`<span class="pdf-att-badge" style="background:var(--odco-bg);color:var(--odco)">COUT×${cout}</span>`:''}
@@ -717,7 +670,7 @@ async function handlePdfFiles(files){
           </div>
         </div>
         <div class="pdf-att-rooms">
-          ${att.rooms.map(r=>{const cls=r.status==='vd'?'vd':r.status==='odrf'?'rfsh':r.status==='odfu'?'full':r.status==='vp'?'vp':'cout';const label=STATUS[r.status]?.label||r.status.toUpperCase();const d=st.rooms.find(x=>x.number===r.number);return`<span class="pdf-room-chip ${cls}" style="${d?'opacity:.35;text-decoration:line-through':''}">${r.number}·${label}</span>`;}).join('')}
+          ${att.rooms.map(r=>{const cls=r.status==='vd'?'vd':r.status==='odrf'?'rfsh':r.status==='odfu'?'full':r.status==='vp'?'vp':'cout';const d=st.rooms.find(x=>x.number===r.number);return`<span class="pdf-room-chip ${cls}" style="${d?'opacity:.35;text-decoration:line-through':''}">${r.number}·${STATUS[r.status]?.label||r.status}</span>`;}).join('')}
         </div>
       </div>`;
     }).join('');
@@ -743,12 +696,14 @@ window.renderAll=function(){
 };
 
 function renderPills(){
-  document.getElementById('hotelName').innerHTML='🏨 '+st.hotel+' <span class="sync-dot" id="syncDot"></span>';
+  document.getElementById('hotelName').innerHTML=st.hotel+' <span class="sync-dot" id="syncDot"></span>';
   const r=st.rooms,total=r.length;
   const cnt=k=>r.filter(x=>x.status===k).length;
   const vc=cnt('vc');
   const pct=total?Math.round(vc/total*100):0;
-  const el=document.getElementById('hdrProgress');if(el)el.style.width=pct+'%';
+  const pctEl=document.getElementById('hdrPct'),barEl=document.getElementById('hdrBar');
+  if(pctEl) pctEl.textContent=pct+'%';
+  if(barEl) barEl.style.width=pct+'%';
   document.getElementById('pills').innerHTML=[
     [total,'total','rgba(255,255,255,.15)','white'],
     [cnt('vd'),'VD','rgba(37,99,235,.4)','white'],
@@ -758,18 +713,18 @@ function renderPills(){
     [cnt('odfu'),'FULL','rgba(124,58,237,.35)','white'],
     [cnt('vp'),'VP','rgba(220,38,38,.4)','white'],
   ].filter(([v])=>v>0).map(([v,l,bg,c])=>
-    `<span class="pill" style="background:${bg};color:${c}"><strong>${v}</strong>${l}</span>`
+    `<span class="pill" style="background:${bg};color:${c}"><strong>${v}</strong> ${l}</span>`
   ).join('');
 }
 
 function sorted(arr){return[...arr].sort((a,b)=>a.number.localeCompare(b.number,undefined,{numeric:true}))}
-function getFloors(rooms){const f=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));return[...f].sort().map(x=>`F${x}`).join(', ')}
+function getFloors(rooms){const f=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));return[...f].sort().map(x=>`P${x}`).join(', ')}
 
 function renderGrid(){
   const isAll=curFilters.has('all');
   const rooms=sorted(st.rooms.filter(r=>isAll||curFilters.has(r.status)));
   if(!rooms.length){
-    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No rooms yet.</p><small>Tap 📄 PDF to import.</small></div>`;
+    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>Sin cuartos.</p><small>Toca 📄 PDF para importar.</small></div>`;
     return;
   }
   const s2=[...rooms.filter(r=>!st.lsDone[r.id]),...rooms.filter(r=>st.lsDone[r.id])];
@@ -799,14 +754,14 @@ function renderAssoc(){
     return{...e,rooms,vc,pct,floors:getFloors(rooms),credits,over,crPct,issues:rooms.filter(r=>r.missing?.length||r.note)};
   });
   const unassigned=sorted(st.rooms.filter(r=>!r.assignedTo));
-  if(!groups.length&&!unassigned.length){el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>No attendants.</p><small>Go to ⚙️ Settings to add.</small></div>`;return;}
+  if(!groups.length&&!unassigned.length){el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>Sin asociadas.</p><small>Ve a ⚙️ Config para agregar.</small></div>`;return;}
   el.innerHTML=[...groups.map(g=>`
     <div class="assoc-card" onclick="openAssocModal('${g.id}')">
       <div class="assoc-hdr">
         <div class="assoc-av" style="${g.over?'background:#dc2626':''}">${g.name[0].toUpperCase()}</div>
         <div class="assoc-info">
           <div class="assoc-name">${g.name}</div>
-          <div class="assoc-sub">${g.rooms.length} rooms · ${g.vc} VC · ${g.pct}%</div>
+          <div class="assoc-sub">${g.rooms.length} cuartos · ${g.vc} VC · ${g.pct}%</div>
           ${g.floors?`<div class="assoc-floors">📍 ${g.floors}</div>`:''}
           <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
             <div style="flex:1;height:5px;background:var(--bdr);border-radius:3px;overflow:hidden">
@@ -814,7 +769,7 @@ function renderAssoc(){
             </div>
             <span style="font-size:.7rem;font-weight:700;color:${g.over?'#dc2626':'#d97706'};white-space:nowrap">${g.credits}/${MAX_CREDITS}cr${g.over?' ⚠️':''}</span>
           </div>
-          ${g.issues.length?`<div style="font-size:.68rem;color:#dc2626;margin-top:2px">⚠️ ${g.issues.length} room(s) with notes</div>`:''}
+          ${g.issues.length?`<div style="font-size:.68rem;color:#dc2626;margin-top:2px">⚠️ ${g.issues.length} cuarto(s) con nota</div>`:''}
         </div>
         <div style="font-size:1.2rem;color:#9ca3af">›</div>
       </div>
@@ -823,7 +778,7 @@ function renderAssoc(){
     unassigned.length?`<div class="assoc-card" onclick="openAssocModal('__none__')">
       <div class="assoc-hdr">
         <div class="assoc-av" style="background:#6b7280">?</div>
-        <div class="assoc-info"><div class="assoc-name">Unassigned</div><div class="assoc-sub">${unassigned.length} rooms</div></div>
+        <div class="assoc-info"><div class="assoc-name">Sin asignar</div><div class="assoc-sub">${unassigned.length} cuartos</div></div>
         <div style="font-size:1.2rem;color:#9ca3af">›</div>
       </div></div>`:''
   ].join('');
@@ -831,7 +786,7 @@ function renderAssoc(){
 
 window.openAssocModal=function(assocId){
   curAssocId=assocId;
-  const emp=assocId==='__none__'?{name:'Unassigned'}:st.employees.find(e=>e.id===assocId);
+  const emp=assocId==='__none__'?{name:'Sin asignar'}:st.employees.find(e=>e.id===assocId);
   const rooms=sorted(assocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===assocId));
   const credits=totalCredits(rooms);
   document.getElementById('assocRoomsTitle').textContent=(emp?.name||'')+(getFloors(rooms)?' · '+getFloors(rooms):'')+' · '+credits+'cr';
@@ -849,10 +804,10 @@ function buildAssocGrid(rooms){
           <div style="font-size:1.05rem;font-weight:800">${r.number}</div>
           <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
           ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed">🕐 ${r.lateCheckout}</div>`:''}
-          <div style="font-size:.56rem;color:${s.color};opacity:.75;margin-top:2px">${r.dnd?'0':CREDITS[r.status]||1}cr</div>
+          <div style="font-size:.56rem;color:${s.color};opacity:.75;margin-top:2px">${roomCredits(r)}cr</div>
         </div>`;
       }).join('')+'</div>'
-    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">No rooms assigned</div>';
+    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos asignados</div>';
 }
 
 function refreshAssocModal(){
@@ -876,7 +831,7 @@ function renderProgress(){
   document.getElementById('tab-progress').innerHTML=`
     <div style="margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-weight:800;font-size:1rem">Today's Progress</div>
+        <div style="font-weight:800;font-size:1rem">Progreso del día</div>
         <div style="font-size:.8rem;color:var(--vc);font-weight:700">${vc}/${total} VC · ${pct}%</div>
       </div>
       <div style="height:8px;background:var(--bdr);border-radius:10px;overflow:hidden">
@@ -884,13 +839,13 @@ function renderProgress(){
       </div>
     </div>
     <div class="stat-grid">
-      <div class="stat-card"><div class="stat-val" style="color:var(--vc)">${cnt('vc')}</div><div class="stat-lbl">✅ VC Done</div></div>
-      <div class="stat-card"><div class="stat-val" style="color:var(--vd)">${cnt('vd')}</div><div class="stat-lbl">🛏️ VD Pending</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--vc)">${cnt('vc')}</div><div class="stat-lbl">✅ VC Listos</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--vd)">${cnt('vd')}</div><div class="stat-lbl">🛏️ VD Pendientes</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--odco)">${cnt('odco')}</div><div class="stat-lbl">🚪 OD COUT</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--odrf)">${cnt('odrf')+cnt('odfu')}</div><div class="stat-lbl">🔄 RFSH/FULL</div></div>
     </div>
     <div class="card">
-      <div class="card-hdr">Credits by Attendant</div>
+      <div class="card-hdr">Créditos por asociada</div>
       <div style="padding:10px 14px">
         ${summaries.map(s=>`<div style="margin-bottom:12px">
           <div style="display:flex;justify-content:space-between;margin-bottom:3px">
@@ -901,10 +856,10 @@ function renderProgress(){
             <div style="height:100%;width:${s.crPct}%;background:${s.over?'#dc2626':'#f59e0b'};border-radius:10px;transition:width .4s"></div>
           </div>
           <div style="display:flex;justify-content:space-between">
-            <span style="font-size:.68rem;color:var(--muted)">${s.norm} standard · ${s.rf} refresh</span>
+            <span style="font-size:.68rem;color:var(--muted)">${s.norm} normales · ${s.rf} refresh</span>
             <span style="font-size:.68rem;color:var(--vc)">${s.vc}/${s.total} VC</span>
           </div>
-        </div>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">No attendants</p>'}
+        </div>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">Sin asociadas</p>'}
       </div>
     </div>
     ${summaries.map(s=>`
@@ -912,30 +867,30 @@ function renderProgress(){
         <div class="card-hdr"><span>${s.name}</span><span style="font-weight:400">${s.credits}cr</span></div>
         ${s.issues.length?s.issues.map(r=>{const st2=STATUS[r.status]||STATUS.vd;return`<div style="display:flex;align-items:flex-start;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px;font-size:.8rem">
           <div>${st2.icon}</div>
-          <div style="flex:1"><strong>Room ${r.number}</strong> — ${st2.label}
-            ${r.missing?.length?`<div style="font-size:.72rem;color:#92400e;margin-top:2px">⚠️ Missing: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
+          <div style="flex:1"><strong>Cuarto ${r.number}</strong> — ${st2.label}
+            ${r.missing?.length?`<div style="font-size:.72rem;color:#92400e;margin-top:2px">⚠️ Faltantes: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
             ${r.note?`<div style="font-size:.72rem;color:#dc2626;margin-top:1px">📝 ${r.note}</div>`:''}
           </div></div>`;}).join('')
-        :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ No issues</div>`}
+        :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ Sin novedades</div>`}
       </div>`).join('')}
-    <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Send Report</button>`;
+    <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Enviar Reporte</button>`;
 }
 
 function renderSetup(){
   document.getElementById('tab-setup').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:12px">Settings</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:12px">Configuración</div>
     <div class="card">
-      <div class="card-hdr">Attendants <button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Add</button></div>
+      <div class="card-hdr">Asociadas <button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Agregar</button></div>
       ${st.employees.map(e=>`
         <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f4f8">
           <div style="width:34px;height:34px;border-radius:50%;background:#e8f4f8;color:#1a5f7a;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
           <div style="flex:1;font-weight:600;font-size:.88rem">${e.name}</div>
-          <div style="font-size:.72rem;color:#9ca3af">${st.rooms.filter(r=>r.assignedTo===e.id).length} rooms</div>
+          <div style="font-size:.72rem;color:#9ca3af">${st.rooms.filter(r=>r.assignedTo===e.id).length} cuartos</div>
           <button onclick="delEmp('${e.id}')" style="background:none;border:none;color:#ef4444;font-size:.9rem;cursor:pointer;padding:4px 6px">🗑</button>
-        </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">No attendants added</div>'}
+        </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
     </div>
     <div class="card">
-      <div class="card-hdr">Today's Rooms <button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Room</button></div>
+      <div class="card-hdr">Cuartos del día <button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Cuarto</button></div>
       ${sorted(st.rooms).map(r=>{
         const s=STATUS[r.status]||STATUS.vd,emp=st.employees.find(e=>e.id===r.assignedTo);
         return`<div style="display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px">
@@ -943,23 +898,23 @@ function renderSetup(){
           <span style="font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:10px;background:${s.bg};color:${s.color}">${s.label}</span>
           <div style="flex:1;font-size:.78rem;color:var(--muted)">${emp?emp.name.split(' ')[0]:''}</div>
           <button onclick="delRoomSetup('${r.id}')" style="background:none;border:none;color:#ef4444;font-size:.85rem;cursor:pointer;padding:3px 5px">🗑</button>
-        </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">No rooms. Use 📄 PDF to import.</div>'}
+        </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📄 PDF.</div>'}
     </div>
-    <button class="btn btn-block" style="background:#fff3cd;color:#856404;border:none;font-size:.9rem;font-weight:700;margin-bottom:8px" onclick="newDay()">🔄 Reset Day</button>
+    <button class="btn btn-block" style="background:#fff3cd;color:#856404;border:none;font-size:.9rem;font-weight:700;margin-bottom:8px" onclick="newDay()">🔄 Reiniciar día</button>
     <div class="card" style="margin-top:4px">
-      <div class="card-hdr">📧 Report Email</div>
+      <div class="card-hdr">📧 Correo para reportes</div>
       <div style="padding:12px 14px;display:flex;gap:8px;align-items:center">
-        <input type="text" id="emailInput" value="${st.reportEmail}" placeholder="example@hotel.com" style="flex:1;font-size:.85rem">
-        <button class="btn btn-p btn-sm" onclick="saveEmail()">Save</button>
+        <input type="text" id="emailInput" value="${st.reportEmail}" placeholder="ejemplo@hotel.com" style="flex:1;font-size:.85rem">
+        <button class="btn btn-p btn-sm" onclick="saveEmail()">Guardar</button>
       </div>
     </div>`;
 }
 
-// ── IMPORT
+// ── IMPORTAR MANUAL
 const statusMap={co:'odco',cout:'odco',odco:'odco',rf:'odrf',rfsh:'odrf',odrf:'odrf',full:'odfu',odfu:'odfu',vd:'vd',vc:'vc',vp:'vp',od:'odco'};
 window.doImport=function(){
   const raw=document.getElementById('pasteInput').value.trim();
-  if(!raw){toast('⚠️ Paste a code first');return}
+  if(!raw){toast('⚠️ Pega un código primero');return}
   try{
     let empName='',roomStr=raw;
     if(raw.includes('|')&&raw.startsWith('EMP:')){const p=raw.split('|');empName=p[0].replace('EMP:','').trim();roomStr=p[1];}
@@ -969,47 +924,62 @@ window.doImport=function(){
     const ex=new Set(st.rooms.map(r=>r.number));let added=0;
     for(const item of items){const[num,code='odco']=item.split('-');if(!num||ex.has(num.trim()))continue;st.rooms.push({id:gid(),number:num.trim(),status:statusMap[code.trim().toLowerCase()]||'odco',assignedTo:empId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});ex.add(num.trim());added++;}
     document.getElementById('pasteInput').value='';closeModal('modalPaste');save();renderAll();
-    toast(`✅ ${added} rooms imported${empName?' → '+empName:''}`);
-  }catch(e){toast('⚠️ Invalid code')}
+    toast(`✅ ${added} cuartos importados${empName?' → '+empName:''}`);
+  }catch(e){toast('⚠️ Código inválido')}
 };
 
 // ── ROOM MODAL
 window.openRoomModal=function(id){
   curRoomId=id;const r=st.rooms.find(x=>x.id===id);if(!r)return;
-  document.getElementById('roomModalTitle').textContent=`Room ${r.number}`;
+  document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number}`;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   document.getElementById('stOpts').innerHTML=Object.entries(STATUS).map(([k,v])=>{
     const isCur=k===r.status,isOk=isCur||allowed.includes(k);
     return`<div class="st-opt ${isCur?'sel':''}" data-k="${k}" style="background:${v.bg};border-color:${isCur?'#1a5f7a':v.border};opacity:${isOk?1:.28};${!isOk?'pointer-events:none':''}" ${isOk?`onclick="selStatus('${k}')"`:''}> 
       <div class="st-opt-icon">${v.icon}</div>
       <div class="st-opt-label" style="color:${v.color}">${v.label}</div>
-      <div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'Unavailable'}</div>
+      <div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'No disponible'}</div>
     </div>`;
   }).join('');
   MISSING.forEach(m=>{const el=document.getElementById('mo-'+m.id);if(el)el.classList.toggle('sel',(r.missing||[]).includes(m.id))});
   const h=r.hangers!=null?r.hangers:4;
   document.getElementById('hangerCount').textContent=h;
-  document.getElementById('hangerNote').textContent=h<4?`⚠️ Missing ${4-h}`:'';
+  document.getElementById('hangerNote').textContent=h<4?`⚠️ Faltan ${4-h}`:'';
   document.getElementById('roomNote').value=r.note||'';
   const emp=st.employees.find(e=>e.id===r.assignedTo);
   document.getElementById('roomEmpLabel').textContent=emp?'👤 '+emp.name:'';
   document.getElementById('lsCheck').checked=!!st.lsDone[r.id];
+  // DND solo visible para RFSH y FULL
   const isDnd=r.status==='odrf'||r.status==='odfu';
   document.getElementById('dndSection').style.display=isDnd?'flex':'none';
   document.getElementById('dndCheck').checked=!!r.dnd;
-  document.getElementById('lateOpts').style.display=lateVisible(r.status)?'flex':'none';
+  // Late solo visible para cuartos ocupados (no VD/VC/VP)
+  const showLate=lateVisible(r.status);
+  document.getElementById('lateRow').style.display=showLate?'flex':'none';
   document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b.dataset.h===(r.lateCheckout||'')));
   openModal('modalRoom');
 };
+
 window.selStatus=function(k){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   if(k!==r.status&&!allowed.includes(k))return;
   r.status=k;
+
+  // Al cambiar a VD/VC/VP: limpiar late checkout y ocultar fila late
+  if(k==='vd'||k==='vc'||k==='vp'){
+    r.lateCheckout=null;
+    document.querySelectorAll('.late-btn').forEach(b=>b.classList.remove('on'));
+    document.getElementById('lateRow').style.display='none';
+  } else {
+    document.getElementById('lateRow').style.display=lateVisible(k)?'flex':'none';
+  }
+
+  // DND solo para RFSH y FULL
   const isDnd=k==='odrf'||k==='odfu';
   document.getElementById('dndSection').style.display=isDnd?'flex':'none';
   if(!isDnd){r.dnd=false;document.getElementById('dndCheck').checked=false;}
-  document.getElementById('lateOpts').style.display=lateVisible(k)?'flex':'none';
+
   save();
   const allowed2=VALID_TRANSITIONS[k]||Object.keys(STATUS);
   document.querySelectorAll('.st-opt').forEach(o=>{
@@ -1017,25 +987,29 @@ window.selStatus=function(k){
     const isCur=sk===k,isOk=isCur||allowed2.includes(sk);
     o.classList.toggle('sel',isCur);o.style.borderColor=isCur?'#1a5f7a':v.border;
     o.style.opacity=isOk?'1':'0.28';o.style.pointerEvents=isOk?'':'none';
-    o.querySelector('.st-opt-desc').textContent=isOk?v.desc:'Unavailable';
+    o.querySelector('.st-opt-desc').textContent=isOk?v.desc:'No disponible';
   });
   renderGrid();refreshAssocModal();
-  toast(`${STATUS[k]?.icon} Room ${r.number} → ${STATUS[k]?.label}`);
-  if(k==='vc')setTimeout(()=>closeModal('modalRoom'),500);
+  toast(`${STATUS[k]?.icon} Cuarto ${r.number} → ${STATUS[k]?.label}`);
+  // Auto-cerrar al seleccionar VC, VD o VP
+  if(k==='vc'||k==='vd'||k==='vp') setTimeout(()=>closeModal('modalRoom'),200);
 };
+
+// Late solo aplica a cuartos ocupados
 function lateVisible(s){return s==='odco'||s==='odrf'||s==='odfu'}
+
 window.setLate=function(btn){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   r.lateCheckout=btn.dataset.h||null;
   document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&btn.dataset.h));
   save();renderGrid();refreshAssocModal();
-  if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Room ${r.number}`);
+  if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Cuarto ${r.number}`);
 };
 window.autoSaveNote=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(r){r.note=document.getElementById('roomNote').value;save();}};
 window.saveLs=function(){
   const el=document.getElementById('lsCheck');if(!el||!curRoomId)return;
   st.lsDone[curRoomId]=el.checked;save();renderGrid();refreshAssocModal();
-  if(el.checked){toast('✅ Marked in Lightspeed');setTimeout(()=>closeModal('modalRoom'),500);}
+  if(el.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),500);}
 };
 window.togMissing=function(id){
   document.getElementById('mo-'+id).classList.toggle('sel');
@@ -1047,36 +1021,36 @@ window.adjHangers=function(d){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   r.hangers=Math.max(0,Math.min(4,(r.hangers!=null?r.hangers:4)+d));
   document.getElementById('hangerCount').textContent=r.hangers;
-  document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Missing ${4-r.hangers}`:'';
+  document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';
   save();renderGrid();refreshAssocModal();
 };
 window.saveDnd=function(){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   r.dnd=document.getElementById('dndCheck').checked;
   save();renderGrid();refreshAssocModal();
-  toast(r.dnd?'🚫 DND — no credit':'✅ DND removed');
+  toast(r.dnd?'🚫 DND — sin crédito':'✅ DND removido');
 };
 window.openAddRoomToAssoc=function(){
   const emp=curAssocId==='__none__'?null:st.employees.find(e=>e.id===curAssocId);
-  document.getElementById('quickAddTitle').textContent='Add Room'+(emp?' → '+emp.name.split(' ')[0]:'');
+  document.getElementById('quickAddTitle').textContent='Agregar cuarto'+(emp?' → '+emp.name.split(' ')[0]:'');
   document.getElementById('qaNum').value='';document.getElementById('qaStatus').value='odco';
   openModal('modalQuickAdd');setTimeout(()=>document.getElementById('qaNum').focus(),200);
 };
 window.doQuickAdd=function(){
   const num=document.getElementById('qaNum').value.trim();
-  if(!num){toast('⚠️ Enter room number');return}
-  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Room '+num+' already exists');return}
+  if(!num){toast('⚠️ Ingresa el número');return}
+  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Cuarto '+num+' ya existe');return}
   st.rooms.push({id:gid(),number:num,status:document.getElementById('qaStatus').value,assignedTo:curAssocId==='__none__'?null:curAssocId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
-  closeModal('modalQuickAdd');save();renderAll();refreshAssocModal();toast('🏠 Room '+num+' added');
+  closeModal('modalQuickAdd');save();renderAll();refreshAssocModal();toast('🏠 Cuarto '+num+' agregado');
 };
 window.openTransfer=function(){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  document.getElementById('transferTitle').textContent=`Transfer Room ${r.number}`;
-  document.getElementById('transferList').innerHTML=[{id:null,name:'Unassigned'},...st.employees].map(e=>{
+  document.getElementById('transferTitle').textContent=`Transferir cuarto ${r.number}`;
+  document.getElementById('transferList').innerHTML=[{id:null,name:'Sin asignar'},...st.employees].map(e=>{
     const isCur=e.id===r.assignedTo,rooms=e.id?st.rooms.filter(x=>x.assignedTo===e.id):st.rooms.filter(x=>!x.assignedTo);
     return`<div onclick="${isCur?'':(`doTransfer('${e.id||''}')`)}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f0f4f8;cursor:${isCur?'default':'pointer'};opacity:${isCur?.5:1}">
       <div style="width:38px;height:38px;border-radius:50%;background:${isCur?'#e2e8f0':'linear-gradient(135deg,#1a5f7a,#0d3d52)'};color:${isCur?'#9ca3af':'white'};font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:.9rem">${e.name}${isCur?' (current)':''}</div><div style="font-size:.72rem;color:var(--muted)">${rooms.length} rooms · ${totalCredits(rooms)}cr</div></div>
+      <div style="flex:1"><div style="font-weight:600;font-size:.9rem">${e.name}${isCur?' (actual)':''}</div><div style="font-size:.72rem;color:var(--muted)">${rooms.length} cuartos · ${totalCredits(rooms)}cr</div></div>
       ${!isCur?'<div style="font-size:1.1rem;color:#9ca3af">›</div>':''}
     </div>`;
   }).join('');
@@ -1086,54 +1060,60 @@ window.doTransfer=function(empId){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   const old=st.employees.find(e=>e.id===r.assignedTo),nw=st.employees.find(e=>e.id===empId);
   r.assignedTo=empId||null;save();renderAll();closeModal('modalTransfer');
-  toast(`🔄 ${r.number}: ${old?old.name:'Unassigned'} → ${nw?nw.name:'Unassigned'}`);
+  toast(`🔄 ${r.number}: ${old?old.name:'Sin asignar'} → ${nw?nw.name:'Sin asignar'}`);
   document.getElementById('roomEmpLabel').textContent=nw?'👤 '+nw.name:'';
   refreshAssocModal();
 };
 window.delRoom=function(){
   const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!confirm(`Delete room ${r?.number}?`))return;
-  st.rooms=st.rooms.filter(x=>x.id!==curRoomId);closeModal('modalRoom');save();renderAll();toast('🗑 Room deleted');
+  if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;
+  st.rooms=st.rooms.filter(x=>x.id!==curRoomId);closeModal('modalRoom');save();renderAll();toast('🗑 Cuarto eliminado');
 };
 
 // ── SETUP
 window.saveHotel=function(){const n=document.getElementById('hotelInput').value.trim();if(n){st.hotel=n;save();renderAll();}closeModal('modalHotel');};
-window.saveEmp=function(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' added');};
-window.delEmp=function(id){if(!confirm('Remove this attendant?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll();};
-window.delRoomSetup=function(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`Delete room ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll();};
-window.saveEmail=function(){const e=document.getElementById('emailInput')?.value.trim();if(!e)return;st.reportEmail=e;save();toast('📧 Email saved');};
-window.newDay=function(){if(!confirm('Reset the day? All rooms and staff will be removed.'))return;st.rooms=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Day reset');};
+window.saveEmp=function(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada');};
+window.delEmp=function(id){if(!confirm('¿Eliminar esta asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll();};
+window.delRoomSetup=function(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll();};
+window.saveEmail=function(){const e=document.getElementById('emailInput')?.value.trim();if(!e)return;st.reportEmail=e;save();toast('📧 Correo guardado');};
+window.newDay=function(){if(!confirm('¿Reiniciar el día? Se eliminarán todos los cuartos y asociadas.'))return;st.rooms=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Día reiniciado');};
 window.openAddRoom=function(){
   document.getElementById('addNum').value='';document.getElementById('addNote').value='';document.getElementById('addStatus').value='odco';
-  document.getElementById('addEmp').innerHTML='<option value="">Unassigned</option>'+st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  document.getElementById('addEmp').innerHTML='<option value="">Sin asignar</option>'+st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
   openModal('modalAddRoom');
 };
 window.saveAddRoom=function(){
   const num=document.getElementById('addNum').value.trim();
-  if(!num){toast('⚠️ Enter room number');return}
-  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Room '+num+' already exists');return}
+  if(!num){toast('⚠️ Ingresa el número');return}
+  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Cuarto '+num+' ya existe');return}
   st.rooms.push({id:gid(),number:num,status:document.getElementById('addStatus').value,assignedTo:document.getElementById('addEmp').value||null,note:document.getElementById('addNote').value.trim(),missing:[],hangers:4,lateCheckout:null,dnd:false});
-  closeModal('modalAddRoom');save();renderAll();toast('🏠 Room '+num+' added');
+  closeModal('modalAddRoom');save();renderAll();toast('🏠 Cuarto '+num+' agregado');
 };
+
+// ── REPORTE — incluye ganchos por cuarto
 window.sendReport=function(){
-  if(!st.reportEmail){const e=prompt('Report email address?');if(!e)return;st.reportEmail=e.trim();save();}
+  if(!st.reportEmail){const e=prompt('¿Correo para los reportes?');if(!e)return;st.reportEmail=e.trim();save();}
   const d=new Date();
-  let body=`HOUSEKEEPING REPORT - ${st.hotel}\n${d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${'='.repeat(40)}\n\n`;
+  let body=`REPORTE HOUSEKEEPING - ${st.hotel}\n${d.toLocaleDateString('es-MX',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${'='.repeat(40)}\n\n`;
   const cnt=k=>st.rooms.filter(x=>x.status===k).length;
-  body+=`SUMMARY\nTotal: ${st.rooms.length} rooms · ${totalCredits(st.rooms)} credits\nVC: ${cnt('vc')} · VD: ${cnt('vd')} · OD COUT: ${cnt('odco')} · OD RFSH: ${cnt('odrf')} · FULL: ${cnt('odfu')} · VP: ${cnt('vp')}\n\n`;
+  body+=`RESUMEN\nTotal: ${st.rooms.length} cuartos · ${totalCredits(st.rooms)} créditos\nVC: ${cnt('vc')} · VD: ${cnt('vd')} · OD COUT: ${cnt('odco')} · OD RFSH: ${cnt('odrf')} · FULL: ${cnt('odfu')} · VP: ${cnt('vp')}\n\n`;
   st.employees.forEach(e=>{
     const rooms=st.rooms.filter(x=>x.assignedTo===e.id),credits=totalCredits(rooms);
     const norm=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu');
     const rf=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd);
     const dnd=rooms.filter(x=>x.dnd);
-    body+=`${'─'.repeat(30)}\n${e.name}\n${rooms.length} rooms · ${rooms.filter(x=>x.status==='vc').length} VC · ${credits}/${MAX_CREDITS}cr\n`;
-    body+=`Standard: ${norm.map(r=>r.number).join(', ')||'none'}\nRefresh/Full: ${rf.map(r=>r.number).join(', ')||'none'}\n`;
-    if(dnd.length)body+=`DND: ${dnd.map(r=>r.number).join(', ')}\n`;
+    body+=`${'─'.repeat(30)}\n${e.name}\n${rooms.length} cuartos · ${rooms.filter(x=>x.status==='vc').length} VC · ${credits}/${MAX_CREDITS}cr\n`;
+    body+=`Normales: ${norm.map(r=>r.number).join(', ')||'ninguno'}\nRefresh/Full: ${rf.map(r=>r.number).join(', ')||'ninguno'}\n`;
+    if(dnd.length) body+=`DND: ${dnd.map(r=>r.number).join(', ')}\n`;
+    // Ganchos faltantes
+    const hangerIssues=rooms.filter(x=>(x.hangers!=null?x.hangers:4)<4);
+    if(hangerIssues.length) body+=`Ganchos: ${hangerIssues.map(r=>`Cuarto ${r.number} (${r.hangers!=null?r.hangers:4}/4)`).join(', ')}\n`;
+    // Novedades
     const issues=rooms.filter(x=>x.missing?.length||x.note);
-    if(issues.length){issues.forEach(r=>{body+=`• Room ${r.number}: `;if(r.missing?.length)body+=r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ');if(r.note)body+=' — '+r.note;body+='\n';});}
+    if(issues.length){issues.forEach(r=>{body+=`• Cuarto ${r.number}: `;if(r.missing?.length)body+=r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ');if(r.note)body+=' — '+r.note;body+='\n';});}
     body+='\n';
   });
-  window.location.href=`mailto:${st.reportEmail}?subject=${encodeURIComponent('HK Report '+st.hotel+' '+d.toLocaleDateString('en-US'))}&body=${encodeURIComponent(body)}`;
+  window.location.href=`mailto:${st.reportEmail}?subject=${encodeURIComponent('Reporte HK '+st.hotel+' '+d.toLocaleDateString('es-MX'))}&body=${encodeURIComponent(body)}`;
 };
 
 // ── NAV
@@ -1170,8 +1150,8 @@ window.toast=function(msg){const el=document.getElementById('toast');el.textCont
 
 // ── INIT
 const d=new Date();
-const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 document.getElementById('hdate').textContent=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
 renderAll();
 </script>
