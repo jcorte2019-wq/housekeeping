@@ -123,7 +123,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 
 /* PAGES */
 .page{display:none;padding:10px}
-.page.on{display:block}
+.page.on{display:block;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
 /* ROOM GRID */
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -136,6 +137,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 .tile:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .tile:active{transform:scale(.93);box-shadow:none}
+.tile.status-flash{animation:flashIn .3s ease;}
+@keyframes flashIn{0%{transform:scale(1.06);opacity:.7}100%{transform:scale(1);opacity:1}}
 .tile-icon{font-size:1.3rem;margin-bottom:3px;line-height:1}
 .tile-num{font-size:1.15rem;font-weight:800;letter-spacing:-.02em}
 .tile-status{font-size:.6rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-top:3px;line-height:1.2}
@@ -244,7 +247,8 @@ textarea{min-height:60px;resize:none}
 
 /* TOAST */
 #toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(12px);background:#0f1923;color:white;padding:10px 20px;border-radius:24px;font-size:.82rem;font-weight:500;z-index:999;opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3),0 2px 6px rgba(0,0,0,.2)}
-#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0);animation:toastIn .28s cubic-bezier(.34,1.56,.64,1)}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(16px) scale(.9)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
 
 /* PDF MODAL */
 .pdf-drop{border:2px dashed #93c5fd;border-radius:12px;padding:32px 16px;text-align:center;cursor:pointer;transition:all .2s;background:#f0f7ff;position:relative;margin-bottom:14px}
@@ -261,7 +265,7 @@ textarea{min-height:60px;resize:none}
 .pdf-att-name{font-weight:700;font-size:.88rem;color:var(--p)}
 .pdf-att-badges{display:flex;gap:4px;flex-wrap:wrap}
 .pdf-att-badge{font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:20px}
-.pdf-att-rooms{display:flex;flex-wrap:wrap;gap:4px;padding:8px 12px}
+.pdf-att-cuartos{display:flex;flex-wrap:wrap;gap:4px;padding:8px 12px}
 .pdf-room-chip{font-size:.7rem;font-family:monospace;padding:3px 8px;border-radius:6px;border:1px solid var(--bdr);background:white}
 .pdf-room-chip.vd{border-color:#93c5fd;color:#2563eb;background:#eff6ff}
 .pdf-room-chip.cout{border-color:#fcd34d;color:#d97706;background:#fffbeb}
@@ -329,10 +333,10 @@ textarea{min-height:60px;resize:none}
 
 <div id="appWrap">
   <nav class="nav">
-    <button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Rooms</button>
+    <button class="nav-btn on" onclick="showTab('cuartos',this)"><span class="ni">🏠</span>Rooms</button>
     <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Staff</button>
     <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progress</button>
-    <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Settings</button>
+    <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Configuración</button>
   </nav>
 
   <div id="contentWrap">
@@ -345,7 +349,7 @@ textarea{min-height:60px;resize:none}
       <button class="filt" data-f="odfu" onclick="setFilter('odfu',this)" style="background:var(--odrf-bg);color:var(--odrf)">FULL</button>
       <button class="filt" data-f="vp"   onclick="setFilter('vp',this)"   style="background:var(--vp-bg);color:var(--vp)">VP</button>
     </div>
-    <div class="page on" id="tab-rooms"><div class="grid" id="roomsGrid"></div></div>
+    <div class="page on" id="tab-cuartos"><div class="grid" id="cuartosGrid"></div></div>
     <div class="page" id="tab-assoc"><div id="assocContent"></div></div>
     <div class="page" id="tab-progress"></div>
     <div class="page" id="tab-setup"></div>
@@ -423,7 +427,7 @@ textarea{min-height:60px;resize:none}
           </label>
         </div>
       </div>
-      <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Missing Items</div>
+      <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Faltan Items</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
         <div class="mo" id="mo-towels_pillows" onclick="togMissing('towels_pillows')" style="padding:6px 7px;font-size:.7rem">🛁 Towels/Pillows</div>
         <div class="mo" id="mo-soap_tp_coffee" onclick="togMissing('soap_tp_coffee')" style="padding:6px 7px;font-size:.7rem">🧴 Soap/Paper/Coffee</div>
@@ -433,7 +437,7 @@ textarea{min-height:60px;resize:none}
         <div class="mo" id="mo-damaged" onclick="togMissing('damaged')" style="padding:6px 7px;font-size:.7rem">🔧 Damage</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;background:#f8fafc;border-radius:8px;padding:7px 10px">
-        <span style="font-size:.78rem;font-weight:600">🪝 Hangers:</span>
+        <span style="font-size:.78rem;font-weight:600">🪝 Ganchos:</span>
         <button onclick="adjHangers(-1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
         <span id="hangerCount" style="font-size:1rem;font-weight:800;min-width:18px;text-align:center">4</span>
         <button onclick="adjHangers(1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
@@ -456,13 +460,13 @@ textarea{min-height:60px;resize:none}
 </div>
 
 <!-- QUICK ADD -->
-<div class="overlay" id="modalQuickAdd" style="z-index:600">
+<div class="overlay" id="modalQuick+ Agregar" style="z-index:600">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title" id="quickAddTitle">Add Room</span><button class="sheet-close" onclick="closeModal('modalQuickAdd')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title" id="quick+ AgregarTitle">Agregar Cuarto</span><button class="sheet-close" onclick="closeModal('modalQuick+ Agregar')">✕</button></div>
     <div class="sheet-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        <div class="fg"><label>Room #</label><input type="text" id="qaNum" placeholder="201" onkeydown="if(event.key==='Enter')doQuickAdd()"></div>
+        <div class="fg"><label>Cuarto #</label><input type="text" id="qaNum" placeholder="201" onkeydown="if(event.key==='Enter')doQuick+ Agregar()"></div>
         <div class="fg"><label>Status</label>
           <select id="qaStatus">
             <option value="odco">OD COUT</option><option value="odrf">OD RFSH</option>
@@ -472,7 +476,7 @@ textarea{min-height:60px;resize:none}
         </div>
       </div>
     </div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalQuickAdd')">Cancel</button><button class="btn btn-p" onclick="doQuickAdd()">Add</button></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalQuick+ Agregar')">Cancel</button><button class="btn btn-p" onclick="doQuick+ Agregar()">+ Agregar</button></div>
   </div>
 </div>
 
@@ -496,29 +500,29 @@ textarea{min-height:60px;resize:none}
 </div>
 
 <!-- ADD EMP -->
-<div class="overlay" id="modalAddEmp">
+<div class="overlay" id="modal+ AgregarEmp">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">Add Attendant</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">+ Agregar Attendant</span><button class="sheet-close" onclick="closeModal('modal+ AgregarEmp')">✕</button></div>
     <div class="sheet-body"><div class="fg"><label>Name</label><input type="text" id="empInput" placeholder="Full name" onkeydown="if(event.key==='Enter')saveEmp()"></div></div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddEmp')">Cancel</button><button class="btn btn-p" onclick="saveEmp()">Add</button></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modal+ AgregarEmp')">Cancel</button><button class="btn btn-p" onclick="saveEmp()">+ Agregar</button></div>
   </div>
 </div>
 
 <!-- ADD ROOM -->
-<div class="overlay" id="modalAddRoom">
+<div class="overlay" id="modal+ AgregarRoom">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div class="sheet-hdr"><span class="sheet-title">Add Room</span><button class="sheet-close" onclick="closeModal('modalAddRoom')">✕</button></div>
+    <div class="sheet-hdr"><span class="sheet-title">Agregar Cuarto</span><button class="sheet-close" onclick="closeModal('modal+ AgregarRoom')">✕</button></div>
     <div class="sheet-body">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="fg"><label>Room #</label><input type="text" id="addNum" placeholder="201"></div>
+        <div class="fg"><label>Cuarto #</label><input type="text" id="addNum" placeholder="201"></div>
         <div class="fg"><label>Status</label><select id="addStatus"><option value="odco">OD COUT</option><option value="odrf">OD RFSH</option><option value="odfu">FULL</option><option value="vd">VD</option><option value="vc">VC</option><option value="vp">VP</option></select></div>
       </div>
-      <div class="fg"><label>Assign to</label><select id="addEmp"><option value="">Unassigned</option></select></div>
-      <div class="fg"><label>Note</label><input type="text" id="addNote" placeholder="Optional"></div>
+      <div class="fg"><label>Assign to</label><select id="addEmp"><option value="">Sin asignar</option></select></div>
+      <div class="fg"><label>Note</label><input type="text" id="addNote" placeholder="Opcional"></div>
     </div>
-    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddRoom')">Cancel</button><button class="btn btn-p" onclick="saveAddRoom()">Add</button></div>
+    <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modal+ AgregarRoom')">Cancel</button><button class="btn btn-p" onclick="save+ AgregarRoom()">+ Agregar</button></div>
   </div>
 </div>
 
@@ -529,7 +533,7 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-hdr">
       <span class="sheet-title" id="assocRoomsTitle">Rooms</span>
       <div style="display:flex;gap:6px;align-items:center">
-        <button onclick="openAddRoomToAssoc()" style="background:#1a5f7a;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:.75rem;font-weight:600;cursor:pointer">+ Room</button>
+        <button onclick="open+ AgregarRoomToAssoc()" style="background:#1a5f7a;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:.75rem;font-weight:600;cursor:pointer">+ Room</button>
         <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
       </div>
     </div>
@@ -560,8 +564,8 @@ document.head.appendChild(pdfScript);
 pdfScript.onload = () => { pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; window._pdfReady=true; };
 
 // ── STATE
-window.st = { hotel:'Aloft Houston Shenandoah', employees:[], rooms:[], lsDone:{}, reportEmail:'' };
-let curTab='rooms', curFilters=new Set(['all']), curRoomId=null, curAssocId=null;
+window.st = { hotel:'Aloft Houston Shenandoah', employees:[], cuartos:[], lsDone:{}, reportEmail:'' };
+let curTab='cuartos', curFilters=new Set(['all']), curRoomId=null, curAssocId=null;
 let saveTimeout=null, ignoreNextSnapshot=false;
 window.gid = () => Math.random().toString(36).substr(2,9);
 
@@ -571,7 +575,7 @@ window.save = function(){
   setSyncDot('syncing');
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(async()=>{
-    try{ ignoreNextSnapshot=true; await setDoc(DOC,{hotel:st.hotel,employees:st.employees,rooms:st.rooms,lsDone:st.lsDone,reportEmail:st.reportEmail,updatedAt:Date.now()}); setSyncDot('ok'); }
+    try{ ignoreNextSnapshot=true; await setDoc(DOC,{hotel:st.hotel,employees:st.employees,cuartos:st.cuartos,lsDone:st.lsDone,reportEmail:st.reportEmail,updatedAt:Date.now()}); setSyncDot('ok'); }
     catch(e){ console.error(e); setSyncDot('error'); toast('⚠️ Error saving'); }
   },600);
 };
@@ -580,7 +584,7 @@ onSnapshot(DOC,(snap)=>{
   if(ignoreNextSnapshot){ignoreNextSnapshot=false;return;}
   if(snap.exists()){
     const d=snap.data();
-    st.hotel=d.hotel||st.hotel; st.employees=d.employees||[]; st.rooms=d.rooms||[];
+    st.hotel=d.hotel||st.hotel; st.employees=d.employees||[]; st.cuartos=d.cuartos||[];
     st.lsDone=d.lsDone||{}; st.reportEmail=d.reportEmail||'';
     renderAll(); setSyncDot('ok');
   }
@@ -590,18 +594,18 @@ setTimeout(()=>{const ls=document.getElementById('loadScreen');if(ls)ls.style.di
 
 // ── STATUS DEFS
 window.STATUS={
-  vd:  {label:'VD',     desc:'Vacant Dirty',              color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
-  vc:  {label:'VC',     desc:'Vacant Clean',               color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
-  odco:{label:'OD COUT',desc:'Occupied — checkout today',  color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
-  odrf:{label:'OD RFSH',desc:'Occupied — refresh requested',color:'var(--odrf)',bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
-  odfu:{label:'FULL',   desc:'Full refresh + linen change', color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄✨'},
-  vp:  {label:'VP',     desc:'Vacant — issue reported',    color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
+  vd:  {label:'VD',     desc:'Vacante sucio',              color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
+  vc:  {label:'VC',     desc:'Vacante limpio',               color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
+  odco:{label:'OD COUT',desc:'Ocupado — salida hoy',  color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
+  odrf:{label:'OD RFSH',desc:'Ocupado — refresh',color:'var(--odrf)',bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
+  odfu:{label:'FULL',   desc:'Full refresh + cambio ropa', color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄✨'},
+  vp:  {label:'VP',     desc:'Vacante — con problema',    color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
 };
 const VALID_TRANSITIONS={odco:['vd','vp','odrf','odfu'],odrf:['vd','vp','vc'],odfu:['vd','vp','vc'],vd:['vc','vp'],vp:['vc','vd'],vc:['vd','vp','odco','odrf','odfu']};
-window.CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:0.5};
+window.CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:1}; // FULL = 1 credit
 const MAX_CREDITS=16;
 function roomCredits(r){if(r.dnd)return 0;return CREDITS[r.status]||1}
-function totalCredits(rooms){return rooms.reduce((s,r)=>s+roomCredits(r),0)}
+function totalCredits(cuartos){return cuartos.reduce((s,r)=>s+roomCredits(r),0)}
 const MISSING=[
   {id:'towels_pillows',label:'Towels/Pillows'},{id:'soap_tp_coffee',label:'Soap/Paper/Coffee'},
   {id:'remote',label:'TV Remote'},{id:'hairdryer',label:'Hair Dryer'},
@@ -630,19 +634,19 @@ function parsePdfText(rawText){
   if(!headers.length) return [];
   const result=new Map(),order=[];
   function extractRooms(seg,att){
-    const ex=new Set(att.rooms.map(r=>r.number));
+    const ex=new Set(att.cuartos.map(r=>r.number));
     const re=/(\d{3})\s+\S+\s+\d+\s+(?:VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP)[^H]*HK Package Information:\s+(\w+)/gi;
     let rm;
-    while((rm=re.exec(seg))!==null) if(!ex.has(rm[1])){att.rooms.push({number:rm[1],status:pdfResolveCode(rm[2],rm[3])});ex.add(rm[1]);}
+    while((rm=re.exec(seg))!==null) if(!ex.has(rm[1])){att.cuartos.push({number:rm[1],status:pdfResolveCode(rm[2],rm[3])});ex.add(rm[1]);}
   }
   headers.forEach((hdr,idx)=>{
     const key=hdr.name+'|||'+hdr.code;
-    if(!result.has(key)){result.set(key,{name:hdr.name,code:hdr.code,rooms:[]});order.push(key);}
+    if(!result.has(key)){result.set(key,{name:hdr.name,code:hdr.code,cuartos:[]});order.push(key);}
     extractRooms(text.slice(idx===0?0:headers[idx-1].end,hdr.start),result.get(key));
   });
   const lh=headers[headers.length-1],lk=lh.name+'|||'+lh.code;
   if(result.has(lk)) extractRooms(text.slice(lh.end),result.get(lk));
-  return order.map(k=>result.get(k)).filter(a=>a.rooms.length>0);
+  return order.map(k=>result.get(k)).filter(a=>a.cuartos.length>0);
 }
 async function extractPdfText(file){
   const buf=await file.arrayBuffer();
@@ -669,19 +673,19 @@ function showPdfStatus(type,msg){
 }
 window.confirmPdfImport=function(){
   if(!pdfParsed.length)return;
-  let added=0;
+  let agregado=0;
   for(const att of pdfParsed){
     let emp=st.employees.find(e=>e.name.toLowerCase()===att.name.toLowerCase());
     if(!emp){emp={id:gid(),name:att.name};st.employees.push(emp);}
-    const ex=new Set(st.rooms.map(r=>r.number));
-    for(const r of att.rooms){
+    const ex=new Set(st.cuartos.map(r=>r.number));
+    for(const r of att.cuartos){
       if(ex.has(r.number))continue;
-      st.rooms.push({id:gid(),number:r.number,status:r.status,assignedTo:emp.id,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
+      st.cuartos.push({id:gid(),number:r.number,status:r.status,assignedTo:emp.id,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
       ex.add(r.number);added++;
     }
   }
   save();renderAll();closePdfModal();
-  toast(`✅ ${added} rooms imported · ${pdfParsed.length} attendants`);
+  toast(`✅ ${added} cuartos imported · ${pdfParsed.length} attendants`);
 };
 async function handlePdfFiles(files){
   const pdfs=[...files].filter(f=>f.name.endsWith('.pdf')||f.type==='application/pdf');
@@ -695,14 +699,14 @@ async function handlePdfFiles(files){
   try{
     for(const file of pdfs){const text=await extractPdfText(file);pdfParsed.push(...parsePdfText(text));}
     if(!pdfParsed.length){showPdfStatus('error','No data found. Is this a Lightspeed PDF?');document.getElementById('pdfDrop').style.display='block';return;}
-    const totalRooms=pdfParsed.reduce((s,a)=>s+a.rooms.length,0);
-    const totalCr=pdfParsed.reduce((s,a)=>s+a.rooms.reduce((ss,r)=>ss+(r.status==='odrf'||r.status==='odfu'?0.5:1),0),0);
-    showPdfStatus('success',`✓ ${pdfParsed.length} attendant(s) · ${totalRooms} rooms · ${totalCr} credits`);
-    document.getElementById('pdfSummaryBar').innerHTML=`<span>👤 <strong>${pdfParsed.length}</strong> attendants</span><span>🚪 <strong>${totalRooms}</strong> rooms</span><span>⭐ <strong>${totalCr}</strong> credits</span>`;
+    const totalRooms=pdfParsed.reduce((s,a)=>s+a.cuartos.length,0);
+    const totalCr=pdfParsed.reduce((s,a)=>s+a.cuartos.reduce((ss,r)=>ss+(r.status==='odrf'||r.status==='odfu'?0.5:1),0),0);
+    showPdfStatus('success',`✓ ${pdfParsed.length} attendant(s) · ${totalRooms} cuartos · ${totalCr} credits`);
+    document.getElementById('pdfSummaryBar').innerHTML=`<span>👤 <strong>${pdfParsed.length}</strong> attendants</span><span>🚪 <strong>${totalRooms}</strong> cuartos</span><span>⭐ <strong>${totalCr}</strong> credits</span>`;
     document.getElementById('pdfAttList').innerHTML=pdfParsed.map(att=>{
-      const vd=att.rooms.filter(r=>r.status==='vd').length,cout=att.rooms.filter(r=>r.status==='odco').length,rfsh=att.rooms.filter(r=>r.status==='odrf').length,full=att.rooms.filter(r=>r.status==='odfu').length,vp=att.rooms.filter(r=>r.status==='vp').length;
-      const cr=att.rooms.reduce((s,r)=>s+(r.status==='odrf'||r.status==='odfu'?0.5:1),0);
-      const dup=att.rooms.filter(r=>st.rooms.find(x=>x.number===r.number));
+      const vd=att.cuartos.filter(r=>r.status==='vd').length,cout=att.cuartos.filter(r=>r.status==='odco').length,rfsh=att.cuartos.filter(r=>r.status==='odrf').length,full=att.cuartos.filter(r=>r.status==='odfu').length,vp=att.cuartos.filter(r=>r.status==='vp').length;
+      const cr=att.cuartos.reduce((s,r)=>s+(r.status==='odrf'||r.status==='odfu'?0.5:1),0);
+      const dup=att.cuartos.filter(r=>st.cuartos.find(x=>x.number===r.number));
       return`<div class="pdf-att-row">
         <div class="pdf-att-hdr">
           <div><div class="pdf-att-name">${att.name} <span style="font-size:.72rem;color:var(--muted);font-weight:400">(${att.code})</span></div>
@@ -716,8 +720,8 @@ async function handlePdfFiles(files){
             <span class="pdf-att-badge" style="background:var(--vc-bg);color:var(--vc)">${cr}cr</span>
           </div>
         </div>
-        <div class="pdf-att-rooms">
-          ${att.rooms.map(r=>{const cls=r.status==='vd'?'vd':r.status==='odrf'?'rfsh':r.status==='odfu'?'full':r.status==='vp'?'vp':'cout';const label=STATUS[r.status]?.label||r.status.toUpperCase();const d=st.rooms.find(x=>x.number===r.number);return`<span class="pdf-room-chip ${cls}" style="${d?'opacity:.35;text-decoration:line-through':''}">${r.number}·${label}</span>`;}).join('')}
+        <div class="pdf-att-cuartos">
+          ${att.cuartos.map(r=>{const cls=r.status==='vd'?'vd':r.status==='odrf'?'rfsh':r.status==='odfu'?'full':r.status==='vp'?'vp':'cout';const label=STATUS[r.status]?.label||r.status.toUpperCase();const d=st.cuartos.find(x=>x.number===r.number);return`<span class="pdf-room-chip ${cls}" style="${d?'opacity:.35;text-decoration:line-through':''}">${r.number}·${label}</span>`;}).join('')}
         </div>
       </div>`;
     }).join('');
@@ -736,7 +740,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ── RENDER
 window.renderAll=function(){
   renderPills();
-  if(curTab==='rooms')    renderGrid();
+  if(curTab==='cuartos')    renderGrid();
   if(curTab==='assoc')    renderAssoc();
   if(curTab==='progress') renderProgress();
   if(curTab==='setup')    renderSetup();
@@ -744,7 +748,7 @@ window.renderAll=function(){
 
 function renderPills(){
   document.getElementById('hotelName').innerHTML='🏨 '+st.hotel+' <span class="sync-dot" id="syncDot"></span>';
-  const r=st.rooms,total=r.length;
+  const r=st.cuartos,total=r.length;
   const cnt=k=>r.filter(x=>x.status===k).length;
   const vc=cnt('vc');
   const pct=total?Math.round(vc/total*100):0;
@@ -763,17 +767,17 @@ function renderPills(){
 }
 
 function sorted(arr){return[...arr].sort((a,b)=>a.number.localeCompare(b.number,undefined,{numeric:true}))}
-function getFloors(rooms){const f=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));return[...f].sort().map(x=>`F${x}`).join(', ')}
+function getFloors(cuartos){const f=new Set(cuartos.map(r=>Math.floor(parseInt(r.number)/100)));return[...f].sort().map(x=>`F${x}`).join(', ')}
 
 function renderGrid(){
   const isAll=curFilters.has('all');
-  const rooms=sorted(st.rooms.filter(r=>isAll||curFilters.has(r.status)));
-  if(!rooms.length){
-    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No rooms yet.</p><small>Tap 📄 PDF to import.</small></div>`;
+  const cuartos=sorted(st.cuartos.filter(r=>isAll||curFilters.has(r.status)));
+  if(!cuartos.length){
+    document.getElementById('cuartosGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>No cuartos yet.</p><small>Tap 📄 PDF to import.</small></div>`;
     return;
   }
-  const s2=[...rooms.filter(r=>!st.lsDone[r.id]),...rooms.filter(r=>st.lsDone[r.id])];
-  document.getElementById('roomsGrid').innerHTML=s2.map(r=>{
+  const s2=[...cuartos.filter(r=>!st.lsDone[r.id]),...cuartos.filter(r=>st.lsDone[r.id])];
+  document.getElementById('cuartosGrid').innerHTML=s2.map(r=>{
     const s=STATUS[r.status]||STATUS.vd,emp=st.employees.find(e=>e.id===r.assignedTo),rep=st.lsDone[r.id];
     const cr=roomCredits(r);
     return`<div class="tile s-${r.status}" onclick="openRoomModal('${r.id}')" style="${rep?'opacity:.45;':''}">
@@ -791,22 +795,22 @@ function renderGrid(){
 function renderAssoc(){
   const el=document.getElementById('assocContent');
   const groups=st.employees.map(e=>{
-    const rooms=sorted(st.rooms.filter(r=>r.assignedTo===e.id));
-    const vc=rooms.filter(r=>r.status==='vc').length;
-    const pct=rooms.length?Math.round(vc/rooms.length*100):0;
-    const credits=totalCredits(rooms),over=credits>MAX_CREDITS;
+    const cuartos=sorted(st.cuartos.filter(r=>r.assignedTo===e.id));
+    const vc=cuartos.filter(r=>r.status==='vc').length;
+    const pct=cuartos.length?Math.round(vc/cuartos.length*100):0;
+    const credits=totalCredits(cuartos),over=credits>MAX_CREDITS;
     const crPct=Math.min(Math.round(credits/MAX_CREDITS*100),100);
-    return{...e,rooms,vc,pct,floors:getFloors(rooms),credits,over,crPct,issues:rooms.filter(r=>r.missing?.length||r.note)};
+    return{...e,cuartos,vc,pct,floors:getFloors(cuartos),credits,over,crPct,issues:cuartos.filter(r=>r.missing?.length||r.note)};
   });
-  const unassigned=sorted(st.rooms.filter(r=>!r.assignedTo));
-  if(!groups.length&&!unassigned.length){el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>No attendants.</p><small>Go to ⚙️ Settings to add.</small></div>`;return;}
+  const unassigned=sorted(st.cuartos.filter(r=>!r.assignedTo));
+  if(!groups.length&&!unassigned.length){el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>Sin asociadas.</p><small>Go to ⚙️ Configuración to add.</small></div>`;return;}
   el.innerHTML=[...groups.map(g=>`
     <div class="assoc-card" onclick="openAssocModal('${g.id}')">
       <div class="assoc-hdr">
         <div class="assoc-av" style="${g.over?'background:#dc2626':''}">${g.name[0].toUpperCase()}</div>
         <div class="assoc-info">
           <div class="assoc-name">${g.name}</div>
-          <div class="assoc-sub">${g.rooms.length} rooms · ${g.vc} VC · ${g.pct}%</div>
+          <div class="assoc-sub">${g.cuartos.length} cuartos · ${g.vc} VC · ${g.pct}%</div>
           ${g.floors?`<div class="assoc-floors">📍 ${g.floors}</div>`:''}
           <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
             <div style="flex:1;height:5px;background:var(--bdr);border-radius:3px;overflow:hidden">
@@ -823,7 +827,7 @@ function renderAssoc(){
     unassigned.length?`<div class="assoc-card" onclick="openAssocModal('__none__')">
       <div class="assoc-hdr">
         <div class="assoc-av" style="background:#6b7280">?</div>
-        <div class="assoc-info"><div class="assoc-name">Unassigned</div><div class="assoc-sub">${unassigned.length} rooms</div></div>
+        <div class="assoc-info"><div class="assoc-name">Sin asignar</div><div class="assoc-sub">${unassigned.length} cuartos</div></div>
         <div style="font-size:1.2rem;color:#9ca3af">›</div>
       </div></div>`:''
   ].join('');
@@ -831,17 +835,17 @@ function renderAssoc(){
 
 window.openAssocModal=function(assocId){
   curAssocId=assocId;
-  const emp=assocId==='__none__'?{name:'Unassigned'}:st.employees.find(e=>e.id===assocId);
-  const rooms=sorted(assocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===assocId));
-  const credits=totalCredits(rooms);
-  document.getElementById('assocRoomsTitle').textContent=(emp?.name||'')+(getFloors(rooms)?' · '+getFloors(rooms):'')+' · '+credits+'cr';
-  buildAssocGrid(rooms);openModal('modalAssocRooms');
+  const emp=assocId==='__none__'?{name:'Sin asignar'}:st.employees.find(e=>e.id===assocId);
+  const cuartos=sorted(assocId==='__none__'?st.cuartos.filter(r=>!r.assignedTo):st.cuartos.filter(r=>r.assignedTo===assocId));
+  const credits=totalCredits(cuartos);
+  document.getElementById('assocRoomsTitle').textContent=(emp?.name||'')+(getFloors(cuartos)?' · '+getFloors(cuartos):'')+' · '+credits+'cr';
+  buildAssocGrid(cuartos);openModal('modalAssocRooms');
 };
 
-function buildAssocGrid(rooms){
-  document.getElementById('assocRoomsBody').innerHTML=rooms.length
+function buildAssocGrid(cuartos){
+  document.getElementById('assocRoomsBody').innerHTML=cuartos.length
     ?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px">`+
-      rooms.map(r=>{
+      cuartos.map(r=>{
         const s=STATUS[r.status]||STATUS.vd,rep=st.lsDone[r.id];
         return`<div onclick="closeModal('modalAssocRooms');openRoomModal('${r.id}')" style="background:${s.bg};border-radius:10px;border:2px solid ${s.border};padding:10px 6px;cursor:pointer;text-align:center;position:relative;opacity:${rep?'.5':'1'}">
           ${rep?'<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>':''}
@@ -852,31 +856,31 @@ function buildAssocGrid(rooms){
           <div style="font-size:.56rem;color:${s.color};opacity:.75;margin-top:2px">${r.dnd?'0':CREDITS[r.status]||1}cr</div>
         </div>`;
       }).join('')+'</div>'
-    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">No rooms assigned</div>';
+    :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos asignados</div>';
 }
 
 function refreshAssocModal(){
   if(!curAssocId||!document.getElementById('modalAssocRooms').classList.contains('on'))return;
-  const rooms=sorted(curAssocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===curAssocId));
-  buildAssocGrid(rooms);
+  const cuartos=sorted(curAssocId==='__none__'?st.cuartos.filter(r=>!r.assignedTo):st.cuartos.filter(r=>r.assignedTo===curAssocId));
+  buildAssocGrid(cuartos);
 }
 
 function renderProgress(){
-  const cnt=k=>st.rooms.filter(x=>x.status===k).length;
-  const vc=cnt('vc'),total=st.rooms.length,pct=total?Math.round(vc/total*100):0;
+  const cnt=k=>st.cuartos.filter(x=>x.status===k).length;
+  const vc=cnt('vc'),total=st.cuartos.length,pct=total?Math.round(vc/total*100):0;
   const summaries=st.employees.map(e=>{
-    const rooms=st.rooms.filter(x=>x.assignedTo===e.id);
-    const vc=rooms.filter(x=>x.status==='vc').length,credits=totalCredits(rooms);
-    const norm=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu').length;
-    const rf=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd).length;
-    const issues=rooms.filter(x=>x.missing?.length||x.note),over=credits>MAX_CREDITS;
+    const cuartos=st.cuartos.filter(x=>x.assignedTo===e.id);
+    const vc=cuartos.filter(x=>x.status==='vc').length,credits=totalCredits(cuartos);
+    const norm=cuartos.filter(x=>x.status!=='odrf'&&x.status!=='odfu').length;
+    const rf=cuartos.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd).length;
+    const issues=cuartos.filter(x=>x.missing?.length||x.note),over=credits>MAX_CREDITS;
     const crPct=Math.min(Math.round(credits/MAX_CREDITS*100),100);
-    return{name:e.name,total:rooms.length,vc,credits,norm,rf,issues,over,crPct};
+    return{name:e.name,total:cuartos.length,vc,credits,norm,rf,issues,over,crPct};
   });
   document.getElementById('tab-progress').innerHTML=`
     <div style="margin-bottom:14px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-weight:800;font-size:1rem">Today's Progress</div>
+        <div style="font-weight:800;font-size:1rem">Progreso del día</div>
         <div style="font-size:.8rem;color:var(--vc);font-weight:700">${vc}/${total} VC · ${pct}%</div>
       </div>
       <div style="height:8px;background:var(--bdr);border-radius:10px;overflow:hidden">
@@ -884,13 +888,13 @@ function renderProgress(){
       </div>
     </div>
     <div class="stat-grid">
-      <div class="stat-card"><div class="stat-val" style="color:var(--vc)">${cnt('vc')}</div><div class="stat-lbl">✅ VC Done</div></div>
-      <div class="stat-card"><div class="stat-val" style="color:var(--vd)">${cnt('vd')}</div><div class="stat-lbl">🛏️ VD Pending</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--vc)">${cnt('vc')}</div><div class="stat-lbl">✅ VC Listos</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--vd)">${cnt('vd')}</div><div class="stat-lbl">🛏️ VD Pendientes</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--odco)">${cnt('odco')}</div><div class="stat-lbl">🚪 OD COUT</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--odrf)">${cnt('odrf')+cnt('odfu')}</div><div class="stat-lbl">🔄 RFSH/FULL</div></div>
     </div>
     <div class="card">
-      <div class="card-hdr">Credits by Attendant</div>
+      <div class="card-hdr">Créditos por Asociada</div>
       <div style="padding:10px 14px">
         ${summaries.map(s=>`<div style="margin-bottom:12px">
           <div style="display:flex;justify-content:space-between;margin-bottom:3px">
@@ -901,10 +905,10 @@ function renderProgress(){
             <div style="height:100%;width:${s.crPct}%;background:${s.over?'#dc2626':'#f59e0b'};border-radius:10px;transition:width .4s"></div>
           </div>
           <div style="display:flex;justify-content:space-between">
-            <span style="font-size:.68rem;color:var(--muted)">${s.norm} standard · ${s.rf} refresh</span>
+            <span style="font-size:.68rem;color:var(--muted)">${s.norm} normales · ${s.rf} refresh</span>
             <span style="font-size:.68rem;color:var(--vc)">${s.vc}/${s.total} VC</span>
           </div>
-        </div>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">No attendants</p>'}
+        </div>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">Sin asociadas</p>'}
       </div>
     </div>
     ${summaries.map(s=>`
@@ -912,42 +916,42 @@ function renderProgress(){
         <div class="card-hdr"><span>${s.name}</span><span style="font-weight:400">${s.credits}cr</span></div>
         ${s.issues.length?s.issues.map(r=>{const st2=STATUS[r.status]||STATUS.vd;return`<div style="display:flex;align-items:flex-start;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px;font-size:.8rem">
           <div>${st2.icon}</div>
-          <div style="flex:1"><strong>Room ${r.number}</strong> — ${st2.label}
+          <div style="flex:1"><strong>Cuarto ${r.number}</strong> — ${st2.label}
             ${r.missing?.length?`<div style="font-size:.72rem;color:#92400e;margin-top:2px">⚠️ Missing: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
             ${r.note?`<div style="font-size:.72rem;color:#dc2626;margin-top:1px">📝 ${r.note}</div>`:''}
           </div></div>`;}).join('')
-        :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ No issues</div>`}
+        :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ Sin novedades</div>`}
       </div>`).join('')}
-    <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Send Report</button>`;
+    <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Enviar Reporte</button>`;
 }
 
 function renderSetup(){
   document.getElementById('tab-setup').innerHTML=`
-    <div style="font-weight:700;font-size:1rem;margin-bottom:12px">Settings</div>
+    <div style="font-weight:700;font-size:1rem;margin-bottom:12px">Configuración</div>
     <div class="card">
-      <div class="card-hdr">Attendants <button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Add</button></div>
+      <div class="card-hdr">Asociadas <button class="btn btn-p btn-sm" onclick="openModal('modal+ AgregarEmp')">+ + Agregar</button></div>
       ${st.employees.map(e=>`
         <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f4f8">
           <div style="width:34px;height:34px;border-radius:50%;background:#e8f4f8;color:#1a5f7a;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
           <div style="flex:1;font-weight:600;font-size:.88rem">${e.name}</div>
-          <div style="font-size:.72rem;color:#9ca3af">${st.rooms.filter(r=>r.assignedTo===e.id).length} rooms</div>
+          <div style="font-size:.72rem;color:#9ca3af">${st.cuartos.filter(r=>r.assignedTo===e.id).length} cuartos</div>
           <button onclick="delEmp('${e.id}')" style="background:none;border:none;color:#ef4444;font-size:.9rem;cursor:pointer;padding:4px 6px">🗑</button>
-        </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">No attendants added</div>'}
+        </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
     </div>
     <div class="card">
-      <div class="card-hdr">Today's Rooms <button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Room</button></div>
-      ${sorted(st.rooms).map(r=>{
+      <div class="card-hdr">Cuartos del día <button class="btn btn-p btn-sm" onclick="open+ AgregarRoom()">+ Room</button></div>
+      ${sorted(st.cuartos).map(r=>{
         const s=STATUS[r.status]||STATUS.vd,emp=st.employees.find(e=>e.id===r.assignedTo);
         return`<div style="display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px">
           <div style="font-weight:700;min-width:40px;font-size:.9rem">${r.number}</div>
           <span style="font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:10px;background:${s.bg};color:${s.color}">${s.label}</span>
           <div style="flex:1;font-size:.78rem;color:var(--muted)">${emp?emp.name.split(' ')[0]:''}</div>
           <button onclick="delRoomSetup('${r.id}')" style="background:none;border:none;color:#ef4444;font-size:.85rem;cursor:pointer;padding:3px 5px">🗑</button>
-        </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">No rooms. Use 📄 PDF to import.</div>'}
+        </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📄 PDF para importar.</div>'}
     </div>
-    <button class="btn btn-block" style="background:#fff3cd;color:#856404;border:none;font-size:.9rem;font-weight:700;margin-bottom:8px" onclick="newDay()">🔄 Reset Day</button>
+    <button class="btn btn-block" style="background:#fff3cd;color:#856404;border:none;font-size:.9rem;font-weight:700;margin-bottom:8px" onclick="newDay()">🔄 Reiniciar día</button>
     <div class="card" style="margin-top:4px">
-      <div class="card-hdr">📧 Report Email</div>
+      <div class="card-hdr">📧 Correo para reportes</div>
       <div style="padding:12px 14px;display:flex;gap:8px;align-items:center">
         <input type="text" id="emailInput" value="${st.reportEmail}" placeholder="example@hotel.com" style="flex:1;font-size:.85rem">
         <button class="btn btn-p btn-sm" onclick="saveEmail()">Save</button>
@@ -966,30 +970,30 @@ window.doImport=function(){
     const items=roomStr.split(',').map(s=>s.trim()).filter(Boolean);
     let empId=null;
     if(empName){let emp=st.employees.find(e=>e.name.toLowerCase()===empName.toLowerCase());if(!emp){emp={id:gid(),name:empName};st.employees.push(emp);}empId=emp.id;}
-    const ex=new Set(st.rooms.map(r=>r.number));let added=0;
-    for(const item of items){const[num,code='odco']=item.split('-');if(!num||ex.has(num.trim()))continue;st.rooms.push({id:gid(),number:num.trim(),status:statusMap[code.trim().toLowerCase()]||'odco',assignedTo:empId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});ex.add(num.trim());added++;}
+    const ex=new Set(st.cuartos.map(r=>r.number));let agregado=0;
+    for(const item of items){const[num,code='odco']=item.split('-');if(!num||ex.has(num.trim()))continue;st.cuartos.push({id:gid(),number:num.trim(),status:statusMap[code.trim().toLowerCase()]||'odco',assignedTo:empId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});ex.add(num.trim());added++;}
     document.getElementById('pasteInput').value='';closeModal('modalPaste');save();renderAll();
-    toast(`✅ ${added} rooms imported${empName?' → '+empName:''}`);
-  }catch(e){toast('⚠️ Invalid code')}
+    toast(`✅ ${added} cuartos imported${empName?' → '+empName:''}`);
+  }catch(e){toast('⚠️ Código inválido')}
 };
 
 // ── ROOM MODAL
 window.openRoomModal=function(id){
-  curRoomId=id;const r=st.rooms.find(x=>x.id===id);if(!r)return;
-  document.getElementById('roomModalTitle').textContent=`Room ${r.number}`;
+  curRoomId=id;const r=st.cuartos.find(x=>x.id===id);if(!r)return;
+  document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number}`;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   document.getElementById('stOpts').innerHTML=Object.entries(STATUS).map(([k,v])=>{
     const isCur=k===r.status,isOk=isCur||allowed.includes(k);
     return`<div class="st-opt ${isCur?'sel':''}" data-k="${k}" style="background:${v.bg};border-color:${isCur?'#1a5f7a':v.border};opacity:${isOk?1:.28};${!isOk?'pointer-events:none':''}" ${isOk?`onclick="selStatus('${k}')"`:''}> 
       <div class="st-opt-icon">${v.icon}</div>
       <div class="st-opt-label" style="color:${v.color}">${v.label}</div>
-      <div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'Unavailable'}</div>
+      <div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'No disponible'}</div>
     </div>`;
   }).join('');
   MISSING.forEach(m=>{const el=document.getElementById('mo-'+m.id);if(el)el.classList.toggle('sel',(r.missing||[]).includes(m.id))});
   const h=r.hangers!=null?r.hangers:4;
   document.getElementById('hangerCount').textContent=h;
-  document.getElementById('hangerNote').textContent=h<4?`⚠️ Missing ${4-h}`:'';
+  document.getElementById('hangerNote').textContent=h<4?`⚠️ Faltan ${4-h}`:'';
   document.getElementById('roomNote').value=r.note||'';
   const emp=st.employees.find(e=>e.id===r.assignedTo);
   document.getElementById('roomEmpLabel').textContent=emp?'👤 '+emp.name:'';
@@ -1002,10 +1006,15 @@ window.openRoomModal=function(id){
   openModal('modalRoom');
 };
 window.selStatus=function(k){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
+  const r=st.cuartos.find(x=>x.id===curRoomId);if(!r)return;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   if(k!==r.status&&!allowed.includes(k))return;
   r.status=k;
+  // Clear late checkout when room becomes VD/VC/VP (no longer occupied)
+  if(k==='vd'||k==='vc'||k==='vp'){
+    r.lateCheckout=null;
+    document.querySelectorAll('.late-btn').forEach(b=>b.classList.remove('on'));
+  }
   const isDnd=k==='odrf'||k==='odfu';
   document.getElementById('dndSection').style.display=isDnd?'flex':'none';
   if(!isDnd){r.dnd=false;document.getElementById('dndCheck').checked=false;}
@@ -1017,120 +1026,129 @@ window.selStatus=function(k){
     const isCur=sk===k,isOk=isCur||allowed2.includes(sk);
     o.classList.toggle('sel',isCur);o.style.borderColor=isCur?'#1a5f7a':v.border;
     o.style.opacity=isOk?'1':'0.28';o.style.pointerEvents=isOk?'':'none';
-    o.querySelector('.st-opt-desc').textContent=isOk?v.desc:'Unavailable';
+    o.querySelector('.st-opt-desc').textContent=isOk?v.desc:'No disponible';
   });
   renderGrid();refreshAssocModal();
-  toast(`${STATUS[k]?.icon} Room ${r.number} → ${STATUS[k]?.label}`);
-  if(k==='vc')setTimeout(()=>closeModal('modalRoom'),500);
+  // Brief flash animation on the tile
+  setTimeout(()=>{const tile=document.querySelector(`[onclick*="'${curRoomId}'"]`);if(tile){tile.classList.add('status-flash');setTimeout(()=>tile.classList.remove('status-flash'),350);}},10);
+  toast(`${STATUS[k]?.icon} Cuarto ${r.number} → ${STATUS[k]?.label}`);
+  // Auto-close when status is VC, VD, or VP
+  if(k==='vc'||k==='vd'||k==='vp')setTimeout(()=>closeModal('modalRoom'),500);
 };
-function lateVisible(s){return s==='odco'||s==='odrf'||s==='odfu'}
+function lateVisible(s){return s==='odco'||s==='odrf'||s==='odfu'} // Only for occupied cuartos
 window.setLate=function(btn){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
+  const r=st.cuartos.find(x=>x.id===curRoomId);if(!r)return;
   r.lateCheckout=btn.dataset.h||null;
   document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&btn.dataset.h));
   save();renderGrid();refreshAssocModal();
-  if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Room ${r.number}`);
+  if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Cuarto ${r.number}`);
 };
-window.autoSaveNote=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(r){r.note=document.getElementById('roomNote').value;save();}};
+window.autoSaveNote=function(){const r=st.cuartos.find(x=>x.id===curRoomId);if(r){r.note=document.getElementById('roomNote').value;save();}};
 window.saveLs=function(){
   const el=document.getElementById('lsCheck');if(!el||!curRoomId)return;
   st.lsDone[curRoomId]=el.checked;save();renderGrid();refreshAssocModal();
-  if(el.checked){toast('✅ Marked in Lightspeed');setTimeout(()=>closeModal('modalRoom'),500);}
+  if(el.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),500);}
 };
 window.togMissing=function(id){
   document.getElementById('mo-'+id).classList.toggle('sel');
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
+  const r=st.cuartos.find(x=>x.id===curRoomId);if(!r)return;
   r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
   save();
 };
 window.adjHangers=function(d){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
+  const r=st.cuartos.find(x=>x.id===curRoomId);if(!r)return;
   r.hangers=Math.max(0,Math.min(4,(r.hangers!=null?r.hangers:4)+d));
   document.getElementById('hangerCount').textContent=r.hangers;
-  document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Missing ${4-r.hangers}`:'';
+  document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';
   save();renderGrid();refreshAssocModal();
 };
 window.saveDnd=function(){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
+  const r=st.cuartos.find(x=>x.id===curRoomId);if(!r)return;
   r.dnd=document.getElementById('dndCheck').checked;
   save();renderGrid();refreshAssocModal();
-  toast(r.dnd?'🚫 DND — no credit':'✅ DND removed');
+  toast(r.dnd?'🚫 DND — sin crédito':'✅ DND removido');
 };
-window.openAddRoomToAssoc=function(){
+window.open+ AgregarRoomToAssoc=function(){
   const emp=curAssocId==='__none__'?null:st.employees.find(e=>e.id===curAssocId);
-  document.getElementById('quickAddTitle').textContent='Add Room'+(emp?' → '+emp.name.split(' ')[0]:'');
+  document.getElementById('quick+ AgregarTitle').textContent='Agregar Cuarto'+(emp?' → '+emp.name.split(' ')[0]:'');
   document.getElementById('qaNum').value='';document.getElementById('qaStatus').value='odco';
-  openModal('modalQuickAdd');setTimeout(()=>document.getElementById('qaNum').focus(),200);
+  openModal('modalQuick+ Agregar');setTimeout(()=>document.getElementById('qaNum').focus(),200);
 };
-window.doQuickAdd=function(){
+window.doQuick+ Agregar=function(){
   const num=document.getElementById('qaNum').value.trim();
-  if(!num){toast('⚠️ Enter room number');return}
-  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Room '+num+' already exists');return}
-  st.rooms.push({id:gid(),number:num,status:document.getElementById('qaStatus').value,assignedTo:curAssocId==='__none__'?null:curAssocId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
-  closeModal('modalQuickAdd');save();renderAll();refreshAssocModal();toast('🏠 Room '+num+' added');
+  if(!num){toast('⚠️ Ingresa el número de cuarto');return}
+  if(st.cuartos.find(r=>r.number===num)){toast('⚠️ Cuarto '+num+' ya existe');return}
+  st.cuartos.push({id:gid(),number:num,status:document.getElementById('qaStatus').value,assignedTo:curAssocId==='__none__'?null:curAssocId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
+  closeModal('modalQuick+ Agregar');save();renderAll();refreshAssocModal();toast('🏠 Cuarto '+num+' agregado');
 };
 window.openTransfer=function(){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  document.getElementById('transferTitle').textContent=`Transfer Room ${r.number}`;
-  document.getElementById('transferList').innerHTML=[{id:null,name:'Unassigned'},...st.employees].map(e=>{
-    const isCur=e.id===r.assignedTo,rooms=e.id?st.rooms.filter(x=>x.assignedTo===e.id):st.rooms.filter(x=>!x.assignedTo);
+  const r=st.cuartos.find(x=>x.id===curRoomId);if(!r)return;
+  document.getElementById('transferTitle').textContent=`Transfer Cuarto ${r.number}`;
+  document.getElementById('transferList').innerHTML=[{id:null,name:'Sin asignar'},...st.employees].map(e=>{
+    const isCur=e.id===r.assignedTo,cuartos=e.id?st.cuartos.filter(x=>x.assignedTo===e.id):st.cuartos.filter(x=>!x.assignedTo);
     return`<div onclick="${isCur?'':(`doTransfer('${e.id||''}')`)}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f0f4f8;cursor:${isCur?'default':'pointer'};opacity:${isCur?.5:1}">
       <div style="width:38px;height:38px;border-radius:50%;background:${isCur?'#e2e8f0':'linear-gradient(135deg,#1a5f7a,#0d3d52)'};color:${isCur?'#9ca3af':'white'};font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:.9rem">${e.name}${isCur?' (current)':''}</div><div style="font-size:.72rem;color:var(--muted)">${rooms.length} rooms · ${totalCredits(rooms)}cr</div></div>
+      <div style="flex:1"><div style="font-weight:600;font-size:.9rem">${e.name}${isCur?' (current)':''}</div><div style="font-size:.72rem;color:var(--muted)">${cuartos.length} cuartos · ${totalCredits(cuartos)}cr</div></div>
       ${!isCur?'<div style="font-size:1.1rem;color:#9ca3af">›</div>':''}
     </div>`;
   }).join('');
   openModal('modalTransfer');
 };
 window.doTransfer=function(empId){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
+  const r=st.cuartos.find(x=>x.id===curRoomId);if(!r)return;
   const old=st.employees.find(e=>e.id===r.assignedTo),nw=st.employees.find(e=>e.id===empId);
   r.assignedTo=empId||null;save();renderAll();closeModal('modalTransfer');
-  toast(`🔄 ${r.number}: ${old?old.name:'Unassigned'} → ${nw?nw.name:'Unassigned'}`);
+  toast(`🔄 ${r.number}: ${old?old.name:'Sin asignar'} → ${nw?nw.name:'Sin asignar'}`);
   document.getElementById('roomEmpLabel').textContent=nw?'👤 '+nw.name:'';
   refreshAssocModal();
 };
 window.delRoom=function(){
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!confirm(`Delete room ${r?.number}?`))return;
-  st.rooms=st.rooms.filter(x=>x.id!==curRoomId);closeModal('modalRoom');save();renderAll();toast('🗑 Room deleted');
+  const r=st.cuartos.find(x=>x.id===curRoomId);
+  if(!confirm(`Eliminar cuarto ${r?.number}?`))return;
+  st.cuartos=st.cuartos.filter(x=>x.id!==curRoomId);closeModal('modalRoom');save();renderAll();toast('🗑 Cuarto deleted');
 };
 
 // ── SETUP
 window.saveHotel=function(){const n=document.getElementById('hotelInput').value.trim();if(n){st.hotel=n;save();renderAll();}closeModal('modalHotel');};
-window.saveEmp=function(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' added');};
-window.delEmp=function(id){if(!confirm('Remove this attendant?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll();};
-window.delRoomSetup=function(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`Delete room ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll();};
-window.saveEmail=function(){const e=document.getElementById('emailInput')?.value.trim();if(!e)return;st.reportEmail=e;save();toast('📧 Email saved');};
-window.newDay=function(){if(!confirm('Reset the day? All rooms and staff will be removed.'))return;st.rooms=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Day reset');};
-window.openAddRoom=function(){
+window.saveEmp=function(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modal+ AgregarEmp');save();renderAll();toast('👤 '+n+' agregado');};
+window.delEmp=function(id){if(!confirm('¿Eliminar esta asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.cuartos.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll();};
+window.delRoomSetup=function(id){const r=st.cuartos.find(x=>x.id===id);if(!confirm(`Eliminar cuarto ${r?.number}?`))return;st.cuartos=st.cuartos.filter(x=>x.id!==id);save();renderAll();};
+window.saveEmail=function(){const e=document.getElementById('emailInput')?.value.trim();if(!e)return;st.reportEmail=e;save();toast('📧 Correo guardado');};
+window.newDay=function(){if(!confirm('¿Reiniciar el día? Se eliminarán todos los cuartos y asociadas.'))return;st.cuartos=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Día reiniciado');};
+window.open+ AgregarRoom=function(){
   document.getElementById('addNum').value='';document.getElementById('addNote').value='';document.getElementById('addStatus').value='odco';
-  document.getElementById('addEmp').innerHTML='<option value="">Unassigned</option>'+st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
-  openModal('modalAddRoom');
+  document.getElementById('addEmp').innerHTML='<option value="">Sin asignar</option>'+st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  openModal('modal+ AgregarRoom');
 };
-window.saveAddRoom=function(){
+window.save+ AgregarRoom=function(){
   const num=document.getElementById('addNum').value.trim();
-  if(!num){toast('⚠️ Enter room number');return}
-  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Room '+num+' already exists');return}
-  st.rooms.push({id:gid(),number:num,status:document.getElementById('addStatus').value,assignedTo:document.getElementById('addEmp').value||null,note:document.getElementById('addNote').value.trim(),missing:[],hangers:4,lateCheckout:null,dnd:false});
-  closeModal('modalAddRoom');save();renderAll();toast('🏠 Room '+num+' added');
+  if(!num){toast('⚠️ Ingresa el número de cuarto');return}
+  if(st.cuartos.find(r=>r.number===num)){toast('⚠️ Cuarto '+num+' ya existe');return}
+  st.cuartos.push({id:gid(),number:num,status:document.getElementById('addStatus').value,assignedTo:document.getElementById('addEmp').value||null,note:document.getElementById('addNote').value.trim(),missing:[],hangers:4,lateCheckout:null,dnd:false});
+  closeModal('modal+ AgregarRoom');save();renderAll();toast('🏠 Cuarto '+num+' agregado');
 };
 window.sendReport=function(){
-  if(!st.reportEmail){const e=prompt('Report email address?');if(!e)return;st.reportEmail=e.trim();save();}
+  if(!st.reportEmail){const e=prompt('¿Correo para los reportes?');if(!e)return;st.reportEmail=e.trim();save();}
   const d=new Date();
-  let body=`HOUSEKEEPING REPORT - ${st.hotel}\n${d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${'='.repeat(40)}\n\n`;
-  const cnt=k=>st.rooms.filter(x=>x.status===k).length;
-  body+=`SUMMARY\nTotal: ${st.rooms.length} rooms · ${totalCredits(st.rooms)} credits\nVC: ${cnt('vc')} · VD: ${cnt('vd')} · OD COUT: ${cnt('odco')} · OD RFSH: ${cnt('odrf')} · FULL: ${cnt('odfu')} · VP: ${cnt('vp')}\n\n`;
+  let body=`REPORTE HOUSEKEEPING - ${st.hotel}\n${d.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}\n${'='.repeat(40)}\n\n`;
+  const cnt=k=>st.cuartos.filter(x=>x.status===k).length;
+  body+=`SUMMARY\nTotal: ${st.cuartos.length} cuartos · ${totalCredits(st.cuartos)} credits\nVC: ${cnt('vc')} · VD: ${cnt('vd')} · OD COUT: ${cnt('odco')} · OD RFSH: ${cnt('odrf')} · FULL: ${cnt('odfu')} · VP: ${cnt('vp')}\n\n`;
   st.employees.forEach(e=>{
-    const rooms=st.rooms.filter(x=>x.assignedTo===e.id),credits=totalCredits(rooms);
-    const norm=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu');
-    const rf=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd);
-    const dnd=rooms.filter(x=>x.dnd);
-    body+=`${'─'.repeat(30)}\n${e.name}\n${rooms.length} rooms · ${rooms.filter(x=>x.status==='vc').length} VC · ${credits}/${MAX_CREDITS}cr\n`;
-    body+=`Standard: ${norm.map(r=>r.number).join(', ')||'none'}\nRefresh/Full: ${rf.map(r=>r.number).join(', ')||'none'}\n`;
+    const cuartos=st.cuartos.filter(x=>x.assignedTo===e.id),credits=totalCredits(cuartos);
+    const norm=cuartos.filter(x=>x.status!=='odrf'&&x.status!=='odfu');
+    const rf=cuartos.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd);
+    const dnd=cuartos.filter(x=>x.dnd);
+    body+=`${'─'.repeat(30)}\n${e.name}\n${cuartos.length} cuartos · ${cuartos.filter(x=>x.status==='vc').length} VC · ${credits}/${MAX_CREDITS}cr\n`;
+    body+=`Normales: ${norm.map(r=>r.number).join(', ')||'none'}\nRefresh/Full: ${rf.map(r=>r.number).join(', ')||'none'}\n`;
     if(dnd.length)body+=`DND: ${dnd.map(r=>r.number).join(', ')}\n`;
-    const issues=rooms.filter(x=>x.missing?.length||x.note);
-    if(issues.length){issues.forEach(r=>{body+=`• Room ${r.number}: `;if(r.missing?.length)body+=r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ');if(r.note)body+=' — '+r.note;body+='\n';});}
+    // Hangers summary
+    const hangerIssues=cuartos.filter(x=>(x.hangers!=null?x.hangers:4)<4);
+    if(hangerIssues.length){
+      body+=`Ganchos: `;
+      body+=hangerIssues.map(r=>`Cuarto ${r.number} (${r.hangers!=null?r.hangers:4}/4)`).join(', ')+`\n`;
+    }
+    const issues=cuartos.filter(x=>x.missing?.length||x.note);
+    if(issues.length){issues.forEach(r=>{body+=`• Cuarto ${r.number}: `;if(r.missing?.length)body+=r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ');if(r.note)body+=' — '+r.note;body+='\n';});}
     body+='\n';
   });
   window.location.href=`mailto:${st.reportEmail}?subject=${encodeURIComponent('HK Report '+st.hotel+' '+d.toLocaleDateString('en-US'))}&body=${encodeURIComponent(body)}`;
@@ -1141,7 +1159,7 @@ window.showTab=function(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
   document.getElementById('tab-'+name).classList.add('on');
-  document.getElementById('filterBar').style.display=name==='rooms'?'flex':'none';
+  document.getElementById('filterBar').style.display=name==='cuartos'?'flex':'none';
   curTab=name;if(btn)btn.classList.add('on');renderAll();
 };
 window.setFilter=function(f,btn){
