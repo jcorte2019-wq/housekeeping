@@ -677,22 +677,15 @@ function pdfResolveCode(hk, pkg){
 function parsePdfText(rawText){
   // Normalize: collapse all whitespace to single spaces
   const text = rawText.replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
-  console.log('[PDF] Text length:', text.length, '| First 200:', text.substring(0,200));
 
   // Create fresh regex each call — avoids JS /g lastIndex bug
-  const headerRe = /For Schedule HK and Board \S+ and Attendant ([^(]+?)\s*\((\w+)\)\s+Page\s+(\d+)\s+of\s+(\d+)/gi;
+  // Match header with optional 'Page X of Y' - some PDF versions omit it
+  const headerRe = /For Schedule HK and Board \S+ and Attendant ([^(]+?)\s*\((\w+)\)(?:\s+Page\s+\d+\s+of\s+\d+)?(?=\s+For All Wings|\s+Ordered|\s+Room)/gi;
   const headers = [];
   let hm;
   while((hm = headerRe.exec(text)) !== null){
     headers.push({ name: hm[1].trim(), code: hm[2].trim(), start: hm.index, end: hm.index + hm[0].length });
   }
-  console.log('[PDF] Headers found:', headers.length, headers.map(h=>h.name));
-  // Debug: find what's near "Attendant" in the text
-  const attIdx = text.indexOf('Attendant');
-  if(attIdx >= 0) console.log('[PDF] Near Attendant:', JSON.stringify(text.substring(attIdx-20, attIdx+120)));
-  const schedIdx = text.indexOf('For Schedule');
-  if(schedIdx >= 0) console.log('[PDF] Near Schedule:', JSON.stringify(text.substring(schedIdx, schedIdx+150)));
-  else console.log('[PDF] No "For Schedule" found in text');
   if(!headers.length) return [];
 
   const result = new Map();
