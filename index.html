@@ -677,6 +677,7 @@ function pdfResolveCode(hk, pkg){
 function parsePdfText(rawText){
   // Normalize: collapse all whitespace to single spaces
   const text = rawText.replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
+  console.log('[PDF] Text length:', text.length, '| First 200:', text.substring(0,200));
 
   // Create fresh regex each call — avoids JS /g lastIndex bug
   const headerRe = /For Schedule HK and Board \S+ and Attendant ([^(]+?)\s*\((\w+)\)\s+Page\s+(\d+)\s+of\s+(\d+)/gi;
@@ -685,6 +686,7 @@ function parsePdfText(rawText){
   while((hm = headerRe.exec(text)) !== null){
     headers.push({ name: hm[1].trim(), code: hm[2].trim(), start: hm.index, end: hm.index + hm[0].length });
   }
+  console.log('[PDF] Headers found:', headers.length, headers.map(h=>h.name));
   if(!headers.length) return [];
 
   const result = new Map();
