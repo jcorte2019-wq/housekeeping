@@ -226,7 +226,7 @@ textarea{min-height:60px;resize:none}
   #assocContent{display:grid!important;grid-template-columns:repeat(2,1fr);gap:14px;align-items:start}
   .stat-grid{grid-template-columns:repeat(4,1fr)!important}
   .overlay{align-items:center!important;justify-content:center!important}
-  .sheet{max-width:580px;width:100%;border-radius:16px!important;margin:0;max-height:88vh}
+  .sheet{max-width:580px;width:100%;border-radius:16px!important;margin:0;max-height:88vh;overflow-y:auto}
   .sheet-handle{display:none}
   #toast{bottom:20px}
 }
@@ -418,6 +418,7 @@ textarea{min-height:60px;resize:none}
         </label>
       </div>
       <button id="btnSendMaint" onclick="openWOModal()" style="display:none;width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--mant-bd);background:var(--mant-bg);color:var(--mant);font-size:.82rem;font-weight:700;cursor:pointer">🔧 Enviar a Mantenimiento</button>
+      <div id="roomLog" style="margin-top:10px"></div>
     </div>
     <div class="sheet-foot" style="padding:8px 14px 14px">
       <button class="btn btn-r" style="flex:0;padding:8px 12px;font-size:.82rem" onclick="delRoom()">🗑</button>
@@ -701,6 +702,25 @@ document.addEventListener('DOMContentLoaded',()=>{
   input.addEventListener('change',()=>handlePdfFiles(input.files));
 });
 
+// ── ACTIVITY LOG
+function addLog(r, newStatus, empId, role){
+  if(!r.log) r.log=[];
+  const emp=st.employees.find(e=>e.id===empId);
+  const who = role==='supervisor'?'Supervisor':role==='maintenance'?'Mantenimiento':(emp?emp.name:'?');
+  r.log.unshift({ts:Date.now(), status:newStatus, who, role});
+  if(r.log.length>20) r.log=r.log.slice(0,20); // keep last 20
+}
+function fmtTime(ts){
+  if(!ts) return '';
+  const d=new Date(ts);
+  const now=new Date();
+  const diff=Math.round((now-d)/60000);
+  if(diff<1) return 'ahora';
+  if(diff<60) return `hace ${diff}m`;
+  if(diff<1440) return `hace ${Math.floor(diff/60)}h`;
+  return d.toLocaleDateString('es-MX',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
 // ── RENDER ALL
 window.renderAll=function(){
   if(currentRole==='supervisor'){
@@ -838,7 +858,11 @@ function woCard(wo,isSup){
       <button onclick="event.stopPropagation();resolveWO('${wo.id}','vd')" class="btn btn-o btn-sm">🛏️ VD</button>
       <button onclick="event.stopPropagation();resolveWO('${wo.id}','vp')" class="btn btn-r btn-sm">⚠️ VP</button>
     </div>`:isSup&&wo.status==='pending'?`<div style="padding:0 14px 12px"><button onclick="event.stopPropagation();deleteWO('${wo.id}')" class="btn btn-r btn-sm">🗑 Eliminar</button></div>`:''}
-    ${!isSup&&(wo.status==='pending'||wo.status==='in')?`<div style="padding:0 14px 12px"><button onclick="mantUpdateWO('${wo.id}')" class="btn btn-y btn-sm btn-block">${wo.status==='pending'?'🔨 Iniciar trabajo':'✔️ Marcar como terminado'}</button></div>`:''}
+    ${!isSup&&wo.status!=='resolved'?`<div style="padding:0 14px 12px;display:flex;gap:6px">
+    ${wo.status==='pending'?`<button onclick="mantUpdateWO('${wo.id}')" class="btn btn-y btn-sm btn-block">🔨 Iniciar trabajo</button>`:''}
+    ${wo.status==='in'?`<button onclick="mantUpdateWO('${wo.id}')" class="btn btn-g btn-sm" style="flex:1">✔️ Marcar terminado</button><button onclick="mantUpdateWO('${wo.id}','pending')" class="btn btn-o btn-sm" style="flex:0;padding:6px 10px" title="Regresar a pendiente">↩</button>`:''}
+    ${wo.status==='vr'?`<button onclick="mantUpdateWO('${wo.id}','in')" class="btn btn-y btn-sm btn-block">↩ Regresar a En proceso</button>`:''}
+  </div>`:''}
   </div>`;
 }
 
@@ -858,7 +882,8 @@ function renderMantTab(){
 window.resolveWO=function(id,newStatus){
   const wo=st.workOrders.find(w=>w.id===id);if(!wo)return;
   wo.status='resolved';
-  const r=st.rooms.find(x=>x.number===wo.roomNumber);if(r)r.status=newStatus;
+  const r=st.rooms.find(x=>x.number===wo.roomNumber);
+  if(r){r.status=newStatus;addLog(r,newStatus,currentEmpId,'supervisor');}
   save();renderAll();toast(`✅ Cuarto ${wo.roomNumber} → ${STATUS[newStatus]?.label}`);
 };
 window.deleteWO=function(id){if(!confirm('¿Eliminar este work order?'))return;st.workOrders=st.workOrders.filter(w=>w.id!==id);save();renderAll();toast('🗑 Eliminado');};
@@ -892,13 +917,17 @@ function renderMantView(){
     ${inprog.length?`<div style="font-size:.72rem;font-weight:700;color:var(--mant);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;margin-top:14px">🔨 En proceso (${inprog.length})</div>${inprog.map(wo=>woCard(wo,false)).join('')}`:''}
     ${done.length?`<div style="font-size:.72rem;font-weight:700;color:var(--vr);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;margin-top:14px">✔️ Terminados — esperando verificación (${done.length})</div>${done.map(wo=>woCard(wo,false)).join('')}`:''}`;
 }
-window.mantUpdateWO=function(id){
+window.mantUpdateWO=function(id,forceNext){
   const wo=st.workOrders.find(w=>w.id===id);if(!wo)return;
-  const next=wo.status==='pending'?'in':wo.status==='in'?'vr':null;
+  let next=forceNext;
+  if(!next) next=wo.status==='pending'?'in':wo.status==='in'?'vr':null;
   if(!next)return;
   wo.status=next;wo.updatedAt=Date.now();
   const r=st.rooms.find(x=>x.number===wo.roomNumber);
-  if(r){if(next==='in')r.status='in';else if(next==='vr')r.status='vr';}
+  if(r){
+    if(next==='in'){r.status='in';addLog(r,'in',null,'maintenance');}
+    else if(next==='vr'){r.status='vr';addLog(r,'vr',null,'maintenance');}
+  }
   save();renderAll();
   toast(next==='in'?`🔨 Iniciado — Cuarto ${wo.roomNumber}`:`✔️ Listo — Cuarto ${wo.roomNumber}`);
 };
@@ -911,11 +940,18 @@ function renderHKView(){
   el.innerHTML=myRooms.map(r=>{
     const s=STATUS[r.status]||STATUS.vd,rep=st.lsDone[r.id];
     let actionHTML='';
-    if(!rep){
+    if(r.status==='vr'){
+      // Already cleaned, waiting for supervisor to mark LS
+      actionHTML=`<div style="background:#ecfdf5;border-radius:10px;padding:12px;text-align:center;border:1px solid var(--vc-bd)">
+        <div style="font-size:1.4rem">✔️</div>
+        <div style="font-size:.82rem;font-weight:700;color:var(--vc);margin-top:4px">Listo — pendiente de Lightspeed</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:2px">El supervisor lo subirá a LS</div>
+      </div>`;
+    } else if(!rep){
       if(r.status==='odco'||r.status==='vd'){
         actionHTML=`<button class="hk-action-btn" style="background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.3)" onclick="hkMarkVC('${r.id}')">✅ Marcar como Limpio (VC)</button>`;
       } else if(r.status==='odrf'||r.status==='odfu'){
-        actionHTML=`<button class="hk-action-btn" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;box-shadow:0 3px 10px rgba(109,40,217,.3)" onclick="hkMarkSO('${r.id}')">🧹 Stand Out — Marcar VC</button>`;
+        actionHTML=`<button class="hk-action-btn" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;box-shadow:0 3px 10px rgba(109,40,217,.3)" onclick="hkMarkSO('${r.id}')">🧹 Stand Out — Marcar Listo</button>`;
         if(r.dnd){
           actionHTML+=`<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 12px;background:#fef3c7;border-radius:10px;border:1px solid #fbbf24"><span style="font-size:.85rem;font-weight:600;color:#92400e">🚫 DND activo</span><button onclick="hkToggleDND('${r.id}')" style="margin-left:auto;background:none;border:none;color:#92400e;cursor:pointer;font-weight:700;font-size:.82rem">Quitar DND</button></div>`;
         } else {
@@ -937,8 +973,18 @@ function renderHKView(){
     </div>`;
   }).join('');
 }
-window.hkMarkVC=function(id){const r=st.rooms.find(x=>x.id===id);if(!r)return;r.status='vc';st.lsDone[id]=true;save();renderAll();toast(`✅ Cuarto ${r.number} limpio`);};
-window.hkMarkSO=function(id){const r=st.rooms.find(x=>x.id===id);if(!r)return;r.status='vc';st.lsDone[id]=true;save();renderAll();toast(`🧹 Stand Out — Cuarto ${r.number} VC`);};
+window.hkMarkVC=function(id){
+  const r=st.rooms.find(x=>x.id===id);if(!r)return;
+  r.status='vr';
+  addLog(r,'vr',currentEmpId,'housekeeper');
+  save();renderAll();toast(`✔️ Cuarto ${r.number} marcado VR — pendiente de Lightspeed`);
+};
+window.hkMarkSO=function(id){
+  const r=st.rooms.find(x=>x.id===id);if(!r)return;
+  r.status='vr';
+  addLog(r,'vr',currentEmpId,'housekeeper');
+  save();renderAll();toast(`🧹 Stand Out — Cuarto ${r.number} marcado VR`);
+};
 window.hkToggleDND=function(id){const r=st.rooms.find(x=>x.id===id);if(!r)return;r.dnd=!r.dnd;save();renderAll();toast(r.dnd?`🚫 DND — Cuarto ${r.number}`:`✅ DND removido — Cuarto ${r.number}`);};
 
 // ── PROGRESS
@@ -1072,7 +1118,7 @@ window.openRoomModal=function(id){
   // Show "Send to maintenance" button for VP rooms
   const maintBtn=document.getElementById('btnSendMaint');
   if(maintBtn)maintBtn.style.display=r.status==='vp'?'block':'none';
-  const isVC=r.status==='vc';
+  const isVC=r.status==='vc'||r.status==='vr'; // VR also shows compact LS mode
   document.getElementById('vcMode').style.display=isVC?'block':'none';
   document.getElementById('normalMode').style.display=isVC?'none':'block';
   document.querySelector('.sheet-foot').style.display=isVC?'none':'flex';
@@ -1089,6 +1135,24 @@ window.openRoomModal=function(id){
     document.getElementById('lateRow').style.display=lateVisible(r.status)?'flex':'none';
     document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b.dataset.h===(r.lateCheckout||'')));
   }
+  // Activity log
+  const logEl=document.getElementById('roomLog');
+  if(logEl){
+    const logs=r.log||[];
+    if(logs.length){
+      logEl.innerHTML=`<div style="font-size:.62rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Historial</div>`+
+        logs.slice(0,5).map(l=>{
+          const s=STATUS[l.status];
+          const label=l.status==='ls'?'→ Lightspeed':(s?`→ ${s.icon} ${s.label}`:`→ ${l.status}`);
+          return`<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0f4f8;font-size:.72rem">
+            <span style="font-weight:600;color:var(--text)">${l.who}</span>
+            <span style="color:var(--muted)">${label}</span>
+            <span style="margin-left:auto;color:var(--muted);font-size:.65rem">${fmtTime(l.ts)}</span>
+          </div>`;}).join('');
+    } else {
+      logEl.innerHTML='';
+    }
+  }
   openModal('modalRoom');
 };
 window.selStatus=function(k){
@@ -1103,6 +1167,7 @@ window.selStatus=function(k){
   if(!isDnd){r.dnd=false;document.getElementById('dndCheck').checked=false;}
   // Show/hide maint button
   const mb=document.getElementById('btnSendMaint');if(mb)mb.style.display=k==='vp'?'block':'none';
+  addLog(r, k, currentEmpId, currentRole);
   save();
   const allowed2=VALID_TRANSITIONS[k]||Object.keys(STATUS);
   document.querySelectorAll('.st-opt').forEach(o=>{
@@ -1120,7 +1185,14 @@ function lateVisible(s){return s==='odco'||s==='odrf'||s==='odfu';}
 window.setLate=function(btn){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.lateCheckout=btn.dataset.h||null;document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&btn.dataset.h));save();renderGrid();refreshAssocModal();if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Cuarto ${r.number}`);};
 window.autoSaveNote=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(r){r.note=document.getElementById('roomNote').value;save();}};
 window.saveLs=function(){const el=document.getElementById('lsCheck');if(!el||!curRoomId)return;st.lsDone[curRoomId]=el.checked;save();renderGrid();refreshAssocModal();if(el.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),200);}};
-window.quickLS=function(){if(!curRoomId)return;st.lsDone[curRoomId]=true;const el=document.getElementById('lsCheck');if(el)el.checked=true;save();renderGrid();refreshAssocModal();toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),200);};
+window.quickLS=function(){
+  if(!curRoomId)return;
+  st.lsDone[curRoomId]=true;
+  const el=document.getElementById('lsCheck');if(el)el.checked=true;
+  const r=st.rooms.find(x=>x.id===curRoomId);
+  if(r) addLog(r,'ls',currentEmpId,'supervisor');
+  save();renderGrid();refreshAssocModal();toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),200);
+};
 window.togMissing=function(id){document.getElementById('mo-'+id).classList.toggle('sel');const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);save();};
 window.adjHangers=function(d){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.hangers=Math.max(0,Math.min(4,(r.hangers!=null?r.hangers:4)+d));document.getElementById('hangerCount').textContent=r.hangers;document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';save();renderGrid();refreshAssocModal();};
 window.saveDnd=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.dnd=document.getElementById('dndCheck').checked;save();renderGrid();refreshAssocModal();toast(r.dnd?'🚫 DND — sin crédito':'✅ DND removido');};
