@@ -20,32 +20,44 @@
   --vp:#d63b3b;--vp-bg:#fff1f1;--vp-bd:#fca5a5;
   --odrf:#6d28d9;--odrf-bg:#f4f0ff;--odrf-bd:#c4b5fd;
   --odco:#c77b08;--odco-bg:#fffbeb;--odco-bd:#fcd34d;
+  --mant:#b45309;--mant-bg:#fef3c7;--mant-bd:#fbbf24;
+  --vr:#059669;--vr-bg:#d1fae5;--vr-bd:#6ee7b7;
   --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
   --shadow-md:0 4px 12px rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.05);
 }
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
-
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#6ee7b7;display:inline-block;margin-left:6px;flex-shrink:0}
 .sync-dot.syncing{background:#fbbf24;animation:pulse .8s infinite}
 .sync-dot.error{background:#f87171}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-@keyframes flashIn{0%{transform:scale(1.07)}100%{transform:scale(1)}}
-
-#loadScreen{position:fixed;inset:0;background:linear-gradient(135deg,#1a5f7a,#0d3d52);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:white}
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0a4f66,#1a5f7a,#0f6b8a);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.login-card{background:white;border-radius:24px;padding:32px 28px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-logo{font-size:2.5rem;text-align:center;margin-bottom:8px}
+.login-title{font-size:1.2rem;font-weight:800;text-align:center;color:var(--text);margin-bottom:4px}
+.login-sub{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:24px}
+.pin-display{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
+.pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--bdr);transition:all .15s}
+.pin-dot.filled{background:var(--p);border-color:var(--p)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.pin-key{height:58px;border-radius:14px;border:1.5px solid var(--bdr);background:white;font-size:1.4rem;font-weight:700;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;box-shadow:var(--shadow-sm)}
+.pin-key:active{transform:scale(.92);background:var(--pl)}
+.pin-key.del{font-size:1rem;color:var(--muted)}
+.pin-key.enter{background:linear-gradient(135deg,var(--p),var(--p2));color:white;border:none;box-shadow:0 3px 10px rgba(15,107,138,.35)}
+.login-error{text-align:center;color:#dc2626;font-size:.82rem;font-weight:600;min-height:20px;margin-bottom:6px}
+/* LOAD */
+#loadScreen{position:fixed;inset:0;background:linear-gradient(135deg,#1a5f7a,#0d3d52);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:8000;color:white;display:none}
 #loadScreen .ls-icon{font-size:3rem;margin-bottom:16px}
 #loadScreen .ls-title{font-size:1.3rem;font-weight:700;margin-bottom:6px}
 #loadScreen .ls-sub{font-size:.82rem;opacity:.7}
 #loadScreen .ls-spinner{width:30px;height:30px;border:3px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-top:24px}
-
 #appWrap{max-width:480px;margin:0 auto;padding-bottom:66px}
-
-/* HEADER */
 .hdr{background:linear-gradient(135deg,var(--p) 0%,var(--p2) 100%);color:white;padding:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(15,107,138,.35)}
 .hdr-inner{padding:14px 16px 10px}
 .hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
-.hdr-brand{display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;min-width:0}
+.hdr-brand{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
 .hdr-logo{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;border:1px solid rgba(255,255,255,.25)}
 .hdr-text{min-width:0}
 .hotel{font-weight:700;font-size:1rem;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
@@ -65,46 +77,36 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .pills::-webkit-scrollbar{display:none}
 .pill{border-radius:20px;padding:4px 10px;font-size:.68rem;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:3px;flex-shrink:0;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2)}
 .pill strong{font-size:.78rem;font-weight:700}
-
-/* FILTER */
 .filters{display:flex;gap:5px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;background:white;border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:90}
 .filters::-webkit-scrollbar{display:none}
 .filt{padding:5px 13px;border-radius:20px;border:1.5px solid var(--bdr);background:white;color:var(--muted);font-size:.72rem;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all .15s;box-shadow:var(--shadow-sm)}
 .filt:hover{border-color:var(--p-light);color:var(--p)}
 .filt.on{color:white;border-color:transparent;box-shadow:var(--shadow-md)}
-
-/* NAV */
 .nav{position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--bdr);display:flex;height:58px;z-index:100;max-width:480px;margin:0 auto}
 .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:.6rem;color:#9ca3af;border:none;background:none;cursor:pointer;padding:4px 0;transition:color .15s}
 .nav-btn.on{color:var(--p)}
 .nav-btn .ni{font-size:1.2rem;transition:transform .15s}
 .nav-btn.on .ni{transform:scale(1.1)}
-
-/* PAGES */
 .page{display:none;padding:10px}
 .page.on{display:block;animation:fadeIn .18s ease}
-
-/* ROOM GRID */
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .tile{border-radius:14px;border:1.5px solid var(--bdr);padding:12px 8px 10px;cursor:pointer;text-align:center;position:relative;user-select:none;background:white;transition:transform .12s ease,box-shadow .12s ease;box-shadow:var(--shadow-sm)}
 .tile:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .tile:active{transform:scale(.93);box-shadow:none}
-.tile.flash{animation:flashIn .25s ease}
 .tile-num{font-size:1.15rem;font-weight:800;letter-spacing:-.02em}
 .tile-status{font-size:.6rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-top:3px;line-height:1.2}
 .tile-emp{font-size:.56rem;color:var(--muted);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .tile-cr{font-size:.54rem;font-weight:700;margin-top:2px;opacity:.65}
 .tile-alert{position:absolute;top:-5px;right:-5px;background:#ef4444;color:white;border-radius:50%;width:17px;height:17px;font-size:.52rem;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 0 0 2px white}
 .tile-done{position:absolute;top:-5px;left:-5px;background:#0d9467;color:white;border-radius:50%;width:17px;height:17px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700;box-shadow:0 0 0 2px white}
-
-.s-vc  {border-color:var(--vc-bd)!important;background:linear-gradient(135deg,#f0fdf9,var(--vc-bg))!important}
-.s-vd  {border-color:var(--vd-bd)!important;background:linear-gradient(135deg,#f5f9ff,var(--vd-bg))!important}
-.s-vp  {border-color:var(--vp-bd)!important;background:linear-gradient(135deg,#fff5f5,var(--vp-bg))!important}
+.s-vc{border-color:var(--vc-bd)!important;background:linear-gradient(135deg,#f0fdf9,var(--vc-bg))!important}
+.s-vd{border-color:var(--vd-bd)!important;background:linear-gradient(135deg,#f5f9ff,var(--vd-bg))!important}
+.s-vp{border-color:var(--vp-bd)!important;background:linear-gradient(135deg,#fff5f5,var(--vp-bg))!important}
 .s-odrf{border-color:var(--odrf-bd)!important;background:linear-gradient(135deg,#f8f5ff,var(--odrf-bg))!important}
 .s-odfu{border-color:var(--odrf-bd)!important;background:linear-gradient(135deg,#f8f5ff,var(--odrf-bg))!important}
 .s-odco{border-color:var(--odco-bd)!important;background:linear-gradient(135deg,#fffdf0,var(--odco-bg))!important}
-
-/* ASSOC */
+.s-in{border-color:var(--mant-bd)!important;background:linear-gradient(135deg,#fffbeb,var(--mant-bg))!important}
+.s-vr{border-color:var(--vr-bd)!important;background:linear-gradient(135deg,#ecfdf5,var(--vr-bg))!important}
 .assoc-card{background:white;border-radius:14px;border:1px solid var(--bdr);margin-bottom:12px;overflow:hidden;cursor:pointer;transition:all .18s ease;box-shadow:var(--shadow-sm)}
 .assoc-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
 .assoc-card:active{opacity:.9;transform:scale(.99)}
@@ -116,14 +118,14 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .assoc-floors{font-size:.68rem;color:var(--p);font-weight:600;margin-top:2px}
 .assoc-prog{height:4px;background:var(--bdr);margin:0 14px 12px;border-radius:2px}
 .assoc-prog-fill{height:100%;background:#059669;border-radius:2px;transition:width .4s}
-
-/* CARDS & FORMS */
 .card{background:white;border-radius:14px;border:1px solid var(--bdr);overflow:hidden;margin-bottom:12px;box-shadow:var(--shadow-sm)}
 .card-hdr{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f4f8;background:#f8fafc;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
 .btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:10px;border:none;cursor:pointer;font-size:.88rem;font-weight:600;transition:opacity .15s;gap:6px}
 .btn-p{background:linear-gradient(135deg,var(--p),var(--p2));color:white;box-shadow:0 2px 8px rgba(15,107,138,.3)}
 .btn-o{background:white;border:1.5px solid var(--bdr)!important;color:var(--text)}
 .btn-r{background:#fee2e2;color:#dc2626;border:none!important}
+.btn-y{background:linear-gradient(135deg,#d97706,#b45309);color:white}
+.btn-g{background:linear-gradient(135deg,#059669,#0d9467);color:white}
 .btn-sm{padding:6px 11px;font-size:.76rem;border-radius:8px}
 .btn-block{width:100%}
 .btn:active{opacity:.8}
@@ -132,8 +134,6 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 input[type=text],select,textarea{width:100%;border:1.5px solid var(--bdr);border-radius:8px;padding:10px 12px;font-size:.92rem;color:var(--text);background:white;outline:none;font-family:inherit;-webkit-appearance:none}
 input:focus,select:focus,textarea:focus{border-color:var(--p)}
 textarea{min-height:60px;resize:none}
-
-/* MODAL */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;display:none;align-items:flex-end}
 .overlay.on{display:flex}
 .sheet{background:white;border-radius:24px 24px 0 0;width:100%;max-height:92vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,16px);box-shadow:0 -4px 32px rgba(0,0,0,.12)}
@@ -144,8 +144,6 @@ textarea{min-height:60px;resize:none}
 .sheet-body{padding:14px 16px}
 .sheet-foot{padding:10px 16px 16px;display:flex;gap:8px}
 .sheet-foot .btn{flex:1}
-
-/* STATUS OPTIONS */
 .st-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
 .st-opt{padding:11px 8px;border-radius:10px;border:2px solid transparent;cursor:pointer;user-select:none;transition:all .15s;text-align:center}
 .st-opt:active{transform:scale(.96)}
@@ -153,31 +151,32 @@ textarea{min-height:60px;resize:none}
 .st-opt-icon{font-size:1.25rem;margin-bottom:3px}
 .st-opt-label{font-size:.7rem;font-weight:700;line-height:1.2}
 .st-opt-desc{font-size:.6rem;opacity:.75;margin-top:2px}
-
-/* MISSING */
 .mo{padding:7px 8px;border-radius:8px;border:1.5px solid var(--bdr);background:white;font-size:.72rem;cursor:pointer;display:flex;align-items:center;gap:5px;user-select:none;transition:all .15s}
 .mo.sel{border-color:#f59e0b;background:#fffbeb;color:#92400e}
-
-/* STAT */
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
 .stat-card{background:white;border:1px solid var(--bdr);border-radius:14px;padding:14px 12px;text-align:center;box-shadow:var(--shadow-sm)}
 .stat-val{font-size:1.6rem;font-weight:800}
 .stat-lbl{font-size:.7rem;color:var(--muted);margin-top:2px}
-
-/* LATE */
 .late-btn{padding:4px 9px;border-radius:20px;border:1.5px solid var(--bdr);background:white;color:var(--muted);font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s}
 .late-btn.on{background:#7c3aed;color:white;border-color:#7c3aed}
-
+/* WORK ORDER */
+.wo-card{background:white;border-radius:12px;border:1.5px solid var(--bdr);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.wo-hdr{display:flex;align-items:center;gap:10px;padding:12px 14px}
+.wo-num{font-size:1.1rem;font-weight:800;min-width:44px}
+.wo-info{flex:1;min-width:0}
+.wo-desc{font-size:.85rem;font-weight:600}
+.wo-meta{font-size:.7rem;color:var(--muted);margin-top:2px}
+.wo-badge{font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+/* HK CARDS */
+.hk-room-card{background:white;border-radius:14px;border:1.5px solid var(--bdr);padding:16px;margin-bottom:10px;box-shadow:var(--shadow-sm)}
+.hk-action-btn{width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px}
+.hk-action-btn:active{transform:scale(.97)}
 .empty{text-align:center;padding:44px 20px;color:var(--muted)}
 .empty .ei{font-size:2.5rem;margin-bottom:8px}
 .empty p{font-size:.88rem}
 .empty small{font-size:.76rem;opacity:.7;margin-top:4px;display:block}
-
-/* TOAST */
 #toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(12px);background:#0f1923;color:white;padding:10px 20px;border-radius:24px;font-size:.82rem;font-weight:500;z-index:999;opacity:0;transition:all .3s cubic-bezier(.4,0,.2,1);pointer-events:none;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3)}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* PDF */
 .pdf-drop{border:2px dashed #93c5fd;border-radius:12px;padding:32px 16px;text-align:center;cursor:pointer;transition:all .2s;background:#f0f7ff;position:relative;margin-bottom:14px}
 .pdf-drop:hover,.pdf-drop.dragging{border-color:var(--p);background:#e0effa}
 .pdf-drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
@@ -200,8 +199,6 @@ textarea{min-height:60px;resize:none}
 .pdf-room-chip.vp{border-color:#fca5a5;color:#dc2626;background:#fef2f2}
 .pdf-room-chip.full{border-color:#c4b5fd;color:#7c3aed;background:#f5f3ff}
 .pdf-summary-bar{background:#f0f7ff;border:1px solid #93c5fd;border-radius:8px;padding:9px 12px;margin-bottom:12px;font-size:.8rem;color:#1e40af;display:flex;gap:12px;flex-wrap:wrap}
-
-/* RESPONSIVE */
 @media(min-width:768px){
   #appWrap{max-width:768px}
   .grid{grid-template-columns:repeat(5,1fr)!important}
@@ -237,31 +234,60 @@ textarea{min-height:60px;resize:none}
 </head>
 <body>
 
-<div id="loadScreen">
-  <div class="ls-icon">🏨</div>
-  <div class="ls-title">Housekeeping</div>
-  <div class="ls-sub">Aloft Houston Shenandoah</div>
-  <div class="ls-spinner"></div>
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">🏨</div>
+    <div class="login-title">Aloft Houston Shenandoah</div>
+    <div class="login-sub">Ingresa tu PIN</div>
+    <div class="pin-display" id="pinDisplay">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key del" onclick="pinDel()">⌫</button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key enter" onclick="pinEnter()">✓</button>
+    </div>
+  </div>
 </div>
 
-<!-- HEADER -->
+<!-- LOAD -->
+<div id="loadScreen">
+  <div class="ls-icon">🏨</div><div class="ls-title">Housekeeping</div>
+  <div class="ls-sub">Aloft Houston Shenandoah</div><div class="ls-spinner"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" style="display:none">
 <div class="hdr">
   <div class="hdr-inner">
     <div class="hdr-top">
-      <div class="hdr-brand" onclick="openModal('modalHotel')">
+      <div class="hdr-brand">
         <div class="hdr-logo">🏨</div>
         <div class="hdr-text">
-          <div class="hotel" id="hotelName">Aloft Houston Shenandoah <span class="sync-dot" id="syncDot"></span></div>
+          <div class="hotel" id="hotelName">Aloft <span class="sync-dot" id="syncDot"></span></div>
           <div class="hdate" id="hdate"></div>
         </div>
       </div>
-      <div class="hbtns">
-        <button class="hbtn-pdf" onclick="openModal('modalPDF')">📄 PDF</button>
-        <button class="hbtn" onclick="openModal('modalPaste')">📋 Importar</button>
+      <div class="hbtns" id="hdrBtns">
+        <button class="hbtn-pdf" id="btnPDF" onclick="openModal('modalPDF')">📄 PDF</button>
+        <button class="hbtn" id="btnImport" onclick="openModal('modalPaste')">📋 Importar</button>
+        <button class="hbtn" onclick="doLogout()" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)">⬡ Salir</button>
       </div>
     </div>
   </div>
-  <div class="hdr-progress-wrap">
+  <div class="hdr-progress-wrap" id="hdrProgressWrap">
     <div class="hdr-progress-row">
       <span class="hdr-progress-label">Progreso del día</span>
       <span class="hdr-progress-pct" id="hdrPct">0%</span>
@@ -270,32 +296,31 @@ textarea{min-height:60px;resize:none}
   </div>
   <div class="pills" id="pills"></div>
 </div>
-
 <div id="appWrap">
-  <nav class="nav">
-    <button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Cuartos</button>
-    <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Asociadas</button>
-    <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progreso</button>
-    <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Config</button>
-  </nav>
+  <nav class="nav" id="mainNav"></nav>
   <div id="contentWrap">
-    <div class="filters" id="filterBar">
+    <div class="filters" id="filterBar" style="display:none">
       <button class="filt on" data-f="all" onclick="setFilter('all',this)">Todos</button>
-      <button class="filt" data-f="vd"   onclick="setFilter('vd',this)"   style="background:var(--vd-bg);color:var(--vd)">VD</button>
-      <button class="filt" data-f="vc"   onclick="setFilter('vc',this)"   style="background:var(--vc-bg);color:var(--vc)">VC</button>
+      <button class="filt" data-f="vd" onclick="setFilter('vd',this)" style="background:var(--vd-bg);color:var(--vd)">VD</button>
+      <button class="filt" data-f="vc" onclick="setFilter('vc',this)" style="background:var(--vc-bg);color:var(--vc)">VC</button>
       <button class="filt" data-f="odco" onclick="setFilter('odco',this)" style="background:var(--odco-bg);color:var(--odco)">OD COUT</button>
       <button class="filt" data-f="odrf" onclick="setFilter('odrf',this)" style="background:var(--odrf-bg);color:var(--odrf)">OD RFSH</button>
       <button class="filt" data-f="odfu" onclick="setFilter('odfu',this)" style="background:var(--odrf-bg);color:var(--odrf)">FULL</button>
-      <button class="filt" data-f="vp"   onclick="setFilter('vp',this)"   style="background:var(--vp-bg);color:var(--vp)">VP</button>
+      <button class="filt" data-f="vp" onclick="setFilter('vp',this)" style="background:var(--vp-bg);color:var(--vp)">VP</button>
+      <button class="filt" data-f="in" onclick="setFilter('in',this)" style="background:var(--mant-bg);color:var(--mant)">IN</button>
+      <button class="filt" data-f="vr" onclick="setFilter('vr',this)" style="background:var(--vr-bg);color:var(--vr)">VR</button>
     </div>
-    <div class="page on" id="tab-rooms"><div class="grid" id="roomsGrid"></div></div>
+    <div class="page" id="tab-rooms"><div class="grid" id="roomsGrid"></div></div>
     <div class="page" id="tab-assoc"><div id="assocContent"></div></div>
     <div class="page" id="tab-progress"></div>
+    <div class="page" id="tab-mant"></div>
     <div class="page" id="tab-setup"></div>
+    <div class="page" id="tab-mantview"></div>
+    <div class="page" id="tab-hkview"></div>
   </div>
 </div>
-
 <div id="toast"></div>
+</div><!-- /mainApp -->
 
 <!-- PDF MODAL -->
 <div class="overlay" id="modalPDF">
@@ -321,7 +346,6 @@ textarea{min-height:60px;resize:none}
     </div>
   </div>
 </div>
-
 <!-- IMPORTAR MANUAL -->
 <div class="overlay" id="modalPaste">
   <div class="sheet">
@@ -331,12 +355,11 @@ textarea{min-height:60px;resize:none}
       <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.82rem;color:#1e40af;line-height:1.6">
         <strong>Cómo importar:</strong><br>1. Manda la foto en el chat de Claude<br>2. Claude te da un código corto<br>3. Pégalo aquí y toca Importar
       </div>
-      <div class="fg"><label>Código</label><textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco,212-odrf" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea></div>
+      <div class="fg"><label>Código</label><textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea></div>
     </div>
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalPaste')">Cancelar</button><button class="btn btn-p" onclick="doImport()">✅ Importar</button></div>
   </div>
 </div>
-
 <!-- ROOM MODAL -->
 <div class="overlay" id="modalRoom">
   <div class="sheet">
@@ -349,15 +372,10 @@ textarea{min-height:60px;resize:none}
         <button class="sheet-close" onclick="closeModal('modalRoom')">✕</button>
       </div>
     </div>
-    <!-- VC mode: compact — solo status + LS button -->
     <div id="vcMode" style="display:none;padding:12px 14px">
       <div class="st-opts" id="stOptsVC" style="gap:5px;margin-bottom:12px"></div>
-      <button onclick="quickLS()" style="width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-size:1rem;font-weight:700;background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.35);display:flex;align-items:center;justify-content:center;gap:8px">
-        ✅ Marcar en Lightspeed
-      </button>
+      <button onclick="quickLS()" style="width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-size:1rem;font-weight:700;background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.35);display:flex;align-items:center;justify-content:center;gap:8px">✅ Marcar en Lightspeed</button>
     </div>
-
-    <!-- Normal mode: full controls -->
     <div id="normalMode" class="sheet-body" style="padding:10px 14px">
       <div class="st-opts" id="stOpts" style="gap:5px;margin-bottom:9px"></div>
       <div style="display:flex;gap:5px;align-items:center;margin-bottom:9px;flex-wrap:wrap" id="lateRow">
@@ -392,13 +410,14 @@ textarea{min-height:60px;resize:none}
         <span style="font-size:.7rem;color:var(--muted)">/4</span>
         <span id="hangerNote" style="font-size:.72rem;color:#dc2626;font-weight:600;margin-left:4px"></span>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
         <input type="text" id="roomNote" placeholder="Nota..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:7px 10px;border:1.5px solid var(--bdr);border-radius:8px">
         <label style="display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap">
           <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:17px;height:17px;accent-color:#059669;cursor:pointer">
           <span style="font-size:.75rem;font-weight:600;color:#059669">LS</span>
         </label>
       </div>
+      <button id="btnSendMaint" onclick="openWOModal()" style="display:none;width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--mant-bd);background:var(--mant-bg);color:var(--mant);font-size:.82rem;font-weight:700;cursor:pointer">🔧 Enviar a Mantenimiento</button>
     </div>
     <div class="sheet-foot" style="padding:8px 14px 14px">
       <button class="btn btn-r" style="flex:0;padding:8px 12px;font-size:.82rem" onclick="delRoom()">🗑</button>
@@ -406,7 +425,20 @@ textarea{min-height:60px;resize:none}
     </div>
   </div>
 </div>
-
+<!-- WORK ORDER MODAL -->
+<div class="overlay" id="modalWO">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr"><span class="sheet-title" id="woModalTitle">🔧 Work Order</span><button class="sheet-close" onclick="closeModal('modalWO')">✕</button></div>
+    <div class="sheet-body">
+      <div class="fg"><label>Descripción del problema</label><textarea id="woDesc" placeholder="Ej: Fuga en el baño, AC no funciona, cerradura dañada..."></textarea></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="btn btn-o" onclick="closeModal('modalWO')">Cancelar</button>
+      <button class="btn btn-y" onclick="saveWO()">🔧 Enviar a Mantenimiento</button>
+    </div>
+  </div>
+</div>
 <!-- QUICK ADD -->
 <div class="overlay" id="modalQuickAdd" style="z-index:600">
   <div class="sheet">
@@ -427,7 +459,6 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalQuickAdd')">Cancelar</button><button class="btn btn-p" onclick="doQuickAdd()">Agregar</button></div>
   </div>
 </div>
-
 <!-- TRANSFER -->
 <div class="overlay" id="modalTransfer">
   <div class="sheet">
@@ -436,7 +467,6 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-body"><div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Selecciona a quién asignar este cuarto:</div><div id="transferList"></div></div>
   </div>
 </div>
-
 <!-- HOTEL -->
 <div class="overlay" id="modalHotel">
   <div class="sheet">
@@ -446,17 +476,18 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalHotel')">Cancelar</button><button class="btn btn-p" onclick="saveHotel()">Guardar</button></div>
   </div>
 </div>
-
 <!-- ADD EMP -->
 <div class="overlay" id="modalAddEmp">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <div class="sheet-hdr"><span class="sheet-title">Agregar asociada</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
-    <div class="sheet-body"><div class="fg"><label>Nombre</label><input type="text" id="empInput" placeholder="Nombre completo" onkeydown="if(event.key==='Enter')saveEmp()"></div></div>
+    <div class="sheet-body">
+      <div class="fg"><label>Nombre</label><input type="text" id="empInput" placeholder="Nombre completo"></div>
+      <div class="fg"><label>PIN (4 dígitos)</label><input type="text" id="empPin" placeholder="ej. 5678" maxlength="4" inputmode="numeric"></div>
+    </div>
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddEmp')">Cancelar</button><button class="btn btn-p" onclick="saveEmp()">Agregar</button></div>
   </div>
 </div>
-
 <!-- ADD ROOM -->
 <div class="overlay" id="modalAddRoom">
   <div class="sheet">
@@ -473,7 +504,6 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddRoom')">Cancelar</button><button class="btn btn-p" onclick="saveAddRoom()">Agregar</button></div>
   </div>
 </div>
-
 <!-- ASSOC ROOMS -->
 <div class="overlay" id="modalAssocRooms">
   <div class="sheet">
@@ -488,82 +518,130 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-body" id="assocRoomsBody" style="padding:0"></div>
   </div>
 </div>
-
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDB4VRVq1TdQB6LjIjn8SkGB4mxpCCkr20",
-  authDomain: "housekeeping-aloft.firebaseapp.com",
-  projectId: "housekeeping-aloft",
-  storageBucket: "housekeeping-aloft.firebasestorage.app",
-  messagingSenderId: "706250496034",
-  appId: "1:706250496034:web:5cddac6c1d086c15b7d27b"
-};
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-const DOC = doc(db, 'housekeeping', 'aloft-shenandoah');
-
-const pdfScript = document.createElement('script');
-pdfScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+const firebaseConfig={apiKey:"AIzaSyDB4VRVq1TdQB6LjIjn8SkGB4mxpCCkr20",authDomain:"housekeeping-aloft.firebaseapp.com",projectId:"housekeeping-aloft",storageBucket:"housekeeping-aloft.firebasestorage.app",messagingSenderId:"706250496034",appId:"1:706250496034:web:5cddac6c1d086c15b7d27b"};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+const DOC=doc(db,'housekeeping','aloft-shenandoah');
+const pdfScript=document.createElement('script');
+pdfScript.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 document.head.appendChild(pdfScript);
-pdfScript.onload = () => { pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; window._pdfReady=true; };
+pdfScript.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';window._pdfReady=true;};
 
 // ── STATE
-window.st = { hotel:'Aloft Houston Shenandoah', employees:[], rooms:[], lsDone:{}, reportEmail:'' };
-let curTab='rooms', curFilters=new Set(['all']), curRoomId=null, curAssocId=null;
-let saveTimeout=null, ignoreNextSnapshot=false;
-window.gid = () => Math.random().toString(36).substr(2,9);
+window.st={hotel:'Aloft Houston Shenandoah',employees:[],rooms:[],lsDone:{},reportEmail:'',workOrders:[],pins:{supervisor:'1234',maintenance:'2345'}};
+let curTab='rooms',curFilters=new Set(['all']),curRoomId=null,curAssocId=null;
+let saveTimeout=null,ignoreNextSnapshot=false;
+let currentRole=null,currentEmpId=null;
+window.gid=()=>Math.random().toString(36).substr(2,9);
 
-function setSyncDot(s){ const d=document.getElementById('syncDot'); if(d) d.className='sync-dot'+(s==='syncing'?' syncing':s==='error'?' error':''); }
-
-window.save = function(){
-  setSyncDot('syncing');
-  clearTimeout(saveTimeout);
-  saveTimeout = setTimeout(async()=>{
-    try{ ignoreNextSnapshot=true; await setDoc(DOC,{hotel:st.hotel,employees:st.employees,rooms:st.rooms,lsDone:st.lsDone,reportEmail:st.reportEmail,updatedAt:Date.now()}); setSyncDot('ok'); }
-    catch(e){ console.error(e); setSyncDot('error'); toast('⚠️ Error al guardar'); }
-  },600);
+// ── LOGIN
+let pinBuf='';
+window.pinPress=function(d){if(pinBuf.length>=4)return;pinBuf+=d;updateDots();if(pinBuf.length===4)setTimeout(pinEnter,150);};
+window.pinDel=function(){pinBuf=pinBuf.slice(0,-1);updateDots();document.getElementById('loginError').textContent='';};
+window.pinEnter=function(){if(!pinBuf)return;const p=pinBuf;pinBuf='';updateDots();attemptLogin(p);};
+function updateDots(){for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.toggle('filled',i<pinBuf.length);}
+function attemptLogin(pin){
+  if(pin===(st.pins?.supervisor||'1234')){startSession('supervisor',null);return;}
+  if(pin===(st.pins?.maintenance||'2345')){startSession('maintenance',null);return;}
+  const emp=st.employees.find(e=>e.pin&&e.pin===pin);
+  if(emp){startSession('housekeeper',emp.id);return;}
+  document.getElementById('loginError').textContent='❌ PIN incorrecto';
+  setTimeout(()=>document.getElementById('loginError').textContent='',2000);
+}
+function startSession(role,empId){
+  currentRole=role;currentEmpId=empId;
+  document.getElementById('loginScreen').style.display='none';
+  buildUI();renderAll();
+}
+window.doLogout=function(){
+  currentRole=null;currentEmpId=null;pinBuf='';updateDots();
+  document.getElementById('loginError').textContent='';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('mainApp').style.display='none';
 };
 
+function buildUI(){
+  document.getElementById('mainApp').style.display='block';
+  const nav=document.getElementById('mainNav');
+  if(currentRole==='supervisor'){
+    nav.innerHTML=`<button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Cuartos</button>
+      <button class="nav-btn" onclick="showTab('assoc',this)"><span class="ni">👥</span>Asociadas</button>
+      <button class="nav-btn" onclick="showTab('progress',this)"><span class="ni">📊</span>Progreso</button>
+      <button class="nav-btn" onclick="showTab('mant',this)"><span class="ni">🔧</span>Mant.</button>
+      <button class="nav-btn" onclick="showTab('setup',this)"><span class="ni">⚙️</span>Config</button>`;
+    document.getElementById('filterBar').style.display='flex';
+    document.getElementById('btnPDF').style.display='';
+    document.getElementById('btnImport').style.display='';
+    document.getElementById('hdrProgressWrap').style.display='';
+    showTab('rooms');
+  } else if(currentRole==='maintenance'){
+    nav.innerHTML=`<button class="nav-btn on" onclick="showTab('mantview',this)"><span class="ni">🔧</span>Work Orders</button>`;
+    document.getElementById('filterBar').style.display='none';
+    document.getElementById('btnPDF').style.display='none';
+    document.getElementById('btnImport').style.display='none';
+    document.getElementById('hdrProgressWrap').style.display='none';
+    document.getElementById('pills').innerHTML='<span style="font-size:.78rem;opacity:.8">🔧 Modo Mantenimiento</span>';
+    showTab('mantview');
+  } else if(currentRole==='housekeeper'){
+    nav.innerHTML=`<button class="nav-btn on" onclick="showTab('hkview',this)"><span class="ni">🧹</span>Mis Cuartos</button>`;
+    document.getElementById('filterBar').style.display='none';
+    document.getElementById('btnPDF').style.display='none';
+    document.getElementById('btnImport').style.display='none';
+    document.getElementById('hdrProgressWrap').style.display='none';
+    showTab('hkview');
+  }
+}
+
+// ── FIREBASE
+function setSyncDot(s){const d=document.getElementById('syncDot');if(d)d.className='sync-dot'+(s==='syncing'?' syncing':s==='error'?' error':'');}
+window.save=function(){
+  setSyncDot('syncing');clearTimeout(saveTimeout);
+  saveTimeout=setTimeout(async()=>{
+    try{ignoreNextSnapshot=true;await setDoc(DOC,{hotel:st.hotel,employees:st.employees,rooms:st.rooms,lsDone:st.lsDone,reportEmail:st.reportEmail,workOrders:st.workOrders||[],pins:st.pins||{supervisor:'1234',maintenance:'2345'},updatedAt:Date.now()});setSyncDot('ok');}
+    catch(e){console.error(e);setSyncDot('error');toast('⚠️ Error al guardar');}
+  },600);
+};
 onSnapshot(DOC,(snap)=>{
   if(ignoreNextSnapshot){ignoreNextSnapshot=false;return;}
   if(snap.exists()){
     const d=snap.data();
-    st.hotel=d.hotel||st.hotel; st.employees=d.employees||[]; st.rooms=d.rooms||[];
-    st.lsDone=d.lsDone||{}; st.reportEmail=d.reportEmail||'';
-    renderAll(); setSyncDot('ok');
+    st.hotel=d.hotel||st.hotel;st.employees=d.employees||[];st.rooms=d.rooms||[];
+    st.lsDone=d.lsDone||{};st.reportEmail=d.reportEmail||'';
+    st.workOrders=d.workOrders||[];st.pins=d.pins||{supervisor:'1234',maintenance:'2345'};
+    if(currentRole)renderAll();setSyncDot('ok');
   }
-  const ls=document.getElementById('loadScreen'); if(ls)ls.style.display='none';
+  document.getElementById('loadScreen').style.display='none';
 });
-setTimeout(()=>{const ls=document.getElementById('loadScreen');if(ls)ls.style.display='none';},3000);
+setTimeout(()=>{document.getElementById('loadScreen').style.display='none';},3000);
 
 // ── STATUS
 window.STATUS={
-  vd:  {label:'VD',     desc:'Vacante sucio',          color:'var(--vd)',   bg:'var(--vd-bg)',   border:'var(--vd-bd)',   icon:'🛏️'},
-  vc:  {label:'VC',     desc:'Vacante limpio',          color:'var(--vc)',   bg:'var(--vc-bg)',   border:'var(--vc-bd)',   icon:'✅'},
-  odco:{label:'OD COUT',desc:'Ocupado — salida hoy',    color:'var(--odco)', bg:'var(--odco-bg)', border:'var(--odco-bd)', icon:'🚪'},
-  odrf:{label:'OD RFSH',desc:'Ocupado — pide refresh',  color:'var(--odrf)', bg:'var(--odrf-bg)', border:'var(--odrf-bd)', icon:'🔄'},
-  odfu:{label:'FULL',   desc:'Full refresh + cambio ropa',color:'var(--odrf)',bg:'var(--odrf-bg)',border:'var(--odrf-bd)', icon:'🔄✨'},
-  vp:  {label:'VP',     desc:'Vacante con problema',    color:'var(--vp)',   bg:'var(--vp-bg)',   border:'var(--vp-bd)',   icon:'⚠️'},
+  vd:{label:'VD',desc:'Vacante sucio',color:'var(--vd)',bg:'var(--vd-bg)',border:'var(--vd-bd)',icon:'🛏️'},
+  vc:{label:'VC',desc:'Vacante limpio',color:'var(--vc)',bg:'var(--vc-bg)',border:'var(--vc-bd)',icon:'✅'},
+  odco:{label:'OD COUT',desc:'Ocupado — salida hoy',color:'var(--odco)',bg:'var(--odco-bg)',border:'var(--odco-bd)',icon:'🚪'},
+  odrf:{label:'OD RFSH',desc:'Ocupado — pide refresh',color:'var(--odrf)',bg:'var(--odrf-bg)',border:'var(--odrf-bd)',icon:'🔄'},
+  odfu:{label:'FULL',desc:'Full refresh + cambio ropa',color:'var(--odrf)',bg:'var(--odrf-bg)',border:'var(--odrf-bd)',icon:'🔄✨'},
+  vp:{label:'VP',desc:'Vacante con problema',color:'var(--vp)',bg:'var(--vp-bg)',border:'var(--vp-bd)',icon:'⚠️'},
+  in:{label:'IN',desc:'Mantenimiento iniciado',color:'var(--mant)',bg:'var(--mant-bg)',border:'var(--mant-bd)',icon:'🔨'},
+  vr:{label:'VR',desc:'Listo para verificar',color:'var(--vr)',bg:'var(--vr-bg)',border:'var(--vr-bd)',icon:'✔️'},
 };
 const VALID_TRANSITIONS={
   odco:['vd','vp','odrf','odfu'],
   odrf:['vd','vp','vc'],
   odfu:['vd','vp','vc'],
-  vd:['vc','vp','odco','odrf','odfu'],  // VD puede cambiar a cualquier estado
-  vp:['vc','vd','odco','odrf','odfu'],  // VP también flexible
-  vc:['vd','vp','odco','odrf','odfu']
+  vd:['vc','vp','odco','odrf','odfu'],
+  vp:['vc','vd','in','odco','odrf','odfu'],
+  vc:['vd','vp','odco','odrf','odfu'],
+  in:['vr'],
+  vr:['vc','vd','vp'],
 };
-
-// ── CREDITS
-// FULL = 1 crédito completo, OD RFSH = 0.5
-window.CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:1};
+window.CREDITS={vd:1,vc:1,odco:1,vp:1,odrf:0.5,odfu:1,in:0,vr:0};
 const MAX_CREDITS=16;
-function roomCredits(r){if(r.dnd)return 0;return CREDITS[r.status]||1}
-function totalCredits(rooms){return rooms.reduce((s,r)=>s+roomCredits(r),0)}
-
+function roomCredits(r){if(r.dnd)return 0;return CREDITS[r.status]||0;}
+function totalCredits(rooms){return rooms.reduce((s,r)=>s+roomCredits(r),0);}
 const MISSING=[
   {id:'towels_pillows',label:'Toallas/Almohadas'},{id:'soap_tp_coffee',label:'Jabón/Papel/Café'},
   {id:'remote',label:'Control TV'},{id:'hairdryer',label:'Secadora'},
@@ -571,89 +649,35 @@ const MISSING=[
 ];
 
 // ── PDF PARSER
-function pdfResolveCode(hk,pkg){
-  hk=hk.toUpperCase();pkg=pkg.toUpperCase();
-  if(hk==='VD') return 'vd';
-  if(hk==='OD'){
-    if(pkg==='RFSH') return 'odrf';
-    if(pkg==='FULL') return 'odfu';
-    return 'odco';
-  }
-  if(hk==='VC') return 'vc';
-  if(hk==='VP') return 'vp';
-  if(hk==='OP') return 'odfu';
-  return 'odco';
-}
+function pdfResolveCode(hk,pkg){hk=hk.toUpperCase();pkg=pkg.toUpperCase();if(hk==='VD')return'vd';if(hk==='OD'){if(pkg==='RFSH')return'odrf';if(pkg==='FULL')return'odfu';return'odco';}if(hk==='VC')return'vc';if(hk==='VP')return'vp';if(hk==='OP')return'odfu';return'odco';}
 function parsePdfText(rawText){
   const text=rawText.replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
   const headerRe=/For Schedule HK and Board \S+ and Attendant ([^(]+?)\s*\((\w+)\)(?:\s+Page\s+\d+\s+of\s+\d+)?(?=\s+For All Wings|\s+Ordered|\s+Room)/gi;
   const headers=[];let hm;
-  while((hm=headerRe.exec(text))!==null) headers.push({name:hm[1].trim(),code:hm[2].trim(),start:hm.index,end:hm.index+hm[0].length});
-  if(!headers.length) return [];
+  while((hm=headerRe.exec(text))!==null)headers.push({name:hm[1].trim(),code:hm[2].trim(),start:hm.index,end:hm.index+hm[0].length});
+  if(!headers.length)return[];
   const result=new Map(),order=[];
-  function extractRooms(seg,att){
-    const ex=new Set(att.rooms.map(r=>r.number));
-    const re=/(\d{3})\s+\S+\s+\d+\s+(?:VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP)[^H]*HK Package Information:\s+(\w+)/gi;
-    let rm;
-    while((rm=re.exec(seg))!==null) if(!ex.has(rm[1])){att.rooms.push({number:rm[1],status:pdfResolveCode(rm[2],rm[3])});ex.add(rm[1]);}
-  }
-  headers.forEach((hdr,idx)=>{
-    const key=hdr.name+'|||'+hdr.code;
-    if(!result.has(key)){result.set(key,{name:hdr.name,code:hdr.code,rooms:[]});order.push(key);}
-    extractRooms(text.slice(idx===0?0:headers[idx-1].end,hdr.start),result.get(key));
-  });
+  function extractRooms(seg,att){const ex=new Set(att.rooms.map(r=>r.number));const re=/(\d{3})\s+\S+\s+\d+\s+(?:VAC|OCC|OOO)\s+(VD|VC|OD|OP|VP)[^H]*HK Package Information:\s+(\w+)/gi;let rm;while((rm=re.exec(seg))!==null)if(!ex.has(rm[1])){att.rooms.push({number:rm[1],status:pdfResolveCode(rm[2],rm[3])});ex.add(rm[1]);}}
+  headers.forEach((hdr,idx)=>{const key=hdr.name+'|||'+hdr.code;if(!result.has(key)){result.set(key,{name:hdr.name,code:hdr.code,rooms:[]});order.push(key);}extractRooms(text.slice(idx===0?0:headers[idx-1].end,hdr.start),result.get(key));});
   const lh=headers[headers.length-1],lk=lh.name+'|||'+lh.code;
-  if(result.has(lk)) extractRooms(text.slice(lh.end),result.get(lk));
+  if(result.has(lk))extractRooms(text.slice(lh.end),result.get(lk));
   return order.map(k=>result.get(k)).filter(a=>a.rooms.length>0);
 }
-async function extractPdfText(file){
-  const buf=await file.arrayBuffer();
-  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
-  let text='';
-  for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p);const c=await page.getTextContent();text+=c.items.map(i=>i.str).join(' ')+'\n';}
-  return text;
-}
-
+async function extractPdfText(file){const buf=await file.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:buf}).promise;let text='';for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p);const c=await page.getTextContent();text+=c.items.map(i=>i.str).join(' ')+'\n';}return text;}
 let pdfParsed=[];
-window.closePdfModal=function(){
-  closeModal('modalPDF');pdfParsed=[];
-  document.getElementById('pdfResults').style.display='none';
-  document.getElementById('pdfFooter').style.display='none';
-  document.getElementById('pdfStatus').className='pdf-status';
-  document.getElementById('pdfDrop').style.display='block';
-  document.getElementById('pdfFileInput').value='';
-};
-function showPdfStatus(type,msg){
-  const el=document.getElementById('pdfStatus');
-  el.className='pdf-status visible '+type;
-  document.getElementById('pdfStatusText').textContent=msg;
-  document.getElementById('pdfSpinner').style.display=type==='processing'?'block':'none';
-}
+window.closePdfModal=function(){closeModal('modalPDF');pdfParsed=[];document.getElementById('pdfResults').style.display='none';document.getElementById('pdfFooter').style.display='none';document.getElementById('pdfStatus').className='pdf-status';document.getElementById('pdfDrop').style.display='block';document.getElementById('pdfFileInput').value='';};
+function showPdfStatus(type,msg){const el=document.getElementById('pdfStatus');el.className='pdf-status visible '+type;document.getElementById('pdfStatusText').textContent=msg;document.getElementById('pdfSpinner').style.display=type==='processing'?'block':'none';}
 window.confirmPdfImport=function(){
-  if(!pdfParsed.length)return;
-  let added=0;
-  for(const att of pdfParsed){
-    let emp=st.employees.find(e=>e.name.toLowerCase()===att.name.toLowerCase());
-    if(!emp){emp={id:gid(),name:att.name};st.employees.push(emp);}
-    const ex=new Set(st.rooms.map(r=>r.number));
-    for(const r of att.rooms){
-      if(ex.has(r.number))continue;
-      st.rooms.push({id:gid(),number:r.number,status:r.status,assignedTo:emp.id,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
-      ex.add(r.number);added++;
-    }
-  }
-  save();renderAll();closePdfModal();
-  toast(`✅ ${added} cuartos importados · ${pdfParsed.length} asociadas`);
+  if(!pdfParsed.length)return;let added=0;
+  for(const att of pdfParsed){let emp=st.employees.find(e=>e.name.toLowerCase()===att.name.toLowerCase());if(!emp){emp={id:gid(),name:att.name,pin:''};st.employees.push(emp);}const ex=new Set(st.rooms.map(r=>r.number));for(const r of att.rooms){if(ex.has(r.number))continue;st.rooms.push({id:gid(),number:r.number,status:r.status,assignedTo:emp.id,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});ex.add(r.number);added++;}}
+  save();renderAll();closePdfModal();toast(`✅ ${added} cuartos importados · ${pdfParsed.length} asociadas`);
 };
 async function handlePdfFiles(files){
   const pdfs=[...files].filter(f=>f.name.endsWith('.pdf')||f.type==='application/pdf');
   if(!pdfs.length){showPdfStatus('error','No se encontraron PDFs.');return;}
   if(!window._pdfReady){showPdfStatus('error','PDF.js cargando, intenta de nuevo.');return;}
-  document.getElementById('pdfDrop').style.display='none';
-  showPdfStatus('processing','Leyendo PDF...');
-  document.getElementById('pdfResults').style.display='none';
-  document.getElementById('pdfFooter').style.display='none';
-  pdfParsed=[];
+  document.getElementById('pdfDrop').style.display='none';showPdfStatus('processing','Leyendo PDF...');
+  document.getElementById('pdfResults').style.display='none';document.getElementById('pdfFooter').style.display='none';pdfParsed=[];
   try{
     for(const file of pdfs){const text=await extractPdfText(file);pdfParsed.push(...parsePdfText(text));}
     if(!pdfParsed.length){showPdfStatus('error','No se encontraron datos. ¿Es un PDF de Lightspeed?');document.getElementById('pdfDrop').style.display='block';return;}
@@ -663,28 +687,10 @@ async function handlePdfFiles(files){
     document.getElementById('pdfSummaryBar').innerHTML=`<span>👤 <strong>${pdfParsed.length}</strong> asociadas</span><span>🚪 <strong>${totalRooms}</strong> cuartos</span><span>⭐ <strong>${totalCr}</strong> créditos</span>`;
     document.getElementById('pdfAttList').innerHTML=pdfParsed.map(att=>{
       const vd=att.rooms.filter(r=>r.status==='vd').length,cout=att.rooms.filter(r=>r.status==='odco').length,rfsh=att.rooms.filter(r=>r.status==='odrf').length,full=att.rooms.filter(r=>r.status==='odfu').length,vp=att.rooms.filter(r=>r.status==='vp').length;
-      const cr=att.rooms.reduce((s,r)=>s+roomCredits(r),0);
-      const dup=att.rooms.filter(r=>st.rooms.find(x=>x.number===r.number));
-      return`<div class="pdf-att-row">
-        <div class="pdf-att-hdr">
-          <div><div class="pdf-att-name">${att.name} <span style="font-size:.72rem;color:var(--muted);font-weight:400">(${att.code})</span></div>
-          ${dup.length?`<div style="font-size:.68rem;color:#d97706;margin-top:2px">⚠️ ${dup.length} ya existen</div>`:''}</div>
-          <div class="pdf-att-badges">
-            ${vd?`<span class="pdf-att-badge" style="background:var(--vd-bg);color:var(--vd)">VD×${vd}</span>`:''}
-            ${cout?`<span class="pdf-att-badge" style="background:var(--odco-bg);color:var(--odco)">COUT×${cout}</span>`:''}
-            ${rfsh?`<span class="pdf-att-badge" style="background:var(--odrf-bg);color:var(--odrf)">RFSH×${rfsh}</span>`:''}
-            ${full?`<span class="pdf-att-badge" style="background:var(--odrf-bg);color:var(--odrf)">FULL×${full}</span>`:''}
-            ${vp?`<span class="pdf-att-badge" style="background:var(--vp-bg);color:var(--vp)">VP×${vp}</span>`:''}
-            <span class="pdf-att-badge" style="background:var(--vc-bg);color:var(--vc)">${cr}cr</span>
-          </div>
-        </div>
-        <div class="pdf-att-rooms">
-          ${att.rooms.map(r=>{const cls=r.status==='vd'?'vd':r.status==='odrf'?'rfsh':r.status==='odfu'?'full':r.status==='vp'?'vp':'cout';const d=st.rooms.find(x=>x.number===r.number);return`<span class="pdf-room-chip ${cls}" style="${d?'opacity:.35;text-decoration:line-through':''}">${r.number}·${STATUS[r.status]?.label||r.status}</span>`;}).join('')}
-        </div>
-      </div>`;
+      const cr=att.rooms.reduce((s,r)=>s+roomCredits(r),0);const dup=att.rooms.filter(r=>st.rooms.find(x=>x.number===r.number));
+      return`<div class="pdf-att-row"><div class="pdf-att-hdr"><div><div class="pdf-att-name">${att.name} <span style="font-size:.72rem;color:var(--muted);font-weight:400">(${att.code})</span></div>${dup.length?`<div style="font-size:.68rem;color:#d97706;margin-top:2px">⚠️ ${dup.length} ya existen</div>`:''}</div><div class="pdf-att-badges">${vd?`<span class="pdf-att-badge" style="background:var(--vd-bg);color:var(--vd)">VD×${vd}</span>`:''}${cout?`<span class="pdf-att-badge" style="background:var(--odco-bg);color:var(--odco)">COUT×${cout}</span>`:''}${rfsh?`<span class="pdf-att-badge" style="background:var(--odrf-bg);color:var(--odrf)">RFSH×${rfsh}</span>`:''}${full?`<span class="pdf-att-badge" style="background:var(--odrf-bg);color:var(--odrf)">FULL×${full}</span>`:''}${vp?`<span class="pdf-att-badge" style="background:var(--vp-bg);color:var(--vp)">VP×${vp}</span>`:''}<span class="pdf-att-badge" style="background:var(--vc-bg);color:var(--vc)">${cr}cr</span></div></div><div class="pdf-att-rooms">${att.rooms.map(r=>{const cls=r.status==='vd'?'vd':r.status==='odrf'?'rfsh':r.status==='odfu'?'full':r.status==='vp'?'vp':'cout';const d=st.rooms.find(x=>x.number===r.number);return`<span class="pdf-room-chip ${cls}" style="${d?'opacity:.35;text-decoration:line-through':''}">${r.number}·${STATUS[r.status]?.label||r.status}</span>`;}).join('')}</div></div>`;
     }).join('');
-    document.getElementById('pdfResults').style.display='block';
-    document.getElementById('pdfFooter').style.display='flex';
+    document.getElementById('pdfResults').style.display='block';document.getElementById('pdfFooter').style.display='flex';
   }catch(err){showPdfStatus('error','Error: '+err.message);document.getElementById('pdfDrop').style.display='block';}
 }
 document.addEventListener('DOMContentLoaded',()=>{
@@ -695,24 +701,33 @@ document.addEventListener('DOMContentLoaded',()=>{
   input.addEventListener('change',()=>handlePdfFiles(input.files));
 });
 
-// ── RENDER
+// ── RENDER ALL
 window.renderAll=function(){
-  renderPills();
-  if(curTab==='rooms')    renderGrid();
-  if(curTab==='assoc')    renderAssoc();
-  if(curTab==='progress') renderProgress();
-  if(curTab==='setup')    renderSetup();
+  if(currentRole==='supervisor'){
+    renderPills();
+    if(curTab==='rooms')renderGrid();
+    if(curTab==='assoc')renderAssoc();
+    if(curTab==='progress')renderProgress();
+    if(curTab==='mant')renderMantTab();
+    if(curTab==='setup')renderSetup();
+  } else if(currentRole==='maintenance'){
+    renderMantView();
+    document.getElementById('hotelName').innerHTML='🔧 Mantenimiento <span class="sync-dot" id="syncDot"></span>';
+  } else if(currentRole==='housekeeper'){
+    renderHKView();
+    const emp=st.employees.find(e=>e.id===currentEmpId);
+    document.getElementById('hotelName').innerHTML=(emp?'🧹 '+emp.name.split(' ')[0]:st.hotel)+' <span class="sync-dot" id="syncDot"></span>';
+  }
 };
 
+// ── SUPERVISOR VIEWS
 function renderPills(){
   document.getElementById('hotelName').innerHTML=st.hotel+' <span class="sync-dot" id="syncDot"></span>';
   const r=st.rooms,total=r.length;
   const cnt=k=>r.filter(x=>x.status===k).length;
-  const vc=cnt('vc');
-  const pct=total?Math.round(vc/total*100):0;
+  const vc=cnt('vc'),pct=total?Math.round(vc/total*100):0;
   const pctEl=document.getElementById('hdrPct'),barEl=document.getElementById('hdrBar');
-  if(pctEl) pctEl.textContent=pct+'%';
-  if(barEl) barEl.style.width=pct+'%';
+  if(pctEl)pctEl.textContent=pct+'%';if(barEl)barEl.style.width=pct+'%';
   document.getElementById('pills').innerHTML=[
     [total,'total','rgba(255,255,255,.15)','white'],
     [cnt('vd'),'VD','rgba(37,99,235,.4)','white'],
@@ -721,33 +736,28 @@ function renderPills(){
     [cnt('odrf'),'OD RFSH','rgba(124,58,237,.4)','white'],
     [cnt('odfu'),'FULL','rgba(124,58,237,.35)','white'],
     [cnt('vp'),'VP','rgba(220,38,38,.4)','white'],
-  ].filter(([v])=>v>0).map(([v,l,bg,c])=>
-    `<span class="pill" style="background:${bg};color:${c}"><strong>${v}</strong> ${l}</span>`
-  ).join('');
+    [cnt('in'),'IN','rgba(180,83,9,.4)','white'],
+    [cnt('vr'),'VR','rgba(5,150,105,.35)','white'],
+  ].filter(([v])=>v>0).map(([v,l,bg,c])=>`<span class="pill" style="background:${bg};color:${c}"><strong>${v}</strong> ${l}</span>`).join('');
 }
-
-function sorted(arr){return[...arr].sort((a,b)=>a.number.localeCompare(b.number,undefined,{numeric:true}))}
-function getFloors(rooms){const f=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));return[...f].sort().map(x=>`P${x}`).join(', ')}
+function sorted(arr){return[...arr].sort((a,b)=>a.number.localeCompare(b.number,undefined,{numeric:true}));}
+function getFloors(rooms){const f=new Set(rooms.map(r=>Math.floor(parseInt(r.number)/100)));return[...f].sort().map(x=>`P${x}`).join(', ');}
 
 function renderGrid(){
   const isAll=curFilters.has('all');
   const rooms=sorted(st.rooms.filter(r=>isAll||curFilters.has(r.status)));
-  if(!rooms.length){
-    document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>Sin cuartos.</p><small>Toca 📄 PDF para importar.</small></div>`;
-    return;
-  }
+  if(!rooms.length){document.getElementById('roomsGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ei">🏨</div><p>Sin cuartos.</p><small>Toca 📄 PDF para importar.</small></div>`;return;}
   const s2=[...rooms.filter(r=>!st.lsDone[r.id]),...rooms.filter(r=>st.lsDone[r.id])];
   document.getElementById('roomsGrid').innerHTML=s2.map(r=>{
-    const s=STATUS[r.status]||STATUS.vd,emp=st.employees.find(e=>e.id===r.assignedTo),rep=st.lsDone[r.id];
-    const cr=roomCredits(r);
+    const s=STATUS[r.status]||STATUS.vd,emp=st.employees.find(e=>e.id===r.assignedTo),rep=st.lsDone[r.id],cr=roomCredits(r);
     return`<div class="tile s-${r.status}" onclick="openRoomModal('${r.id}')" style="${rep?'opacity:.45;':''}">
-      ${rep?`<span class="tile-done">✓</span>`:''}
+      ${rep?'<span class="tile-done">✓</span>':''}
       ${r.missing?.length?`<span class="tile-alert">${r.missing.length}</span>`:''}
-      <div class="tile-num" style="${rep?'text-decoration:line-through;color:#9ca3af;':''}">${r.number}</div>
+      <div class="tile-num" style="${rep?'text-decoration:line-through;color:#9ca3af':''}">${r.number}</div>
       <div class="tile-status" style="color:${rep?'#9ca3af':s.color}">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
       ${r.lateCheckout?`<div style="font-size:.56rem;font-weight:700;color:#7c3aed;margin-top:1px">🕐 ${r.lateCheckout}</div>`:''}
       <div class="tile-emp">${emp?emp.name.split(' ')[0]:'—'}</div>
-      <div class="tile-cr" style="color:${s.color}">${cr}cr</div>
+      ${cr>0?`<div class="tile-cr" style="color:${s.color}">${cr}cr</div>`:''}
     </div>`;
   }).join('');
 }
@@ -756,26 +766,22 @@ function renderAssoc(){
   const el=document.getElementById('assocContent');
   const groups=st.employees.map(e=>{
     const rooms=sorted(st.rooms.filter(r=>r.assignedTo===e.id));
-    const vc=rooms.filter(r=>r.status==='vc').length;
-    const pct=rooms.length?Math.round(vc/rooms.length*100):0;
-    const credits=totalCredits(rooms),over=credits>MAX_CREDITS;
-    const crPct=Math.min(Math.round(credits/MAX_CREDITS*100),100);
+    const vc=rooms.filter(r=>r.status==='vc').length,pct=rooms.length?Math.round(vc/rooms.length*100):0;
+    const credits=totalCredits(rooms),over=credits>MAX_CREDITS,crPct=Math.min(Math.round(credits/MAX_CREDITS*100),100);
     return{...e,rooms,vc,pct,floors:getFloors(rooms),credits,over,crPct,issues:rooms.filter(r=>r.missing?.length||r.note)};
   });
   const unassigned=sorted(st.rooms.filter(r=>!r.assignedTo));
-  if(!groups.length&&!unassigned.length){el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>Sin asociadas.</p><small>Ve a ⚙️ Config para agregar.</small></div>`;return;}
+  if(!groups.length&&!unassigned.length){el.innerHTML=`<div class="empty"><div class="ei">👥</div><p>Sin asociadas.</p></div>`;return;}
   el.innerHTML=[...groups.map(g=>`
     <div class="assoc-card" onclick="openAssocModal('${g.id}')">
       <div class="assoc-hdr">
         <div class="assoc-av" style="${g.over?'background:#dc2626':''}">${g.name[0].toUpperCase()}</div>
         <div class="assoc-info">
-          <div class="assoc-name">${g.name}</div>
+          <div class="assoc-name">${g.name} ${g.pin?'<span style="font-size:.65rem;background:#e8f4f8;color:var(--p);padding:1px 6px;border-radius:8px">PIN ✓</span>':''}</div>
           <div class="assoc-sub">${g.rooms.length} cuartos · ${g.vc} VC · ${g.pct}%</div>
           ${g.floors?`<div class="assoc-floors">📍 ${g.floors}</div>`:''}
           <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
-            <div style="flex:1;height:5px;background:var(--bdr);border-radius:3px;overflow:hidden">
-              <div style="height:100%;width:${g.crPct}%;background:${g.over?'#dc2626':'#f59e0b'};border-radius:3px;transition:width .4s"></div>
-            </div>
+            <div style="flex:1;height:5px;background:var(--bdr);border-radius:3px;overflow:hidden"><div style="height:100%;width:${g.crPct}%;background:${g.over?'#dc2626':'#f59e0b'};border-radius:3px;transition:width .4s"></div></div>
             <span style="font-size:.7rem;font-weight:700;color:${g.over?'#dc2626':'#d97706'};white-space:nowrap">${g.credits}/${MAX_CREDITS}cr${g.over?' ⚠️':''}</span>
           </div>
           ${g.issues.length?`<div style="font-size:.68rem;color:#dc2626;margin-top:2px">⚠️ ${g.issues.length} cuarto(s) con nota</div>`:''}
@@ -784,12 +790,7 @@ function renderAssoc(){
       </div>
       <div class="assoc-prog"><div class="assoc-prog-fill" style="width:${g.pct}%"></div></div>
     </div>`),
-    unassigned.length?`<div class="assoc-card" onclick="openAssocModal('__none__')">
-      <div class="assoc-hdr">
-        <div class="assoc-av" style="background:#6b7280">?</div>
-        <div class="assoc-info"><div class="assoc-name">Sin asignar</div><div class="assoc-sub">${unassigned.length} cuartos</div></div>
-        <div style="font-size:1.2rem;color:#9ca3af">›</div>
-      </div></div>`:''
+    unassigned.length?`<div class="assoc-card" onclick="openAssocModal('__none__')"><div class="assoc-hdr"><div class="assoc-av" style="background:#6b7280">?</div><div class="assoc-info"><div class="assoc-name">Sin asignar</div><div class="assoc-sub">${unassigned.length} cuartos</div></div><div style="font-size:1.2rem;color:#9ca3af">›</div></div></div>`:''
   ].join('');
 }
 
@@ -797,16 +798,13 @@ window.openAssocModal=function(assocId){
   curAssocId=assocId;
   const emp=assocId==='__none__'?{name:'Sin asignar'}:st.employees.find(e=>e.id===assocId);
   const rooms=sorted(assocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===assocId));
-  const credits=totalCredits(rooms);
-  document.getElementById('assocRoomsTitle').textContent=(emp?.name||'')+(getFloors(rooms)?' · '+getFloors(rooms):'')+' · '+credits+'cr';
+  document.getElementById('assocRoomsTitle').textContent=(emp?.name||'')+(getFloors(rooms)?' · '+getFloors(rooms):'')+' · '+totalCredits(rooms)+'cr';
   buildAssocGrid(rooms);openModal('modalAssocRooms');
 };
-
 function buildAssocGrid(rooms){
   document.getElementById('assocRoomsBody').innerHTML=rooms.length
     ?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px">`+
-      rooms.map(r=>{
-        const s=STATUS[r.status]||STATUS.vd,rep=st.lsDone[r.id];
+      rooms.map(r=>{const s=STATUS[r.status]||STATUS.vd,rep=st.lsDone[r.id];
         return`<div onclick="closeModal('modalAssocRooms');openRoomModal('${r.id}')" style="background:${s.bg};border-radius:10px;border:2px solid ${s.border};padding:10px 6px;cursor:pointer;text-align:center;position:relative;opacity:${rep?'.5':'1'}">
           ${rep?'<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>':''}
           ${r.missing?.length?`<span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700">${r.missing.length}</span>`:''}
@@ -814,17 +812,136 @@ function buildAssocGrid(rooms){
           <div style="font-size:.6rem;font-weight:700;color:${s.color};margin-top:2px">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
           ${r.lateCheckout?`<div style="font-size:.58rem;font-weight:700;color:#7c3aed">🕐 ${r.lateCheckout}</div>`:''}
           <div style="font-size:.56rem;color:${s.color};opacity:.75;margin-top:2px">${roomCredits(r)}cr</div>
-        </div>`;
-      }).join('')+'</div>'
+        </div>`;}).join('')+'</div>'
     :'<div style="padding:20px;text-align:center;font-size:.85rem;color:var(--muted)">Sin cuartos asignados</div>';
 }
-
 function refreshAssocModal(){
   if(!curAssocId||!document.getElementById('modalAssocRooms').classList.contains('on'))return;
   const rooms=sorted(curAssocId==='__none__'?st.rooms.filter(r=>!r.assignedTo):st.rooms.filter(r=>r.assignedTo===curAssocId));
   buildAssocGrid(rooms);
 }
 
+// ── WORK ORDERS
+function timeAgo(ts){if(!ts)return'';const m=Math.round((Date.now()-ts)/60000);return m<1?'ahora':m<60?`${m}m`:m<1440?`${Math.floor(m/60)}h`:`${Math.floor(m/1440)}d`;}
+function woCard(wo,isSup){
+  const statusColors={pending:'var(--vp)',in:'var(--mant)',vr:'var(--vr)'};
+  const statusLabels={pending:'⏳ Pendiente',in:'🔨 En proceso',vr:'✔️ Listo'};
+  const col=statusColors[wo.status]||'var(--muted)';
+  return`<div class="wo-card" onclick="${isSup?'':(`mantUpdateWO('${wo.id}')`)}">
+    <div class="wo-hdr">
+      <div class="wo-num">🚪${wo.roomNumber}</div>
+      <div class="wo-info"><div class="wo-desc">${wo.description}</div><div class="wo-meta">${timeAgo(wo.createdAt)}${wo.updatedAt?' · act. '+timeAgo(wo.updatedAt):''}</div></div>
+      <span class="wo-badge" style="background:${col}22;color:${col};border:1px solid ${col}44">${statusLabels[wo.status]||wo.status}</span>
+    </div>
+    ${isSup&&wo.status==='vr'?`<div style="padding:0 14px 12px;display:flex;gap:6px">
+      <button onclick="event.stopPropagation();resolveWO('${wo.id}','vc')" class="btn btn-g btn-sm">✅ VC</button>
+      <button onclick="event.stopPropagation();resolveWO('${wo.id}','vd')" class="btn btn-o btn-sm">🛏️ VD</button>
+      <button onclick="event.stopPropagation();resolveWO('${wo.id}','vp')" class="btn btn-r btn-sm">⚠️ VP</button>
+    </div>`:isSup&&wo.status==='pending'?`<div style="padding:0 14px 12px"><button onclick="event.stopPropagation();deleteWO('${wo.id}')" class="btn btn-r btn-sm">🗑 Eliminar</button></div>`:''}
+    ${!isSup&&(wo.status==='pending'||wo.status==='in')?`<div style="padding:0 14px 12px"><button onclick="mantUpdateWO('${wo.id}')" class="btn btn-y btn-sm btn-block">${wo.status==='pending'?'🔨 Iniciar trabajo':'✔️ Marcar como terminado'}</button></div>`:''}
+  </div>`;
+}
+
+function renderMantTab(){
+  const wos=st.workOrders||[];
+  const active=wos.filter(w=>w.status!=='resolved');
+  const pending=active.filter(w=>w.status==='pending');
+  const inprog=active.filter(w=>w.status==='in');
+  const done=active.filter(w=>w.status==='vr');
+  document.getElementById('tab-mant').innerHTML=`
+    <div style="font-weight:800;font-size:1rem;margin-bottom:14px">🔧 Mantenimiento</div>
+    ${!active.length?'<div class="empty"><div class="ei">✅</div><p>Sin work orders activos.</p></div>':''}
+    ${pending.length?`<div style="font-size:.72rem;font-weight:700;color:var(--vp);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">⏳ Pendientes (${pending.length})</div>${pending.map(wo=>woCard(wo,true)).join('')}`:''}
+    ${inprog.length?`<div style="font-size:.72rem;font-weight:700;color:var(--mant);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;margin-top:14px">🔨 En proceso (${inprog.length})</div>${inprog.map(wo=>woCard(wo,true)).join('')}`:''}
+    ${done.length?`<div style="font-size:.72rem;font-weight:700;color:var(--vr);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;margin-top:14px">✔️ Listos para verificar (${done.length})</div>${done.map(wo=>woCard(wo,true)).join('')}`:''}`;
+}
+window.resolveWO=function(id,newStatus){
+  const wo=st.workOrders.find(w=>w.id===id);if(!wo)return;
+  wo.status='resolved';
+  const r=st.rooms.find(x=>x.number===wo.roomNumber);if(r)r.status=newStatus;
+  save();renderAll();toast(`✅ Cuarto ${wo.roomNumber} → ${STATUS[newStatus]?.label}`);
+};
+window.deleteWO=function(id){if(!confirm('¿Eliminar este work order?'))return;st.workOrders=st.workOrders.filter(w=>w.id!==id);save();renderAll();toast('🗑 Eliminado');};
+let woRoomNum='';
+window.openWOModal=function(){
+  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
+  woRoomNum=r.number;
+  document.getElementById('woModalTitle').textContent=`🔧 Work Order — Cuarto ${r.number}`;
+  document.getElementById('woDesc').value='';
+  openModal('modalWO');
+};
+window.saveWO=function(){
+  const desc=document.getElementById('woDesc').value.trim();
+  if(!desc){toast('⚠️ Describe el problema');return;}
+  st.workOrders=st.workOrders||[];
+  st.workOrders.push({id:gid(),roomNumber:woRoomNum,description:desc,status:'pending',createdAt:Date.now(),updatedAt:null});
+  closeModal('modalWO');closeModal('modalRoom');
+  save();renderAll();toast(`🔧 Work order creado — Cuarto ${woRoomNum}`);
+};
+
+// ── MAINTENANCE VIEW
+function renderMantView(){
+  const wos=(st.workOrders||[]).filter(w=>w.status!=='resolved');
+  const el=document.getElementById('tab-mantview');
+  if(!wos.length){el.innerHTML=`<div class="empty"><div class="ei">✅</div><p>Sin work orders pendientes.</p><small>Todo en orden por ahora.</small></div>`;return;}
+  const pending=wos.filter(w=>w.status==='pending');
+  const inprog=wos.filter(w=>w.status==='in');
+  const done=wos.filter(w=>w.status==='vr');
+  el.innerHTML=`<div style="font-weight:800;font-size:1rem;margin-bottom:14px">🔧 Mis Work Orders</div>
+    ${pending.length?`<div style="font-size:.72rem;font-weight:700;color:var(--vp);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">⏳ Pendientes (${pending.length})</div>${pending.map(wo=>woCard(wo,false)).join('')}`:''}
+    ${inprog.length?`<div style="font-size:.72rem;font-weight:700;color:var(--mant);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;margin-top:14px">🔨 En proceso (${inprog.length})</div>${inprog.map(wo=>woCard(wo,false)).join('')}`:''}
+    ${done.length?`<div style="font-size:.72rem;font-weight:700;color:var(--vr);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;margin-top:14px">✔️ Terminados — esperando verificación (${done.length})</div>${done.map(wo=>woCard(wo,false)).join('')}`:''}`;
+}
+window.mantUpdateWO=function(id){
+  const wo=st.workOrders.find(w=>w.id===id);if(!wo)return;
+  const next=wo.status==='pending'?'in':wo.status==='in'?'vr':null;
+  if(!next)return;
+  wo.status=next;wo.updatedAt=Date.now();
+  const r=st.rooms.find(x=>x.number===wo.roomNumber);
+  if(r){if(next==='in')r.status='in';else if(next==='vr')r.status='vr';}
+  save();renderAll();
+  toast(next==='in'?`🔨 Iniciado — Cuarto ${wo.roomNumber}`:`✔️ Listo — Cuarto ${wo.roomNumber}`);
+};
+
+// ── HOUSEKEEPER VIEW
+function renderHKView(){
+  const el=document.getElementById('tab-hkview');
+  const myRooms=sorted(st.rooms.filter(r=>r.assignedTo===currentEmpId));
+  if(!myRooms.length){el.innerHTML=`<div class="empty"><div class="ei">🧹</div><p>Sin cuartos asignados.</p><small>El supervisor debe importar las tablas primero.</small></div>`;return;}
+  el.innerHTML=myRooms.map(r=>{
+    const s=STATUS[r.status]||STATUS.vd,rep=st.lsDone[r.id];
+    let actionHTML='';
+    if(!rep){
+      if(r.status==='odco'||r.status==='vd'){
+        actionHTML=`<button class="hk-action-btn" style="background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.3)" onclick="hkMarkVC('${r.id}')">✅ Marcar como Limpio (VC)</button>`;
+      } else if(r.status==='odrf'||r.status==='odfu'){
+        actionHTML=`<button class="hk-action-btn" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;box-shadow:0 3px 10px rgba(109,40,217,.3)" onclick="hkMarkSO('${r.id}')">🧹 Stand Out — Marcar VC</button>`;
+        if(r.dnd){
+          actionHTML+=`<div style="display:flex;align-items:center;gap:8px;margin-top:8px;padding:10px 12px;background:#fef3c7;border-radius:10px;border:1px solid #fbbf24"><span style="font-size:.85rem;font-weight:600;color:#92400e">🚫 DND activo</span><button onclick="hkToggleDND('${r.id}')" style="margin-left:auto;background:none;border:none;color:#92400e;cursor:pointer;font-weight:700;font-size:.82rem">Quitar DND</button></div>`;
+        } else {
+          actionHTML+=`<button class="hk-action-btn" style="background:#f8fafc;color:#6b7280;border:1.5px solid var(--bdr);font-size:.9rem" onclick="hkToggleDND('${r.id}')">🚫 Marcar DND (sin crédito)</button>`;
+        }
+      }
+    }
+    return`<div class="hk-room-card s-${r.status}" style="border-color:${s.border}${rep?';opacity:.55':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:1.6rem;font-weight:800;letter-spacing:-.02em${rep?';text-decoration:line-through;color:#9ca3af':''}">${r.number}</div>
+          <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${rep?'#9ca3af':s.color};margin-top:2px">${s.icon} ${s.label}</div>
+        </div>
+        ${rep?`<div style="background:#ecfdf5;border-radius:12px;padding:10px 14px;text-align:center"><div style="font-size:1.5rem">✅</div><div style="font-size:.65rem;font-weight:700;color:var(--vc)">EN LS</div></div>`:''}
+        ${r.lateCheckout&&!rep?`<div style="background:#f5f3ff;border-radius:12px;padding:10px 12px;text-align:center"><div style="font-size:1rem;font-weight:700;color:#7c3aed">🕐</div><div style="font-size:.72rem;font-weight:700;color:#7c3aed">${r.lateCheckout}</div></div>`:''}
+      </div>
+      ${!rep&&r.note?`<div style="font-size:.78rem;color:#dc2626;background:#fff1f1;padding:6px 10px;border-radius:8px;margin-top:8px">📝 ${r.note}</div>`:''}
+      ${!rep?actionHTML:'<div style="font-size:.82rem;color:var(--muted);text-align:center;padding:8px 0">Ya marcado en Lightspeed ✅</div>'}
+    </div>`;
+  }).join('');
+}
+window.hkMarkVC=function(id){const r=st.rooms.find(x=>x.id===id);if(!r)return;r.status='vc';st.lsDone[id]=true;save();renderAll();toast(`✅ Cuarto ${r.number} limpio`);};
+window.hkMarkSO=function(id){const r=st.rooms.find(x=>x.id===id);if(!r)return;r.status='vc';st.lsDone[id]=true;save();renderAll();toast(`🧹 Stand Out — Cuarto ${r.number} VC`);};
+window.hkToggleDND=function(id){const r=st.rooms.find(x=>x.id===id);if(!r)return;r.dnd=!r.dnd;save();renderAll();toast(r.dnd?`🚫 DND — Cuarto ${r.number}`:`✅ DND removido — Cuarto ${r.number}`);};
+
+// ── PROGRESS
 function renderProgress(){
   const cnt=k=>st.rooms.filter(x=>x.status===k).length;
   const vc=cnt('vc'),total=st.rooms.length,pct=total?Math.round(vc/total*100):0;
@@ -833,8 +950,7 @@ function renderProgress(){
     const vc=rooms.filter(x=>x.status==='vc').length,credits=totalCredits(rooms);
     const norm=rooms.filter(x=>x.status!=='odrf'&&x.status!=='odfu').length;
     const rf=rooms.filter(x=>(x.status==='odrf'||x.status==='odfu')&&!x.dnd).length;
-    const issues=rooms.filter(x=>x.missing?.length||x.note),over=credits>MAX_CREDITS;
-    const crPct=Math.min(Math.round(credits/MAX_CREDITS*100),100);
+    const issues=rooms.filter(x=>x.missing?.length||x.note),over=credits>MAX_CREDITS,crPct=Math.min(Math.round(credits/MAX_CREDITS*100),100);
     return{name:e.name,total:rooms.length,vc,credits,norm,rf,issues,over,crPct};
   });
   document.getElementById('tab-progress').innerHTML=`
@@ -853,55 +969,63 @@ function renderProgress(){
       <div class="stat-card"><div class="stat-val" style="color:var(--odco)">${cnt('odco')}</div><div class="stat-lbl">🚪 OD COUT</div></div>
       <div class="stat-card"><div class="stat-val" style="color:var(--odrf)">${cnt('odrf')+cnt('odfu')}</div><div class="stat-lbl">🔄 RFSH/FULL</div></div>
     </div>
-    <div class="card">
-      <div class="card-hdr">Créditos por asociada</div>
-      <div style="padding:10px 14px">
-        ${summaries.map(s=>`<div style="margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-            <span style="font-size:.78rem;font-weight:600">${s.name.split(' ')[0]}</span>
-            <span style="font-size:.72rem;color:${s.over?'#dc2626':'#d97706'};font-weight:700">${s.credits}/${MAX_CREDITS}cr${s.over?' ⚠️':''}</span>
-          </div>
-          <div style="height:7px;background:var(--bdr);border-radius:10px;overflow:hidden;margin-bottom:2px">
-            <div style="height:100%;width:${s.crPct}%;background:${s.over?'#dc2626':'#f59e0b'};border-radius:10px;transition:width .4s"></div>
-          </div>
-          <div style="display:flex;justify-content:space-between">
-            <span style="font-size:.68rem;color:var(--muted)">${s.norm} normales · ${s.rf} refresh</span>
-            <span style="font-size:.68rem;color:var(--vc)">${s.vc}/${s.total} VC</span>
-          </div>
-        </div>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">Sin asociadas</p>'}
-      </div>
-    </div>
-    ${summaries.map(s=>`
-      <div class="card" style="margin-bottom:10px">
-        <div class="card-hdr"><span>${s.name}</span><span style="font-weight:400">${s.credits}cr</span></div>
-        ${s.issues.length?s.issues.map(r=>{const st2=STATUS[r.status]||STATUS.vd;return`<div style="display:flex;align-items:flex-start;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px;font-size:.8rem">
-          <div>${st2.icon}</div>
-          <div style="flex:1"><strong>Cuarto ${r.number}</strong> — ${st2.label}
-            ${r.missing?.length?`<div style="font-size:.72rem;color:#92400e;margin-top:2px">⚠️ Faltantes: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
-            ${r.note?`<div style="font-size:.72rem;color:#dc2626;margin-top:1px">📝 ${r.note}</div>`:''}
-          </div></div>`;}).join('')
-        :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ Sin novedades</div>`}
-      </div>`).join('')}
+    ${cnt('vp')+cnt('in')+cnt('vr')>0?`<div class="stat-grid">
+      <div class="stat-card"><div class="stat-val" style="color:var(--vp)">${cnt('vp')}</div><div class="stat-lbl">⚠️ VP</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--mant)">${cnt('in')}</div><div class="stat-lbl">🔨 IN Mant.</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--vr)">${cnt('vr')}</div><div class="stat-lbl">✔️ VR Verif.</div></div>
+      <div class="stat-card"><div class="stat-val">${(st.workOrders||[]).filter(w=>w.status!=='resolved').length}</div><div class="stat-lbl">🔧 Work Orders</div></div>
+    </div>`:''}
+    <div class="card"><div class="card-hdr">Créditos por asociada</div><div style="padding:10px 14px">
+      ${summaries.map(s=>`<div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <span style="font-size:.78rem;font-weight:600">${s.name.split(' ')[0]}</span>
+          <span style="font-size:.72rem;color:${s.over?'#dc2626':'#d97706'};font-weight:700">${s.credits}/${MAX_CREDITS}cr${s.over?' ⚠️':''}</span>
+        </div>
+        <div style="height:7px;background:var(--bdr);border-radius:10px;overflow:hidden;margin-bottom:2px">
+          <div style="height:100%;width:${s.crPct}%;background:${s.over?'#dc2626':'#f59e0b'};border-radius:10px;transition:width .4s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="font-size:.68rem;color:var(--muted)">${s.norm} normales · ${s.rf} refresh</span>
+          <span style="font-size:.68rem;color:var(--vc)">${s.vc}/${s.total} VC</span>
+        </div>
+      </div>`).join('')||'<p style="font-size:.82rem;color:var(--muted)">Sin asociadas</p>'}
+    </div></div>
+    ${summaries.map(s=>`<div class="card" style="margin-bottom:10px"><div class="card-hdr"><span>${s.name}</span><span style="font-weight:400">${s.credits}cr</span></div>
+      ${s.issues.length?s.issues.map(r=>{const st2=STATUS[r.status]||STATUS.vd;return`<div style="display:flex;align-items:flex-start;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px;font-size:.8rem">
+        <div>${st2.icon}</div><div style="flex:1"><strong>Cuarto ${r.number}</strong> — ${st2.label}
+          ${r.missing?.length?`<div style="font-size:.72rem;color:#92400e;margin-top:2px">⚠️ Faltantes: ${r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ')}</div>`:''}
+          ${r.note?`<div style="font-size:.72rem;color:#dc2626;margin-top:1px">📝 ${r.note}</div>`:''}
+        </div></div>`;}).join('')
+      :`<div style="padding:9px 14px;font-size:.8rem;color:var(--muted)">✅ Sin novedades</div>`}
+    </div>`).join('')}
     <button class="btn btn-p btn-block" onclick="sendReport()" style="margin-top:4px;margin-bottom:8px">📧 Enviar Reporte</button>`;
 }
 
+// ── SETUP
 function renderSetup(){
+  const sup=st.pins?.supervisor||'1234',mnt=st.pins?.maintenance||'2345';
   document.getElementById('tab-setup').innerHTML=`
     <div style="font-weight:700;font-size:1rem;margin-bottom:12px">Configuración</div>
-    <div class="card">
-      <div class="card-hdr">Asociadas <button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Agregar</button></div>
-      ${st.employees.map(e=>`
-        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f4f8">
-          <div style="width:34px;height:34px;border-radius:50%;background:#e8f4f8;color:#1a5f7a;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
-          <div style="flex:1;font-weight:600;font-size:.88rem">${e.name}</div>
-          <div style="font-size:.72rem;color:#9ca3af">${st.rooms.filter(r=>r.assignedTo===e.id).length} cuartos</div>
-          <button onclick="delEmp('${e.id}')" style="background:none;border:none;color:#ef4444;font-size:.9rem;cursor:pointer;padding:4px 6px">🗑</button>
-        </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
+    <div class="card"><div class="card-hdr">🔐 PINs del sistema</div><div style="padding:12px 14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="fg" style="margin:0"><label>Supervisor</label><input type="text" id="pinSup" value="${sup}" maxlength="4" inputmode="numeric" placeholder="4 dígitos"></div>
+        <div class="fg" style="margin:0"><label>Mantenimiento</label><input type="text" id="pinMant" value="${mnt}" maxlength="4" inputmode="numeric" placeholder="4 dígitos"></div>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="savePins()">Guardar PINs</button>
+    </div></div>
+    <div class="card"><div class="card-hdr">Asociadas <button class="btn btn-p btn-sm" onclick="openModal('modalAddEmp')">+ Agregar</button></div>
+      ${st.employees.map(e=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid #f0f4f8">
+        <div style="width:34px;height:34px;border-radius:50%;background:#e8f4f8;color:#1a5f7a;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:.88rem">${e.name}</div>
+          <div style="font-size:.7rem;color:var(--muted)">${st.rooms.filter(r=>r.assignedTo===e.id).length} cuartos · PIN: ${e.pin?`<span style="color:var(--vc);font-weight:700">${e.pin}</span>`:'<span style="color:#dc2626">sin PIN</span>'}</div>
+        </div>
+        <input type="text" value="${e.pin||''}" maxlength="4" inputmode="numeric" placeholder="PIN" style="width:60px;padding:5px 8px;font-size:.82rem;border-radius:8px;border:1.5px solid var(--bdr);text-align:center" onchange="updateEmpPin('${e.id}',this.value)">
+        <button onclick="delEmp('${e.id}')" style="background:none;border:none;color:#ef4444;font-size:.9rem;cursor:pointer;padding:4px 6px">🗑</button>
+      </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
     </div>
-    <div class="card">
-      <div class="card-hdr">Cuartos del día <button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Cuarto</button></div>
-      ${sorted(st.rooms).map(r=>{
-        const s=STATUS[r.status]||STATUS.vd,emp=st.employees.find(e=>e.id===r.assignedTo);
+    <div class="card"><div class="card-hdr">Cuartos del día <button class="btn btn-p btn-sm" onclick="openAddRoom()">+ Cuarto</button></div>
+      ${sorted(st.rooms).map(r=>{const s=STATUS[r.status]||STATUS.vd,emp=st.employees.find(e=>e.id===r.assignedTo);
         return`<div style="display:flex;align-items:center;padding:9px 14px;border-bottom:1px solid #f0f4f8;gap:8px">
           <div style="font-weight:700;min-width:40px;font-size:.9rem">${r.number}</div>
           <span style="font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:10px;background:${s.bg};color:${s.color}">${s.label}</span>
@@ -910,104 +1034,75 @@ function renderSetup(){
         </div>`;}).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin cuartos. Usa 📄 PDF.</div>'}
     </div>
     <button class="btn btn-block" style="background:#fff3cd;color:#856404;border:none;font-size:.9rem;font-weight:700;margin-bottom:8px" onclick="newDay()">🔄 Reiniciar día</button>
-    <div class="card" style="margin-top:4px">
-      <div class="card-hdr">📧 Correo para reportes</div>
+    <div class="card" style="margin-top:4px"><div class="card-hdr">📧 Correo para reportes</div>
       <div style="padding:12px 14px;display:flex;gap:8px;align-items:center">
         <input type="text" id="emailInput" value="${st.reportEmail}" placeholder="ejemplo@hotel.com" style="flex:1;font-size:.85rem">
         <button class="btn btn-p btn-sm" onclick="saveEmail()">Guardar</button>
       </div>
     </div>`;
 }
-
-// ── IMPORTAR MANUAL
-const statusMap={co:'odco',cout:'odco',odco:'odco',rf:'odrf',rfsh:'odrf',odrf:'odrf',full:'odfu',odfu:'odfu',vd:'vd',vc:'vc',vp:'vp',od:'odco'};
-window.doImport=function(){
-  const raw=document.getElementById('pasteInput').value.trim();
-  if(!raw){toast('⚠️ Pega un código primero');return}
-  try{
-    let empName='',roomStr=raw;
-    if(raw.includes('|')&&raw.startsWith('EMP:')){const p=raw.split('|');empName=p[0].replace('EMP:','').trim();roomStr=p[1];}
-    const items=roomStr.split(',').map(s=>s.trim()).filter(Boolean);
-    let empId=null;
-    if(empName){let emp=st.employees.find(e=>e.name.toLowerCase()===empName.toLowerCase());if(!emp){emp={id:gid(),name:empName};st.employees.push(emp);}empId=emp.id;}
-    const ex=new Set(st.rooms.map(r=>r.number));let added=0;
-    for(const item of items){const[num,code='odco']=item.split('-');if(!num||ex.has(num.trim()))continue;st.rooms.push({id:gid(),number:num.trim(),status:statusMap[code.trim().toLowerCase()]||'odco',assignedTo:empId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});ex.add(num.trim());added++;}
-    document.getElementById('pasteInput').value='';closeModal('modalPaste');save();renderAll();
-    toast(`✅ ${added} cuartos importados${empName?' → '+empName:''}`);
-  }catch(e){toast('⚠️ Código inválido')}
+window.savePins=function(){
+  const sup=document.getElementById('pinSup')?.value.trim(),mnt=document.getElementById('pinMant')?.value.trim();
+  if((sup&&sup.length!==4)||(mnt&&mnt.length!==4)){toast('⚠️ Los PINs deben ser de 4 dígitos');return;}
+  st.pins=st.pins||{};if(sup)st.pins.supervisor=sup;if(mnt)st.pins.maintenance=mnt;
+  save();toast('🔐 PINs guardados');
+};
+window.updateEmpPin=function(id,pin){
+  const emp=st.employees.find(e=>e.id===id);if(!emp)return;
+  if(pin&&pin.length!==4){toast('⚠️ PIN debe ser de 4 dígitos');return;}
+  emp.pin=pin;save();toast(pin?`🔑 PIN actualizado — ${emp.name}`:`PIN removido — ${emp.name}`);
 };
 
-// ── ROOM MODAL
+// ── ROOM MODAL (supervisor)
 window.openRoomModal=function(id){
   curRoomId=id;const r=st.rooms.find(x=>x.id===id);if(!r)return;
   document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number}`;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   document.getElementById('stOpts').innerHTML=Object.entries(STATUS).map(([k,v])=>{
     const isCur=k===r.status,isOk=isCur||allowed.includes(k);
-    return`<div class="st-opt ${isCur?'sel':''}" data-k="${k}" style="background:${v.bg};border-color:${isCur?'#1a5f7a':v.border};opacity:${isOk?1:.28};${!isOk?'pointer-events:none':''}" ${isOk?`onclick="selStatus('${k}')"`:''}> 
-      <div class="st-opt-icon">${v.icon}</div>
-      <div class="st-opt-label" style="color:${v.color}">${v.label}</div>
-      <div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'No disponible'}</div>
-    </div>`;
+    return`<div class="st-opt ${isCur?'sel':''}" data-k="${k}" style="background:${v.bg};border-color:${isCur?'#1a5f7a':v.border};opacity:${isOk?1:.28};${!isOk?'pointer-events:none':''}" ${isOk?`onclick="selStatus('${k}')"`:''}><div class="st-opt-icon">${v.icon}</div><div class="st-opt-label" style="color:${v.color}">${v.label}</div><div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'No disponible'}</div></div>`;
   }).join('');
   MISSING.forEach(m=>{const el=document.getElementById('mo-'+m.id);if(el)el.classList.toggle('sel',(r.missing||[]).includes(m.id))});
   const h=r.hangers!=null?r.hangers:4;
   document.getElementById('hangerCount').textContent=h;
   document.getElementById('hangerNote').textContent=h<4?`⚠️ Faltan ${4-h}`:'';
   document.getElementById('roomNote').value=r.note||'';
-  const emp=st.employees.find(e=>e.id===r.assignedTo);
-  document.getElementById('roomEmpLabel').textContent=emp?'👤 '+emp.name:'';
+  document.getElementById('roomEmpLabel').textContent=st.employees.find(e=>e.id===r.assignedTo)?'👤 '+st.employees.find(e=>e.id===r.assignedTo).name:'';
   document.getElementById('lsCheck').checked=!!st.lsDone[r.id];
-
-  const isVC = r.status==='vc';
-  // Alternar entre modo VC (compacto) y modo normal
-  document.getElementById('vcMode').style.display = isVC ? 'block' : 'none';
-  document.getElementById('normalMode').style.display = isVC ? 'none' : 'block';
-  document.querySelector('.sheet-foot').style.display = isVC ? 'none' : 'flex';
-
+  // Show "Send to maintenance" button for VP rooms
+  const maintBtn=document.getElementById('btnSendMaint');
+  if(maintBtn)maintBtn.style.display=r.status==='vp'?'block':'none';
+  const isVC=r.status==='vc';
+  document.getElementById('vcMode').style.display=isVC?'block':'none';
+  document.getElementById('normalMode').style.display=isVC?'none':'block';
+  document.querySelector('.sheet-foot').style.display=isVC?'none':'flex';
   if(isVC){
-    // Modo VC: poblar stOptsVC con todas las opciones de cambio
-    const allowed=VALID_TRANSITIONS['vc']||[];
+    const av=VALID_TRANSITIONS['vc']||[];
     document.getElementById('stOptsVC').innerHTML=Object.entries(STATUS).map(([k,v])=>{
-      const isCur=k==='vc', isOk=isCur||allowed.includes(k);
-      return`<div class="st-opt ${isCur?'sel':''}" data-k="${k}" style="background:${v.bg};border-color:${isCur?'#1a5f7a':v.border};opacity:${isOk?1:.28};${!isOk?'pointer-events:none':''}" ${isOk?`onclick="selStatus('${k}')"`:''}> 
-        <div class="st-opt-icon">${v.icon}</div>
-        <div class="st-opt-label" style="color:${v.color}">${v.label}</div>
-        <div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'No disponible'}</div>
-      </div>`;
+      const isCur=k==='vc',isOk=isCur||av.includes(k);
+      return`<div class="st-opt ${isCur?'sel':''}" data-k="${k}" style="background:${v.bg};border-color:${isCur?'#1a5f7a':v.border};opacity:${isOk?1:.28};${!isOk?'pointer-events:none':''}" ${isOk?`onclick="selStatus('${k}')"`:''}><div class="st-opt-icon">${v.icon}</div><div class="st-opt-label" style="color:${v.color}">${v.label}</div><div class="st-opt-desc" style="color:${v.color}">${isOk?v.desc:'No disponible'}</div></div>`;
     }).join('');
   } else {
-    // Modo normal: DND y late
     const isDnd=r.status==='odrf'||r.status==='odfu';
     document.getElementById('dndSection').style.display=isDnd?'flex':'none';
     document.getElementById('dndCheck').checked=!!r.dnd;
-    const showLate=lateVisible(r.status);
-    document.getElementById('lateRow').style.display=showLate?'flex':'none';
+    document.getElementById('lateRow').style.display=lateVisible(r.status)?'flex':'none';
     document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b.dataset.h===(r.lateCheckout||'')));
   }
   openModal('modalRoom');
 };
-
 window.selStatus=function(k){
   const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   if(k!==r.status&&!allowed.includes(k))return;
   r.status=k;
-
-  // Al cambiar a VD/VC/VP: limpiar late checkout y ocultar fila late
-  if(k==='vd'||k==='vc'||k==='vp'){
-    r.lateCheckout=null;
-    document.querySelectorAll('.late-btn').forEach(b=>b.classList.remove('on'));
-    document.getElementById('lateRow').style.display='none';
-  } else {
-    document.getElementById('lateRow').style.display=lateVisible(k)?'flex':'none';
-  }
-
-  // DND solo para RFSH y FULL
+  if(k==='vd'||k==='vc'||k==='vp'){r.lateCheckout=null;document.querySelectorAll('.late-btn').forEach(b=>b.classList.remove('on'));document.getElementById('lateRow').style.display='none';}
+  else{document.getElementById('lateRow').style.display=lateVisible(k)?'flex':'none';}
   const isDnd=k==='odrf'||k==='odfu';
   document.getElementById('dndSection').style.display=isDnd?'flex':'none';
   if(!isDnd){r.dnd=false;document.getElementById('dndCheck').checked=false;}
-
+  // Show/hide maint button
+  const mb=document.getElementById('btnSendMaint');if(mb)mb.style.display=k==='vp'?'block':'none';
   save();
   const allowed2=VALID_TRANSITIONS[k]||Object.keys(STATUS);
   document.querySelectorAll('.st-opt').forEach(o=>{
@@ -1019,103 +1114,55 @@ window.selStatus=function(k){
   });
   renderGrid();refreshAssocModal();
   toast(`${STATUS[k]?.icon} Cuarto ${r.number} → ${STATUS[k]?.label}`);
-  // Auto-cerrar siempre al llegar a VC, VD o VP
-  if(k==='vc'||k==='vd'||k==='vp'){
-    setTimeout(()=>closeModal('modalRoom'),200);
-  }
+  if(k==='vc'||k==='vd'||k==='vp')setTimeout(()=>closeModal('modalRoom'),200);
 };
-
-// Late solo aplica a cuartos ocupados
-function lateVisible(s){return s==='odco'||s==='odrf'||s==='odfu'}
-
-window.setLate=function(btn){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  r.lateCheckout=btn.dataset.h||null;
-  document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&btn.dataset.h));
-  save();renderGrid();refreshAssocModal();
-  if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Cuarto ${r.number}`);
-};
+function lateVisible(s){return s==='odco'||s==='odrf'||s==='odfu';}
+window.setLate=function(btn){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.lateCheckout=btn.dataset.h||null;document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&btn.dataset.h));save();renderGrid();refreshAssocModal();if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Cuarto ${r.number}`);};
 window.autoSaveNote=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(r){r.note=document.getElementById('roomNote').value;save();}};
-window.saveLs=function(){
-  const el=document.getElementById('lsCheck');if(!el||!curRoomId)return;
-  st.lsDone[curRoomId]=el.checked;save();renderGrid();refreshAssocModal();
-  if(el.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),200);}
-};
-// Botón rápido LS para modo VC
-window.quickLS=function(){
-  if(!curRoomId)return;
-  st.lsDone[curRoomId]=true;
-  const el=document.getElementById('lsCheck');if(el)el.checked=true;
-  save();renderGrid();refreshAssocModal();
-  toast('✅ Marcado en Lightspeed');
-  setTimeout(()=>closeModal('modalRoom'),200);
-};
-window.togMissing=function(id){
-  document.getElementById('mo-'+id).classList.toggle('sel');
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);
-  save();
-};
-window.adjHangers=function(d){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  r.hangers=Math.max(0,Math.min(4,(r.hangers!=null?r.hangers:4)+d));
-  document.getElementById('hangerCount').textContent=r.hangers;
-  document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';
-  save();renderGrid();refreshAssocModal();
-};
-window.saveDnd=function(){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  r.dnd=document.getElementById('dndCheck').checked;
-  save();renderGrid();refreshAssocModal();
-  toast(r.dnd?'🚫 DND — sin crédito':'✅ DND removido');
-};
-window.openAddRoomToAssoc=function(){
-  const emp=curAssocId==='__none__'?null:st.employees.find(e=>e.id===curAssocId);
-  document.getElementById('quickAddTitle').textContent='Agregar cuarto'+(emp?' → '+emp.name.split(' ')[0]:'');
-  document.getElementById('qaNum').value='';document.getElementById('qaStatus').value='odco';
-  openModal('modalQuickAdd');setTimeout(()=>document.getElementById('qaNum').focus(),200);
-};
-window.doQuickAdd=function(){
-  const num=document.getElementById('qaNum').value.trim();
-  if(!num){toast('⚠️ Ingresa el número');return}
-  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Cuarto '+num+' ya existe');return}
-  st.rooms.push({id:gid(),number:num,status:document.getElementById('qaStatus').value,assignedTo:curAssocId==='__none__'?null:curAssocId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});
-  closeModal('modalQuickAdd');save();renderAll();refreshAssocModal();toast('🏠 Cuarto '+num+' agregado');
-};
-window.openTransfer=function(){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  document.getElementById('transferTitle').textContent=`Transferir cuarto ${r.number}`;
-  document.getElementById('transferList').innerHTML=[{id:null,name:'Sin asignar'},...st.employees].map(e=>{
-    const isCur=e.id===r.assignedTo,rooms=e.id?st.rooms.filter(x=>x.assignedTo===e.id):st.rooms.filter(x=>!x.assignedTo);
-    return`<div onclick="${isCur?'':(`doTransfer('${e.id||''}')`)}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f0f4f8;cursor:${isCur?'default':'pointer'};opacity:${isCur?.5:1}">
-      <div style="width:38px;height:38px;border-radius:50%;background:${isCur?'#e2e8f0':'linear-gradient(135deg,#1a5f7a,#0d3d52)'};color:${isCur?'#9ca3af':'white'};font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div>
-      <div style="flex:1"><div style="font-weight:600;font-size:.9rem">${e.name}${isCur?' (actual)':''}</div><div style="font-size:.72rem;color:var(--muted)">${rooms.length} cuartos · ${totalCredits(rooms)}cr</div></div>
-      ${!isCur?'<div style="font-size:1.1rem;color:#9ca3af">›</div>':''}
-    </div>`;
-  }).join('');
-  openModal('modalTransfer');
-};
-window.doTransfer=function(empId){
-  const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;
-  const old=st.employees.find(e=>e.id===r.assignedTo),nw=st.employees.find(e=>e.id===empId);
-  r.assignedTo=empId||null;save();renderAll();closeModal('modalTransfer');
-  toast(`🔄 ${r.number}: ${old?old.name:'Sin asignar'} → ${nw?nw.name:'Sin asignar'}`);
-  document.getElementById('roomEmpLabel').textContent=nw?'👤 '+nw.name:'';
-  refreshAssocModal();
-};
-window.delRoom=function(){
-  const r=st.rooms.find(x=>x.id===curRoomId);
-  if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;
-  st.rooms=st.rooms.filter(x=>x.id!==curRoomId);closeModal('modalRoom');save();renderAll();toast('🗑 Cuarto eliminado');
-};
+window.saveLs=function(){const el=document.getElementById('lsCheck');if(!el||!curRoomId)return;st.lsDone[curRoomId]=el.checked;save();renderGrid();refreshAssocModal();if(el.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),200);}};
+window.quickLS=function(){if(!curRoomId)return;st.lsDone[curRoomId]=true;const el=document.getElementById('lsCheck');if(el)el.checked=true;save();renderGrid();refreshAssocModal();toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),200);};
+window.togMissing=function(id){document.getElementById('mo-'+id).classList.toggle('sel');const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);save();};
+window.adjHangers=function(d){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.hangers=Math.max(0,Math.min(4,(r.hangers!=null?r.hangers:4)+d));document.getElementById('hangerCount').textContent=r.hangers;document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';save();renderGrid();refreshAssocModal();};
+window.saveDnd=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.dnd=document.getElementById('dndCheck').checked;save();renderGrid();refreshAssocModal();toast(r.dnd?'🚫 DND — sin crédito':'✅ DND removido');};
+window.openAddRoomToAssoc=function(){const emp=curAssocId==='__none__'?null:st.employees.find(e=>e.id===curAssocId);document.getElementById('quickAddTitle').textContent='Agregar cuarto'+(emp?' → '+emp.name.split(' ')[0]:'');document.getElementById('qaNum').value='';document.getElementById('qaStatus').value='odco';openModal('modalQuickAdd');setTimeout(()=>document.getElementById('qaNum').focus(),200);};
+window.doQuickAdd=function(){const num=document.getElementById('qaNum').value.trim();if(!num){toast('⚠️ Ingresa el número');return;}if(st.rooms.find(r=>r.number===num)){toast('⚠️ Cuarto '+num+' ya existe');return;}st.rooms.push({id:gid(),number:num,status:document.getElementById('qaStatus').value,assignedTo:curAssocId==='__none__'?null:curAssocId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});closeModal('modalQuickAdd');save();renderAll();refreshAssocModal();toast('🏠 Cuarto '+num+' agregado');};
+window.openTransfer=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;document.getElementById('transferTitle').textContent=`Transferir cuarto ${r.number}`;document.getElementById('transferList').innerHTML=[{id:null,name:'Sin asignar'},...st.employees].map(e=>{const isCur=e.id===r.assignedTo,rooms=e.id?st.rooms.filter(x=>x.assignedTo===e.id):st.rooms.filter(x=>!x.assignedTo);return`<div onclick="${isCur?'':(`doTransfer('${e.id||''}')`)}" style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid #f0f4f8;cursor:${isCur?'default':'pointer'};opacity:${isCur?.5:1}"><div style="width:38px;height:38px;border-radius:50%;background:${isCur?'#e2e8f0':'linear-gradient(135deg,#1a5f7a,#0d3d52)'};color:${isCur?'#9ca3af':'white'};font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${e.name[0].toUpperCase()}</div><div style="flex:1"><div style="font-weight:600;font-size:.9rem">${e.name}${isCur?' (actual)':''}</div><div style="font-size:.72rem;color:var(--muted)">${rooms.length} cuartos · ${totalCredits(rooms)}cr</div></div>${!isCur?'<div style="font-size:1.1rem;color:#9ca3af">›</div>':''}</div>`;}).join('');openModal('modalTransfer');};
+window.doTransfer=function(empId){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;const old=st.employees.find(e=>e.id===r.assignedTo),nw=st.employees.find(e=>e.id===empId);r.assignedTo=empId||null;save();renderAll();closeModal('modalTransfer');toast(`🔄 ${r.number}: ${old?old.name:'Sin asignar'} → ${nw?nw.name:'Sin asignar'}`);document.getElementById('roomEmpLabel').textContent=nw?'👤 '+nw.name:'';refreshAssocModal();};
+window.delRoom=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==curRoomId);closeModal('modalRoom');save();renderAll();toast('🗑 Cuarto eliminado');};
 
-// ── SETUP
-window.saveHotel=function(){const n=document.getElementById('hotelInput').value.trim();if(n){st.hotel=n;save();renderAll();}closeModal('modalHotel');};
-window.saveEmp=function(){const n=document.getElementById('empInput').value.trim();if(!n)return;st.employees.push({id:gid(),name:n});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada');};
-window.delEmp=function(id){if(!confirm('¿Eliminar esta asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null});save();renderAll();};
+// ── IMPORT/SETUP
+const statusMap={co:'odco',cout:'odco',odco:'odco',rf:'odrf',rfsh:'odrf',odrf:'odrf',full:'odfu',odfu:'odfu',vd:'vd',vc:'vc',vp:'vp',od:'odco'};
+window.doImport=function(){
+  const raw=document.getElementById('pasteInput').value.trim();
+  if(!raw){toast('⚠️ Pega un código primero');return;}
+  try{
+    let empName='',roomStr=raw;
+    if(raw.includes('|')&&raw.startsWith('EMP:')){const p=raw.split('|');empName=p[0].replace('EMP:','').trim();roomStr=p[1];}
+    const items=roomStr.split(',').map(s=>s.trim()).filter(Boolean);
+    let empId=null;
+    if(empName){let emp=st.employees.find(e=>e.name.toLowerCase()===empName.toLowerCase());if(!emp){emp={id:gid(),name:empName,pin:''};st.employees.push(emp);}empId=emp.id;}
+    const ex=new Set(st.rooms.map(r=>r.number));let added=0;
+    for(const item of items){const[num,code='odco']=item.split('-');if(!num||ex.has(num.trim()))continue;st.rooms.push({id:gid(),number:num.trim(),status:statusMap[code.trim().toLowerCase()]||'odco',assignedTo:empId,note:'',missing:[],hangers:4,lateCheckout:null,dnd:false});ex.add(num.trim());added++;}
+    document.getElementById('pasteInput').value='';closeModal('modalPaste');save();renderAll();
+    toast(`✅ ${added} cuartos importados${empName?' → '+empName:''}`);
+  }catch(e){toast('⚠️ Código inválido');}
+};
+window.saveHotel=function(){const n=document.getElementById('hotelInput')?.value.trim();if(n){st.hotel=n;save();renderAll();}closeModal('modalHotel');};
+window.saveEmp=function(){
+  const n=document.getElementById('empInput').value.trim(),p=document.getElementById('empPin').value.trim();
+  if(!n)return;if(p&&p.length!==4){toast('⚠️ El PIN debe ser de 4 dígitos');return;}
+  st.employees.push({id:gid(),name:n,pin:p});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada');
+};
+window.delEmp=function(id){if(!confirm('¿Eliminar esta asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null;});save();renderAll();};
 window.delRoomSetup=function(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll();};
 window.saveEmail=function(){const e=document.getElementById('emailInput')?.value.trim();if(!e)return;st.reportEmail=e;save();toast('📧 Correo guardado');};
-window.newDay=function(){if(!confirm('¿Reiniciar el día? Se eliminarán todos los cuartos y asociadas.'))return;st.rooms=[];st.employees=[];st.lsDone={};curFilters=new Set(['all']);save();renderAll();toast('🌅 Día reiniciado');};
+window.newDay=function(){
+  if(!confirm('¿Reiniciar el día? Se eliminarán todos los cuartos, asociadas y work orders. Los PINs del sistema se mantienen.'))return;
+  // Clear employee PINs too (only keep system PINs)
+  st.employees.forEach(e=>e.pin='');
+  st.rooms=[];st.lsDone={};st.workOrders=[];curFilters=new Set(['all']);
+  save();renderAll();toast('🌅 Día reiniciado');
+};
 window.openAddRoom=function(){
   document.getElementById('addNum').value='';document.getElementById('addNote').value='';document.getElementById('addStatus').value='odco';
   document.getElementById('addEmp').innerHTML='<option value="">Sin asignar</option>'+st.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
@@ -1123,13 +1170,13 @@ window.openAddRoom=function(){
 };
 window.saveAddRoom=function(){
   const num=document.getElementById('addNum').value.trim();
-  if(!num){toast('⚠️ Ingresa el número');return}
-  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Cuarto '+num+' ya existe');return}
+  if(!num){toast('⚠️ Ingresa el número');return;}
+  if(st.rooms.find(r=>r.number===num)){toast('⚠️ Cuarto '+num+' ya existe');return;}
   st.rooms.push({id:gid(),number:num,status:document.getElementById('addStatus').value,assignedTo:document.getElementById('addEmp').value||null,note:document.getElementById('addNote').value.trim(),missing:[],hangers:4,lateCheckout:null,dnd:false});
   closeModal('modalAddRoom');save();renderAll();toast('🏠 Cuarto '+num+' agregado');
 };
 
-// ── REPORTE — incluye ganchos por cuarto
+// ── REPORT
 window.sendReport=function(){
   if(!st.reportEmail){const e=prompt('¿Correo para los reportes?');if(!e)return;st.reportEmail=e.trim();save();}
   const d=new Date();
@@ -1143,44 +1190,31 @@ window.sendReport=function(){
     const dnd=rooms.filter(x=>x.dnd);
     body+=`${'─'.repeat(30)}\n${e.name}\n${rooms.length} cuartos · ${rooms.filter(x=>x.status==='vc').length} VC · ${credits}/${MAX_CREDITS}cr\n`;
     body+=`Normales: ${norm.map(r=>r.number).join(', ')||'ninguno'}\nRefresh/Full: ${rf.map(r=>r.number).join(', ')||'ninguno'}\n`;
-    if(dnd.length) body+=`DND: ${dnd.map(r=>r.number).join(', ')}\n`;
-    // Ganchos faltantes
+    if(dnd.length)body+=`DND: ${dnd.map(r=>r.number).join(', ')}\n`;
     const hangerIssues=rooms.filter(x=>(x.hangers!=null?x.hangers:4)<4);
-    if(hangerIssues.length) body+=`Ganchos: ${hangerIssues.map(r=>`Cuarto ${r.number} (${r.hangers!=null?r.hangers:4}/4)`).join(', ')}\n`;
-    // Novedades
+    if(hangerIssues.length)body+=`Ganchos: ${hangerIssues.map(r=>`Cuarto ${r.number} (${r.hangers!=null?r.hangers:4}/4)`).join(', ')}\n`;
     const issues=rooms.filter(x=>x.missing?.length||x.note);
     if(issues.length){issues.forEach(r=>{body+=`• Cuarto ${r.number}: `;if(r.missing?.length)body+=r.missing.map(m=>MISSING.find(x=>x.id===m)?.label||m).join(', ');if(r.note)body+=' — '+r.note;body+='\n';});}
     body+='\n';
   });
+  if(st.workOrders?.length){body+=`${'='.repeat(40)}\nWORK ORDERS\n`;st.workOrders.forEach(wo=>{body+=`• Cuarto ${wo.roomNumber} [${wo.status.toUpperCase()}]: ${wo.description}\n`;});}
   window.location.href=`mailto:${st.reportEmail}?subject=${encodeURIComponent('Reporte HK '+st.hotel+' '+d.toLocaleDateString('es-MX'))}&body=${encodeURIComponent(body)}`;
 };
 
-// ── NAV
+// ── NAV / FILTER / MODAL
 window.showTab=function(name,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tab-'+name).classList.add('on');
-  document.getElementById('filterBar').style.display=name==='rooms'?'flex':'none';
+  const pg=document.getElementById('tab-'+name);if(pg)pg.classList.add('on');
+  document.getElementById('filterBar').style.display=(name==='rooms'&&currentRole==='supervisor')?'flex':'none';
   curTab=name;if(btn)btn.classList.add('on');renderAll();
 };
 window.setFilter=function(f,btn){
-  if(f==='all'){
-    curFilters=new Set(['all']);
-    document.querySelectorAll('.filt').forEach(b=>{b.classList.remove('on');resetFiltStyle(b);});
-    btn.classList.add('on');btn.style.background='var(--p)';btn.style.color='white';
-  }else{
-    curFilters.delete('all');const ab=document.querySelector('.filt[data-f="all"]');ab.classList.remove('on');resetFiltStyle(ab);
-    if(curFilters.has(f)){curFilters.delete(f);btn.classList.remove('on');resetFiltStyle(btn);}
-    else{curFilters.add(f);btn.classList.add('on');const s=STATUS[f];if(s){btn.style.background=s.color;btn.style.color='white';}}
-    if(!curFilters.size){curFilters=new Set(['all']);const ab2=document.querySelector('.filt[data-f="all"]');ab2.classList.add('on');ab2.style.background='var(--p)';ab2.style.color='white';}
-  }
+  if(f==='all'){curFilters=new Set(['all']);document.querySelectorAll('.filt').forEach(b=>{b.classList.remove('on');resetFiltStyle(b);});btn.classList.add('on');btn.style.background='var(--p)';btn.style.color='white';}
+  else{curFilters.delete('all');const ab=document.querySelector('.filt[data-f="all"]');ab.classList.remove('on');resetFiltStyle(ab);if(curFilters.has(f)){curFilters.delete(f);btn.classList.remove('on');resetFiltStyle(btn);}else{curFilters.add(f);btn.classList.add('on');const s=STATUS[f];if(s){btn.style.background=s.color;btn.style.color='white';}}if(!curFilters.size){curFilters=new Set(['all']);const ab2=document.querySelector('.filt[data-f="all"]');ab2.classList.add('on');ab2.style.background='var(--p)';ab2.style.color='white';}}
   renderGrid();
 };
-function resetFiltStyle(btn){
-  const f=btn.dataset.f;
-  if(f==='all'){btn.style.background='white';btn.style.color='var(--muted)';}
-  else{const s=STATUS[f];if(s){btn.style.background=s.bg;btn.style.color=s.color;}}
-}
+function resetFiltStyle(btn){const f=btn.dataset.f;if(f==='all'){btn.style.background='white';btn.style.color='var(--muted)';}else{const s=STATUS[f];if(s){btn.style.background=s.bg;btn.style.color=s.color;}}}
 window.openModal=function(id){document.getElementById(id).classList.add('on');};
 window.closeModal=function(id){document.getElementById(id).classList.remove('on');};
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
@@ -1192,7 +1226,9 @@ const d=new Date();
 const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 document.getElementById('hdate').textContent=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
-renderAll();
+// Show load briefly while Firebase connects, then show login
+document.getElementById('loadScreen').style.display='flex';
+setTimeout(()=>{document.getElementById('loadScreen').style.display='none';document.getElementById('loginScreen').style.display='flex';},1200);
 </script>
 </body>
 </html>
