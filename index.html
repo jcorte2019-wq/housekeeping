@@ -249,6 +249,25 @@ textarea{min-height:60px;resize:none}
   .sheet-handle{display:none}
   #toast{bottom:20px}
 }
+/* SCROLL FIX - explicit override */
+#assocRoomsBody{
+  overflow-y:scroll!important;
+  -webkit-overflow-scrolling:touch!important;
+  position:absolute!important;
+  top:53px!important;
+  bottom:0!important;
+  left:0!important;
+  right:0!important;
+}
+#roomScrollArea{
+  overflow-y:scroll!important;
+  -webkit-overflow-scrolling:touch!important;
+  position:absolute!important;
+  top:53px!important;
+  bottom:0!important;
+  left:0!important;
+  right:0!important;
+}
 </style>
 </head>
 <body>
@@ -382,7 +401,7 @@ textarea{min-height:60px;resize:none}
 <!-- ROOM MODAL -->
 <div class="overlay" id="modalRoom">
   <div class="sheet" style="position:relative;height:82vh;max-height:82vh;overflow:hidden;border-radius:16px;display:block">
-    <div class="sheet-hdr" style="position:sticky;top:0;z-index:2;background:white">
+    <div class="sheet-hdr" style="position:relative;z-index:2;background:white;flex-shrink:0">
       <span class="sheet-title" id="roomModalTitle">Cuarto</span>
       <div style="display:flex;gap:6px;align-items:center">
         <span id="roomEmpLabel" style="font-size:.7rem;color:var(--muted)"></span>
@@ -527,7 +546,7 @@ textarea{min-height:60px;resize:none}
 <!-- ASSOC ROOMS -->
 <div class="overlay" id="modalAssocRooms">
   <div class="sheet" style="position:relative;height:82vh;max-height:82vh;overflow:hidden;border-radius:16px;display:block">
-    <div class="sheet-hdr" id="assocHdr" style="position:sticky;top:0;z-index:2;background:white">
+    <div class="sheet-hdr" id="assocHdr" style="position:relative;z-index:2;background:white;flex-shrink:0">
       <span class="sheet-title" id="assocRoomsTitle">Cuartos</span>
       <div style="display:flex;gap:6px;align-items:center">
         <button onclick="openAddRoomToAssoc()" style="background:#1a5f7a;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:.75rem;font-weight:600;cursor:pointer">+ Cuarto</button>
