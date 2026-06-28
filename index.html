@@ -404,7 +404,7 @@ textarea{min-height:60px;resize:none}
       <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.82rem;color:#1e40af;line-height:1.6">
         <strong>Cómo importar:</strong><br>1. Manda la foto en el chat de Claude<br>2. Claude te da un código corto<br>3. Pégalo aquí y toca Importar
       </div>
-      <div class="fg"><label>Código</label><textarea id="pasteInput" placeholder="EMP:JUAN|201-vd,203-odco" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea></div>
+      <div class="fg"><label>Código</label><textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea></div>
     </div>
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalPaste')">Cancelar</button><button class="btn btn-p" onclick="doImport()">✅ Importar</button></div>
   </div>
@@ -1013,62 +1013,91 @@ window.mantUpdateWO=function(id,forceNext){
 function renderHKView(){
   const el=document.getElementById('tab-hkview');
   const myRooms=sorted(st.rooms.filter(r=>r.assignedTo===currentEmpId));
-  if(!myRooms.length){el.innerHTML=`<div class="empty"><div class="ei">🧹</div><p>Sin cuartos asignados.</p><small>El supervisor debe importar las tablas primero.</small></div>`;return;}
+  if(!myRooms.length){
+    el.innerHTML=`<div class="empty"><div class="ei">🧹</div><p>Sin cuartos asignados.</p><small>El supervisor debe importar las tablas primero.</small></div>`;
+    return;
+  }
   el.innerHTML=myRooms.map(r=>{
-    const s=STATUS[r.status]||STATUS.vd,rep=st.lsDone[r.id];
+    const s=STATUS[r.status]||STATUS.vd;
+    const isClean=r.status==='vc'||r.status==='vr';
     let actionHTML='';
-    if(r.status==='vr'){
-      // Already cleaned, waiting for supervisor to mark LS
-      actionHTML=`<div style="background:#ecfdf5;border-radius:10px;padding:12px;text-align:center;border:1px solid var(--vc-bd)">
-        <div style="font-size:1.4rem">✔️</div>
-        <div style="font-size:.82rem;font-weight:700;color:var(--vc);margin-top:4px">Listo — pendiente de Lightspeed</div>
-        <div style="font-size:.72rem;color:var(--muted);margin-top:2px">El supervisor lo subirá a LS</div>
-      </div>`;
-    } else if(!rep){
-      if(r.status==='odco'||r.status==='vd'){
-        actionHTML=`<button class="hk-action-btn" style="background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.3)" onclick="hkMarkVC('${r.id}')">✅ Marcar como Limpio (VC)</button>`;
-      } else if(r.status==='odrf'||r.status==='odfu'){
-        // Occupied refresh/full: only Ocupado Servido (SO) and DND
-        if(r.dnd){
-          actionHTML=`
-            <div style="background:#fef3c7;border-radius:10px;padding:10px 12px;border:1px solid #fbbf24;display:flex;align-items:center;gap:8px;margin-bottom:8px">
-              <span style="font-size:.85rem;font-weight:600;color:#92400e">🚫 DND activo — el huésped no quiere servicio</span>
-              <button onclick="hkToggleDND('${r.id}')" style="margin-left:auto;background:none;border:1px solid #92400e;border-radius:6px;color:#92400e;cursor:pointer;font-weight:700;font-size:.75rem;padding:3px 8px">Quitar</button>
-            </div>`;
-        } else {
-          actionHTML=`
-            <button class="hk-action-btn" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;box-shadow:0 3px 10px rgba(109,40,217,.3)" onclick="hkMarkSO('${r.id}')">🧹 Ocupado Servido</button>
-            <button class="hk-action-btn" style="background:#f8fafc;color:#6b7280;border:1.5px solid var(--bdr);font-size:.88rem;margin-top:6px" onclick="hkToggleDND('${r.id}')">🚫 DND — El huésped no quiere servicio</button>`;
-        }
+
+    if(isClean){
+      // Already marked clean — show undo + note option
+      actionHTML=`
+        <div style="background:#ecfdf5;border-radius:10px;padding:10px 12px;border:1px solid var(--vc-bd);display:flex;align-items:center;gap:8px;margin-top:8px">
+          <span style="font-size:1.2rem">✅</span>
+          <span style="font-size:.85rem;font-weight:700;color:var(--vc)">Marcado como limpio</span>
+          <button onclick="hkUndo('${r.id}')" style="margin-left:auto;background:none;border:1px solid #6b7280;border-radius:6px;color:#6b7280;cursor:pointer;font-weight:600;font-size:.75rem;padding:3px 8px">↩ Deshacer</button>
+        </div>`;
+    } else if(r.status==='odco'||r.status==='vd'){
+      actionHTML=`
+        <button class="hk-action-btn" style="background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.3)" onclick="hkMarkVC('${r.id}')">✅ Marcar como Limpio</button>`;
+    } else if(r.status==='odrf'||r.status==='odfu'){
+      if(r.dnd){
+        actionHTML=`
+          <div style="background:#fef3c7;border-radius:10px;padding:10px 12px;border:1px solid #fbbf24;display:flex;align-items:center;gap:8px;margin-top:8px">
+            <span style="font-size:.85rem;font-weight:600;color:#92400e">🚫 DND — El huésped no quiere servicio</span>
+            <button onclick="hkToggleDND('${r.id}')" style="margin-left:auto;background:none;border:1px solid #92400e;border-radius:6px;color:#92400e;cursor:pointer;font-weight:700;font-size:.75rem;padding:3px 8px">Quitar</button>
+          </div>`;
+      } else {
+        actionHTML=`
+          <button class="hk-action-btn" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;box-shadow:0 3px 10px rgba(109,40,217,.3)" onclick="hkMarkSO('${r.id}')">🧹 Ocupado Servido</button>
+          <button class="hk-action-btn" style="background:#f8fafc;color:#6b7280;border:1.5px solid var(--bdr);font-size:.88rem;margin-top:6px" onclick="hkToggleDND('${r.id}')">🚫 DND — El huésped no quiere servicio</button>`;
       }
     }
-    return`<div class="hk-room-card s-${r.status}" style="border-color:${s.border}${rep?';opacity:.55':''}">
+
+    // Note input — always visible so they can report issues
+    const noteArea=`
+      <div style="display:flex;gap:6px;align-items:center;margin-top:10px">
+        <input type="text" value="${r.note||''}" placeholder="📝 Nota o faltante..." 
+          style="flex:1;font-size:.82rem;padding:8px 10px;border:1.5px solid var(--bdr);border-radius:8px"
+          onchange="hkSaveNote('${r.id}',this.value)" onblur="hkSaveNote('${r.id}',this.value)">
+      </div>`;
+
+    return`<div class="hk-room-card s-${isClean?'vc':r.status}" style="border-color:${isClean?'var(--vc-bd)':s.border}">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div style="font-size:1.6rem;font-weight:800;letter-spacing:-.02em${rep?';text-decoration:line-through;color:#9ca3af':''}">${r.number}</div>
-          <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${rep?'#9ca3af':s.color};margin-top:2px">${s.icon} ${s.label}</div>
+          <div style="font-size:1.6rem;font-weight:800;letter-spacing:-.02em">${r.number}</div>
+          <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:${isClean?'var(--vc)':s.color};margin-top:2px">${isClean?'✅ Limpio':s.icon+' '+s.label}</div>
         </div>
-        ${rep?`<div style="background:#ecfdf5;border-radius:12px;padding:10px 14px;text-align:center"><div style="font-size:1.5rem">✅</div><div style="font-size:.65rem;font-weight:700;color:var(--vc)">EN LS</div></div>`:''}
-        ${r.lateCheckout&&!rep?`<div style="background:#f5f3ff;border-radius:12px;padding:10px 12px;text-align:center"><div style="font-size:1rem;font-weight:700;color:#7c3aed">🕐</div><div style="font-size:.72rem;font-weight:700;color:#7c3aed">${r.lateCheckout}</div></div>`:''}
+        ${r.lateCheckout&&!isClean?`<div style="background:#f5f3ff;border-radius:12px;padding:10px 12px;text-align:center"><div style="font-size:1rem;font-weight:700;color:#7c3aed">🕐</div><div style="font-size:.72rem;font-weight:700;color:#7c3aed">${r.lateCheckout}</div></div>`:''}
       </div>
-      ${!rep&&r.note?`<div style="font-size:.78rem;color:#dc2626;background:#fff1f1;padding:6px 10px;border-radius:8px;margin-top:8px">📝 ${r.note}</div>`:''}
-      ${!rep?actionHTML:'<div style="font-size:.82rem;color:var(--muted);text-align:center;padding:8px 0">Ya marcado en Lightspeed ✅</div>'}
+      ${actionHTML}
+      ${noteArea}
     </div>`;
   }).join('');
 }
 window.hkMarkVC=function(id){
   const r=st.rooms.find(x=>x.id===id);if(!r)return;
-  r.status='vr';
-  addLog(r,'vr',currentEmpId,'housekeeper');
-  save();renderAll();toast(`✔️ Cuarto ${r.number} marcado VR — pendiente de Lightspeed`);
+  r.status='vc';
+  addLog(r,'vc',currentEmpId,'housekeeper');
+  save();renderHKView();toast(`✅ Cuarto ${r.number} limpio`);
 };
 window.hkMarkSO=function(id){
   const r=st.rooms.find(x=>x.id===id);if(!r)return;
-  r.status='vr';
-  addLog(r,'vr',currentEmpId,'housekeeper');
-  save();renderAll();toast(`🧹 Stand Out — Cuarto ${r.number} marcado VR`);
+  r.status='vc';
+  addLog(r,'vc',currentEmpId,'housekeeper');
+  save();renderHKView();toast(`🧹 Ocupado Servido — Cuarto ${r.number} limpio`);
 };
-window.hkToggleDND=function(id){const r=st.rooms.find(x=>x.id===id);if(!r)return;r.dnd=!r.dnd;save();renderAll();toast(r.dnd?`🚫 DND — Cuarto ${r.number}`:`✅ DND removido — Cuarto ${r.number}`);};
+window.hkToggleDND=function(id){
+  const r=st.rooms.find(x=>x.id===id);if(!r)return;
+  r.dnd=!r.dnd;save();renderHKView();
+  toast(r.dnd?`🚫 DND — Cuarto ${r.number}`:`✅ DND removido — Cuarto ${r.number}`);
+};
+window.hkUndo=function(id){
+  const r=st.rooms.find(x=>x.id===id);if(!r)return;
+  r.status='vd';
+  addLog(r,'vd',currentEmpId,'housekeeper');
+  save();renderHKView();toast(`↩ Cuarto ${r.number} regresado a VD`);
+};
+window.hkSaveNote=function(id,val){
+  const r=st.rooms.find(x=>x.id===id);if(!r)return;
+  if(r.note===val)return;
+  r.note=val.trim();
+  save();
+  if(r.note) toast(`📝 Nota guardada — Cuarto ${r.number}`);
+};
 
 // ── PROGRESS
 function renderProgress(){
