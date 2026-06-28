@@ -401,7 +401,7 @@ textarea{min-height:60px;resize:none}
 <!-- ROOM MODAL -->
 <div class="overlay" id="modalRoom">
   <div class="sheet" style="position:relative;height:82vh;max-height:82vh;overflow:hidden;border-radius:16px;display:block">
-    <div class="sheet-hdr" style="position:relative;z-index:2;background:white;flex-shrink:0">
+    <div class="sheet-hdr" style="flex-shrink:0;position:relative;z-index:2;background:white">
       <span class="sheet-title" id="roomModalTitle">Cuarto</span>
       <div style="display:flex;gap:6px;align-items:center">
         <span id="roomEmpLabel" style="font-size:.7rem;color:var(--muted)"></span>
@@ -409,59 +409,75 @@ textarea{min-height:60px;resize:none}
         <button class="sheet-close" onclick="closeModal('modalRoom')">✕</button>
       </div>
     </div>
-    <div id="roomScrollArea" style="position:absolute;top:53px;bottom:0;left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch">
-    <div id="vcMode" style="display:none;padding:12px 14px">
-      <div class="st-opts" id="stOptsVC" style="gap:5px;margin-bottom:12px"></div>
-      <button onclick="quickLS()" style="width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-size:1rem;font-weight:700;background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.35);display:flex;align-items:center;justify-content:center;gap:8px">✅ Marcar en Lightspeed</button>
-    </div>
-    <div id="normalMode" class="sheet-body" style="padding:10px 14px;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch">
-      <div class="st-opts" id="stOpts" style="gap:5px;margin-bottom:9px"></div>
-      <div style="display:flex;gap:5px;align-items:center;margin-bottom:9px;flex-wrap:wrap" id="lateRow">
-        <span style="font-size:.68rem;font-weight:700;color:var(--muted)">LATE:</span>
-        <div style="display:flex;gap:3px" id="lateOpts">
-          <button class="late-btn" data-h="" onclick="setLate(this)">—</button>
-          <button class="late-btn" data-h="1pm" onclick="setLate(this)">1pm</button>
-          <button class="late-btn" data-h="2pm" onclick="setLate(this)">2pm</button>
-          <button class="late-btn" data-h="3pm" onclick="setLate(this)">3pm</button>
-          <button class="late-btn" data-h="4pm" onclick="setLate(this)">4pm</button>
+    <!-- Single scrollable area for entire room modal body -->
+    <div id="roomScrollArea" style="position:absolute;top:52px;bottom:0;left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch">
+      <div id="vcMode" style="display:none;padding:12px 14px">
+        <div class="st-opts" id="stOptsVC" style="gap:5px;margin-bottom:12px"></div>
+        <button onclick="quickLS()" style="width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-size:1rem;font-weight:700;background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.35);display:flex;align-items:center;justify-content:center;gap:8px">✅ Marcar en Lightspeed</button>
+      </div>
+      <div id="normalMode" style="padding:10px 14px">
+        <div class="st-opts" id="stOpts" style="gap:5px;margin-bottom:9px"></div>
+        <div style="display:flex;gap:5px;align-items:center;margin-bottom:9px;flex-wrap:wrap" id="lateRow">
+          <span style="font-size:.68rem;font-weight:700;color:var(--muted)">LATE:</span>
+          <div style="display:flex;gap:3px" id="lateOpts">
+            <button class="late-btn" data-h="" onclick="setLate(this)">—</button>
+            <button class="late-btn" data-h="1pm" onclick="setLate(this)">1pm</button>
+            <button class="late-btn" data-h="2pm" onclick="setLate(this)">2pm</button>
+            <button class="late-btn" data-h="3pm" onclick="setLate(this)">3pm</button>
+            <button class="late-btn" data-h="4pm" onclick="setLate(this)">4pm</button>
+          </div>
+          <div id="dndSection" style="display:none;margin-left:4px">
+            <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.75rem;font-weight:600;color:#6b7280">
+              <input type="checkbox" id="dndCheck" onchange="saveDnd()" style="width:15px;height:15px;accent-color:#6b7280"> 🚫 DND
+            </label>
+          </div>
         </div>
-        <div id="dndSection" style="display:none;margin-left:4px">
-          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.75rem;font-weight:600;color:#6b7280">
-            <input type="checkbox" id="dndCheck" onchange="saveDnd()" style="width:15px;height:15px;accent-color:#6b7280"> 🚫 DND
+        <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Faltantes</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
+          <div class="mo" id="mo-towels_pillows" onclick="togMissing('towels_pillows')" style="padding:6px 7px;font-size:.7rem">🛁 Toallas/Alm.</div>
+          <div class="mo" id="mo-soap_tp_coffee" onclick="togMissing('soap_tp_coffee')" style="padding:6px 7px;font-size:.7rem">🧴 Jabón/Papel/Café</div>
+          <div class="mo" id="mo-remote" onclick="togMissing('remote')" style="padding:6px 7px;font-size:.7rem">📺 Control</div>
+          <div class="mo" id="mo-hairdryer" onclick="togMissing('hairdryer')" style="padding:6px 7px;font-size:.7rem">💨 Secadora</div>
+          <div class="mo" id="mo-dirty" onclick="togMissing('dirty')" style="padding:6px 7px;font-size:.7rem">🔴 Sucio</div>
+          <div class="mo" id="mo-damaged" onclick="togMissing('damaged')" style="padding:6px 7px;font-size:.7rem">🔧 Daño</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;background:#f8fafc;border-radius:8px;padding:7px 10px">
+          <span style="font-size:.78rem;font-weight:600">🪝 Ganchos:</span>
+          <button onclick="adjHangers(-1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+          <span id="hangerCount" style="font-size:1rem;font-weight:800;min-width:18px;text-align:center">4</span>
+          <button onclick="adjHangers(1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+          <span style="font-size:.7rem;color:var(--muted)">/4</span>
+          <span id="hangerNote" style="font-size:.72rem;color:#dc2626;font-weight:600;margin-left:4px"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <input type="text" id="roomNote" placeholder="Nota..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:7px 10px;border:1.5px solid var(--bdr);border-radius:8px">
+          <label style="display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap">
+            <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:17px;height:17px;accent-color:#059669;cursor:pointer">
+            <span style="font-size:.75rem;font-weight:600;color:#059669">LS</span>
           </label>
         </div>
+        <button id="btnSendMaint" onclick="openWOModal()" style="display:none;width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--mant-bd);background:var(--mant-bg);color:var(--mant);font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:8px">🔧 Enviar a Mantenimiento</button>
+        <div id="roomLog" style="margin-top:4px"></div>
       </div>
-      <div style="font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Faltantes</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px">
-        <div class="mo" id="mo-towels_pillows" onclick="togMissing('towels_pillows')" style="padding:6px 7px;font-size:.7rem">🛁 Toallas/Alm.</div>
-        <div class="mo" id="mo-soap_tp_coffee" onclick="togMissing('soap_tp_coffee')" style="padding:6px 7px;font-size:.7rem">🧴 Jabón/Papel/Café</div>
-        <div class="mo" id="mo-remote" onclick="togMissing('remote')" style="padding:6px 7px;font-size:.7rem">📺 Control</div>
-        <div class="mo" id="mo-hairdryer" onclick="togMissing('hairdryer')" style="padding:6px 7px;font-size:.7rem">💨 Secadora</div>
-        <div class="mo" id="mo-dirty" onclick="togMissing('dirty')" style="padding:6px 7px;font-size:.7rem">🔴 Sucio</div>
-        <div class="mo" id="mo-damaged" onclick="togMissing('damaged')" style="padding:6px 7px;font-size:.7rem">🔧 Daño</div>
+      <!-- Foot inside scroll area -->
+      <div style="padding:8px 14px 20px;display:flex;gap:8px" id="roomModalFoot">
+        <button class="btn btn-r" style="flex:0;padding:8px 12px;font-size:.82rem" onclick="delRoom()">🗑</button>
+        <button class="btn btn-o" style="flex:1" onclick="closeModal('modalRoom')">Cerrar</button>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;background:#f8fafc;border-radius:8px;padding:7px 10px">
-        <span style="font-size:.78rem;font-weight:600">🪝 Ganchos:</span>
-        <button onclick="adjHangers(-1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
-        <span id="hangerCount" style="font-size:1rem;font-weight:800;min-width:18px;text-align:center">4</span>
-        <button onclick="adjHangers(1)" style="width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bdr);background:white;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
-        <span style="font-size:.7rem;color:var(--muted)">/4</span>
-        <span id="hangerNote" style="font-size:.72rem;color:#dc2626;font-weight:600;margin-left:4px"></span>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-        <input type="text" id="roomNote" placeholder="Nota..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:7px 10px;border:1.5px solid var(--bdr);border-radius:8px">
-        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap">
-          <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:17px;height:17px;accent-color:#059669;cursor:pointer">
-          <span style="font-size:.75rem;font-weight:600;color:#059669">LS</span>
-        </label>
-      </div>
-      <button id="btnSendMaint" onclick="openWOModal()" style="display:none;width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--mant-bd);background:var(--mant-bg);color:var(--mant);font-size:.82rem;font-weight:700;cursor:pointer">🔧 Enviar a Mantenimiento</button>
-      <div id="roomLog" style="margin-top:10px"></div>
     </div>
-    <div class="sheet-foot" style="padding:8px 14px 14px;flex-shrink:0">
-      <button class="btn btn-r" style="flex:0;padding:8px 12px;font-size:.82rem" onclick="delRoom()">🗑</button>
-      <button class="btn btn-o btn-block" onclick="closeModal('modalRoom')">Cerrar</button>
+  </div>
+</div>
+<!-- ASSOC ROOMS -->
+<div class="overlay" id="modalAssocRooms">
+  <div class="sheet" style="position:relative;height:82vh;max-height:82vh;overflow:hidden;border-radius:16px;display:block">
+    <div class="sheet-hdr" style="position:relative;z-index:2;background:white;flex-shrink:0">
+      <span class="sheet-title" id="assocRoomsTitle">Cuartos</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button onclick="openAddRoomToAssoc()" style="background:#1a5f7a;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:.75rem;font-weight:600;cursor:pointer">+ Cuarto</button>
+        <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
+      </div>
     </div>
+    <div id="assocRoomsBody" style="position:absolute;top:52px;bottom:0;left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0"></div>
   </div>
 </div>
 <!-- WORK ORDER MODAL -->
@@ -1178,7 +1194,7 @@ window.openRoomModal=function(id){
   const isVC=r.status==='vc'||r.status==='vr'; // VR also shows compact LS mode
   document.getElementById('vcMode').style.display=isVC?'block':'none';
   document.getElementById('normalMode').style.display=isVC?'none':'block';
-  document.querySelector('.sheet-foot').style.display=isVC?'none':'flex';
+  document.getElementById('roomModalFoot').style.display=isVC?'none':'flex';
   if(isVC){
     const av=VALID_TRANSITIONS['vc']||[];
     document.getElementById('stOptsVC').innerHTML=Object.entries(STATUS).map(([k,v])=>{
