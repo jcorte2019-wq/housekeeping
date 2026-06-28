@@ -374,9 +374,9 @@ textarea{min-height:60px;resize:none}
 </div>
 <!-- ROOM MODAL -->
 <div class="overlay" id="modalRoom">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-hdr">
+  <div class="sheet" style="display:flex;flex-direction:column;height:82vh;max-height:82vh;overflow:hidden">
+    <div class="sheet-handle" style="flex-shrink:0"></div>
+    <div class="sheet-hdr" style="flex-shrink:0">
       <span class="sheet-title" id="roomModalTitle">Cuarto</span>
       <div style="display:flex;gap:6px;align-items:center">
         <span id="roomEmpLabel" style="font-size:.7rem;color:var(--muted)"></span>
@@ -388,7 +388,7 @@ textarea{min-height:60px;resize:none}
       <div class="st-opts" id="stOptsVC" style="gap:5px;margin-bottom:12px"></div>
       <button onclick="quickLS()" style="width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-size:1rem;font-weight:700;background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.35);display:flex;align-items:center;justify-content:center;gap:8px">✅ Marcar en Lightspeed</button>
     </div>
-    <div id="normalMode" class="sheet-body" style="padding:10px 14px">
+    <div id="normalMode" class="sheet-body" style="padding:10px 14px;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch">
       <div class="st-opts" id="stOpts" style="gap:5px;margin-bottom:9px"></div>
       <div style="display:flex;gap:5px;align-items:center;margin-bottom:9px;flex-wrap:wrap" id="lateRow">
         <span style="font-size:.68rem;font-weight:700;color:var(--muted)">LATE:</span>
@@ -432,7 +432,7 @@ textarea{min-height:60px;resize:none}
       <button id="btnSendMaint" onclick="openWOModal()" style="display:none;width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--mant-bd);background:var(--mant-bg);color:var(--mant);font-size:.82rem;font-weight:700;cursor:pointer">🔧 Enviar a Mantenimiento</button>
       <div id="roomLog" style="margin-top:10px"></div>
     </div>
-    <div class="sheet-foot" style="padding:8px 14px 14px">
+    <div class="sheet-foot" style="padding:8px 14px 14px;flex-shrink:0">
       <button class="btn btn-r" style="flex:0;padding:8px 12px;font-size:.82rem" onclick="delRoom()">🗑</button>
       <button class="btn btn-o btn-block" onclick="closeModal('modalRoom')">Cerrar</button>
     </div>
@@ -519,16 +519,16 @@ textarea{min-height:60px;resize:none}
 </div>
 <!-- ASSOC ROOMS -->
 <div class="overlay" id="modalAssocRooms">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-hdr">
+  <div class="sheet" style="display:flex;flex-direction:column;height:82vh;max-height:82vh;overflow:hidden">
+    <div class="sheet-handle" style="flex-shrink:0"></div>
+    <div class="sheet-hdr" style="flex-shrink:0">
       <span class="sheet-title" id="assocRoomsTitle">Cuartos</span>
       <div style="display:flex;gap:6px;align-items:center">
         <button onclick="openAddRoomToAssoc()" style="background:#1a5f7a;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:.75rem;font-weight:600;cursor:pointer">+ Cuarto</button>
         <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
       </div>
     </div>
-    <div id="assocRoomsBody" style="padding:0;flex:1;overflow-y:auto;min-height:0"></div>
+    <div id="assocRoomsBody" style="flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0"></div>
   </div>
 </div>
 <script type="module">
