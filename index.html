@@ -217,7 +217,7 @@ textarea{min-height:60px;resize:none}
 @media(min-width:1100px){
   body{display:flex;flex-direction:column;height:100vh;overflow:hidden;padding-bottom:0}
   .hdr{flex-shrink:0}
-  #appWrap{max-width:100%;width:100%;margin:0;padding-bottom:0;display:flex;flex-direction:row;flex:1;min-height:0;overflow:hidden}
+  #appWrap{max-width:100%;width:100%;margin:0;padding-bottom:0;display:flex;flex-direction:row;flex:1;height:0;overflow:hidden}
   /* Sidebar nav */
   .nav{
     position:relative!important;bottom:auto!important;left:auto!important;right:auto!important;
@@ -235,10 +235,10 @@ textarea{min-height:60px;resize:none}
   .nav-btn .ni{font-size:1.05rem!important;flex-shrink:0;transform:none!important}
   .nav-btn.on .ni{transform:none!important}
   /* Content area — flex column, children scroll */
-  #contentWrap{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+  #contentWrap{flex:1;display:flex;flex-direction:column;min-width:0;height:0;overflow:hidden}
   .filters{flex-shrink:0;position:relative;top:auto;z-index:9}
   /* Page is the scroller */
-  .page{overflow-y:auto;overflow-x:hidden;padding:16px 20px;flex:1;min-height:0;display:none}
+  .page{overflow-y:auto;overflow-x:hidden;padding:16px 20px;flex:1;height:0;display:none}
   .page.on{display:block}
   /* Grids */
   .grid{grid-template-columns:repeat(6,1fr)!important;gap:10px}
