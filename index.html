@@ -141,7 +141,7 @@ textarea{min-height:60px;resize:none}
 .sheet-hdr{padding:11px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #f0f4f8}
 .sheet-title{font-weight:700;font-size:1rem}
 .sheet-close{background:#f0f4f8;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;color:var(--muted);font-size:.85rem;display:flex;align-items:center;justify-content:center}
-.sheet-body{padding:14px 16px}
+.sheet-body{padding:14px 16px;overflow-y:auto;flex:1}
 .sheet-foot{padding:10px 16px 16px;display:flex;gap:8px}
 .sheet-foot .btn{flex:1}
 .st-opts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
@@ -204,7 +204,7 @@ textarea{min-height:60px;resize:none}
   .grid{grid-template-columns:repeat(5,1fr)!important}
   .nav{max-width:768px}
   .overlay{align-items:center;justify-content:center}
-  .sheet{max-width:580px;margin:0 auto;border-radius:16px;max-height:88vh}
+  .sheet{max-width:580px;margin:0 auto;border-radius:16px;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column}
   .sheet-handle{display:none}
 }
 @media(min-width:1100px){
@@ -226,7 +226,7 @@ textarea{min-height:60px;resize:none}
   #assocContent{display:grid!important;grid-template-columns:repeat(2,1fr);gap:14px;align-items:start}
   .stat-grid{grid-template-columns:repeat(4,1fr)!important}
   .overlay{align-items:center!important;justify-content:center!important}
-  .sheet{max-width:580px;width:100%;border-radius:16px!important;margin:0;max-height:88vh;overflow-y:auto}
+  .sheet{max-width:580px;width:100%;border-radius:16px!important;margin:0;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column}
   .sheet-handle{display:none}
   #toast{bottom:20px}
 }
@@ -484,7 +484,7 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-hdr"><span class="sheet-title">Agregar asociada</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
     <div class="sheet-body">
       <div class="fg"><label>Nombre</label><input type="text" id="empInput" placeholder="Nombre completo"></div>
-      <div class="fg"><label>PIN (4 dígitos)</label><input type="text" id="empPin" placeholder="ej. 5678" maxlength="4" inputmode="numeric"></div>
+      <div class="fg"><label>PIN (4 dígitos)</label><input type="text" id="empPin" placeholder="ej. 56" maxlength="2" inputmode="numeric"></div>
     </div>
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddEmp')">Cancelar</button><button class="btn btn-p" onclick="saveEmp()">Agregar</button></div>
   </div>
@@ -516,7 +516,7 @@ textarea{min-height:60px;resize:none}
         <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
       </div>
     </div>
-    <div class="sheet-body" id="assocRoomsBody" style="padding:0"></div>
+    <div id="assocRoomsBody" style="padding:0;overflow-y:auto;max-height:70vh"></div>
   </div>
 </div>
 <script type="module">
@@ -540,7 +540,16 @@ window.gid=()=>Math.random().toString(36).substr(2,9);
 
 // ── LOGIN
 let pinBuf='';
-window.pinPress=function(d){if(pinBuf.length>=4)return;pinBuf+=d;updateDots();if(pinBuf.length===4)setTimeout(pinEnter,150);};
+window.pinPress=function(d){
+  if(pinBuf.length>=4)return;
+  pinBuf+=d;updateDots();
+  // Auto-submit at 2 digits if matches a housekeeper PIN, otherwise wait for 4
+  if(pinBuf.length===2){
+    const empMatch=st.employees.find(e=>e.pin&&e.pin===pinBuf);
+    if(empMatch){setTimeout(pinEnter,150);return;}
+  }
+  if(pinBuf.length===4)setTimeout(pinEnter,150);
+};
 window.pinDel=function(){pinBuf=pinBuf.slice(0,-1);updateDots();document.getElementById('loginError').textContent='';};
 window.pinEnter=function(){if(!pinBuf)return;const p=pinBuf;pinBuf='';updateDots();attemptLogin(p);};
 function updateDots(){for(let i=0;i<4;i++)document.getElementById('pd'+i).classList.toggle('filled',i<pinBuf.length);}
@@ -1066,7 +1075,7 @@ function renderSetup(){
           <div style="font-weight:600;font-size:.88rem">${e.name}</div>
           <div style="font-size:.7rem;color:var(--muted)">${st.rooms.filter(r=>r.assignedTo===e.id).length} cuartos · PIN: ${e.pin?`<span style="color:var(--vc);font-weight:700">${e.pin}</span>`:'<span style="color:#dc2626">sin PIN</span>'}</div>
         </div>
-        <input type="text" value="${e.pin||''}" maxlength="4" inputmode="numeric" placeholder="PIN" style="width:60px;padding:5px 8px;font-size:.82rem;border-radius:8px;border:1.5px solid var(--bdr);text-align:center" onchange="updateEmpPin('${e.id}',this.value)">
+        <input type="text" value="${e.pin||''}" maxlength="2" inputmode="numeric" placeholder="PIN" style="width:48px;padding:5px 8px;font-size:.82rem;border-radius:8px;border:1.5px solid var(--bdr);text-align:center" onchange="updateEmpPin('${e.id}',this.value)">
         <button onclick="delEmp('${e.id}')" style="background:none;border:none;color:#ef4444;font-size:.9rem;cursor:pointer;padding:4px 6px">🗑</button>
       </div>`).join('')||'<div style="padding:14px;font-size:.85rem;color:var(--muted);text-align:center">Sin asociadas</div>'}
     </div>
@@ -1089,13 +1098,13 @@ function renderSetup(){
 }
 window.savePins=function(){
   const sup=document.getElementById('pinSup')?.value.trim(),mnt=document.getElementById('pinMant')?.value.trim();
-  if((sup&&sup.length!==4)||(mnt&&mnt.length!==4)){toast('⚠️ Los PINs deben ser de 4 dígitos');return;}
+  if((sup&&(sup.length<3||sup.length>6))||(mnt&&(mnt.length<3||mnt.length>6))){toast('⚠️ Los PINs del sistema deben ser de 3 a 6 dígitos');return;}
   st.pins=st.pins||{};if(sup)st.pins.supervisor=sup;if(mnt)st.pins.maintenance=mnt;
   save();toast('🔐 PINs guardados');
 };
 window.updateEmpPin=function(id,pin){
   const emp=st.employees.find(e=>e.id===id);if(!emp)return;
-  if(pin&&pin.length!==4){toast('⚠️ PIN debe ser de 4 dígitos');return;}
+  if(pin&&pin.length!==2){toast('⚠️ PIN debe ser de 2 dígitos');return;}
   emp.pin=pin;save();toast(pin?`🔑 PIN actualizado — ${emp.name}`:`PIN removido — ${emp.name}`);
 };
 
@@ -1229,10 +1238,10 @@ window.delEmp=function(id){if(!confirm('¿Eliminar esta asociada?'))return;st.em
 window.delRoomSetup=function(id){const r=st.rooms.find(x=>x.id===id);if(!confirm(`¿Eliminar cuarto ${r?.number}?`))return;st.rooms=st.rooms.filter(x=>x.id!==id);save();renderAll();};
 window.saveEmail=function(){const e=document.getElementById('emailInput')?.value.trim();if(!e)return;st.reportEmail=e;save();toast('📧 Correo guardado');};
 window.newDay=function(){
-  if(!confirm('¿Reiniciar el día? Se eliminarán todos los cuartos, asociadas y work orders. Los PINs del sistema se mantienen.'))return;
-  // Clear employee PINs too (only keep system PINs)
-  st.employees.forEach(e=>e.pin='');
+  if(!confirm('¿Reiniciar el día? Se eliminarán todos los cuartos, asociadas y work orders. Los PINs del sistema (Supervisor y Mantenimiento) se mantienen.'))return;
+  st.employees=[];
   st.rooms=[];st.lsDone={};st.workOrders=[];curFilters=new Set(['all']);
+  // Keep st.pins (supervisor & maintenance) but clear employees
   save();renderAll();toast('🌅 Día reiniciado');
 };
 window.openAddRoom=function(){
