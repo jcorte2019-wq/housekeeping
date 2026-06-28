@@ -217,6 +217,8 @@ textarea{min-height:60px;resize:none}
 @media(min-width:1100px){
   body{margin:0;padding:0;overflow:hidden}
   .hdr{position:fixed;top:0;left:0;right:0;z-index:100}
+  /* nav bottom bar hidden on desktop */
+  /* (nav is sidebar) */
   #appWrap{
     position:fixed;
     top:var(--hdr-h,130px);
@@ -240,12 +242,14 @@ textarea{min-height:60px;resize:none}
   .nav-btn:hover:not(.on){background:#f8fafc}
   .nav-btn .ni{font-size:1.05rem!important;flex-shrink:0;transform:none!important}
   .nav-btn.on .ni{transform:none!important}
+  /* Hide mobile bottom nav padding on desktop */
+  #appWrap{padding-bottom:0!important}
   /* Content area */
-  #contentWrap{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;height:100%}
-  .filters{flex-shrink:0;position:relative;z-index:9}
+  #contentWrap{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+  .filters{flex-shrink:0;position:sticky;top:0;z-index:9;box-shadow:0 1px 3px rgba(0,0,0,.06)}
   /* Pages fill remaining space and scroll */
-  .page{display:none;padding:16px 20px;overflow-y:auto;overflow-x:hidden}
-  .page.on{display:block;height:100%}
+  .page{display:none;padding:16px 20px;overflow-y:auto;overflow-x:hidden;flex:1;min-height:0}
+  .page.on{display:block}
   /* Grids */
   .grid{grid-template-columns:repeat(6,1fr)!important;gap:10px}
   #assocContent{display:grid!important;grid-template-columns:repeat(2,1fr);gap:12px;align-items:start}
@@ -400,7 +404,7 @@ textarea{min-height:60px;resize:none}
       <div style="background:#eff6ff;border:1px solid #93c5fd;border-radius:10px;padding:12px;margin-bottom:14px;font-size:.82rem;color:#1e40af;line-height:1.6">
         <strong>Cómo importar:</strong><br>1. Manda la foto en el chat de Claude<br>2. Claude te da un código corto<br>3. Pégalo aquí y toca Importar
       </div>
-      <div class="fg"><label>Código</label><textarea id="pasteInput" placeholder="EMP:Flor|201-vd,203-odco" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea></div>
+      <div class="fg"><label>Código</label><textarea id="pasteInput" placeholder="EMP:JUAN|201-vd,203-odco" style="min-height:80px;font-family:monospace;font-size:.85rem"></textarea></div>
     </div>
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalPaste')">Cancelar</button><button class="btn btn-p" onclick="doImport()">✅ Importar</button></div>
   </div>
@@ -792,6 +796,7 @@ function fmtTime(ts){
 
 // ── RENDER ALL
 window.renderAll=function(){
+  setHdrHeight();
   if(currentRole==='supervisor'){
     renderPills();
     if(curTab==='rooms')renderGrid();
@@ -1377,12 +1382,16 @@ window.toast=function(msg){const el=document.getElementById('toast');el.textCont
 // Set header height CSS variable for desktop fixed layout
 function setHdrHeight(){
   const hdr=document.querySelector('.hdr');
-  if(hdr && window.innerWidth>=1100){
-    document.documentElement.style.setProperty('--hdr-h', hdr.offsetHeight+'px');
+  if(hdr){
+    const h=hdr.getBoundingClientRect().height;
+    document.documentElement.style.setProperty('--hdr-h', Math.ceil(h)+'px');
   }
 }
 window.addEventListener('resize', setHdrHeight);
-setTimeout(setHdrHeight, 100);
+// Run multiple times to catch after fonts/content load
+setTimeout(setHdrHeight,50);
+setTimeout(setHdrHeight,200);
+setTimeout(setHdrHeight,600);
 
 const d=new Date();
 const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
