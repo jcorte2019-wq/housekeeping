@@ -410,7 +410,7 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 <!-- ROOM MODAL -->
-<div class="overlay" id="modalRoom">
+<div class="overlay" id="modalRoom" style="z-index:600">
   <div class="sheet" style="position:relative;height:82vh;max-height:82vh;overflow:hidden;border-radius:16px;display:block">
     <div class="sheet-hdr" style="flex-shrink:0;position:relative;z-index:2;background:white">
       <span class="sheet-title" id="roomModalTitle">Cuarto</span>
@@ -800,7 +800,10 @@ window.renderAll=function(){
   if(currentRole==='supervisor'){
     renderPills();
     if(curTab==='rooms')renderGrid();
-    if(curTab==='assoc')renderAssoc();
+    if(curTab==='assoc'){
+  const _assocOpen=document.getElementById('modalAssocRooms').classList.contains('on');
+  if(!_assocOpen) renderAssoc(); else refreshAssocModal();
+}
     if(curTab==='progress')renderProgress();
     if(curTab==='mant')renderMantTab();
     if(curTab==='setup')renderSetup();
@@ -902,7 +905,7 @@ function buildAssocGrid(rooms){
   document.getElementById('assocRoomsBody').innerHTML=rooms.length
     ?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px">`+
       rooms.map(r=>{const s=STATUS[r.status]||STATUS.vd,rep=st.lsDone[r.id];
-        return`<div onclick="closeModal('modalAssocRooms');openRoomModal('${r.id}')" style="background:${s.bg};border-radius:10px;border:2px solid ${s.border};padding:10px 6px;cursor:pointer;text-align:center;position:relative;opacity:${rep?'.5':'1'}">
+        return`<div onclick="openRoomModal('${r.id}')" style="background:${s.bg};border-radius:10px;border:2px solid ${s.border};padding:10px 6px;cursor:pointer;text-align:center;position:relative;opacity:${rep?'.5':'1'}">
           ${rep?'<span style="position:absolute;top:-4px;left:-4px;background:#059669;color:white;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:700">✓</span>':''}
           ${r.missing?.length?`<span style="position:absolute;top:-4px;right:-4px;background:#dc2626;color:white;border-radius:50%;width:15px;height:15px;font-size:.5rem;display:flex;align-items:center;justify-content:center;font-weight:700">${r.missing.length}</span>`:''}
           <div style="font-size:1.05rem;font-weight:800">${r.number}</div>
@@ -1293,7 +1296,15 @@ window.selStatus=function(k){
   });
   renderGrid();refreshAssocModal();
   toast(`${STATUS[k]?.icon} Cuarto ${r.number} → ${STATUS[k]?.label}`);
-  if(k==='vc'||k==='vd'||k==='vp')setTimeout(()=>closeModal('modalRoom'),200);
+  if(k==='vc'||k==='vd'||k==='vp')setTimeout(()=>{
+  closeModal('modalRoom');
+  if(curAssocId&&document.getElementById('modalAssocRooms').classList.contains('on')){
+    const _emp=curAssocId==='__none__'?{name:'Sin asignar'}:st.employees.find(e=>e.id===curAssocId);
+    const _rooms=sorted(curAssocId==='__none__'?st.rooms.filter(x=>!x.assignedTo):st.rooms.filter(x=>x.assignedTo===curAssocId));
+    document.getElementById('assocRoomsTitle').textContent=(_emp?.name||'')+(getFloors(_rooms)?' · '+getFloors(_rooms):'')+' · '+totalCredits(_rooms)+'cr';
+    refreshAssocModal();
+  }
+},200);
 };
 function lateVisible(s){return s==='odco'||s==='odrf'||s==='odfu';}
 window.setLate=function(btn){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.lateCheckout=btn.dataset.h||null;document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&btn.dataset.h));save();renderGrid();refreshAssocModal();if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Cuarto ${r.number}`);};
