@@ -1599,15 +1599,32 @@ function pct(o) {
   if (!has(o.inh) && !has(o.arr)) return null;
   return Math.round((num(o.inh) + num(o.arr)) / TOTAL_ROOMS * 1000) / 10;
 }
-function pctColors(p) {
-  return p >= 95 ? ['#fff1f1', '#d63b3b'] : p >= 80 ? ['#fffbeb', '#c77b08'] : p >= 50 ? ['#ecfdf5', '#0d9467'] : ['#eff6ff', '#1d6fd4'];
+// Degradado rojo→amarillo→verde, relativo a la semana (más alto = verde, más bajo = rojo)
+const _lerp = (a, b, t) => Math.round(a + (b - a) * t);
+const _mix = (c1, c2, t) => [_lerp(c1[0], c2[0], t), _lerp(c1[1], c2[1], t), _lerp(c1[2], c2[2], t)];
+const RED_BG = [254, 226, 226], RED_FG = [185, 28, 28];
+const YEL_BG = [254, 243, 160], YEL_FG = [161, 98, 7];
+const GRN_BG = [209, 250, 223], GRN_FG = [21, 128, 61];
+function occRange(w) {
+  const ps = [0, 1, 2, 3, 4, 5, 6].map(d => pct((w.occ || [])[d])).filter(p => p !== null);
+  if (!ps.length) return null;
+  return { min: Math.min(...ps), max: Math.max(...ps) };
 }
-function pctHTML(o, big) {
+function gradColor(p, range) {
+  let t = 0.5;
+  if (range && range.max > range.min) t = (p - range.min) / (range.max - range.min);
+  t = Math.max(0, Math.min(1, t));
+  let bg, fg;
+  if (t <= 0.5) { const u = t / 0.5; bg = _mix(RED_BG, YEL_BG, u); fg = _mix(RED_FG, YEL_FG, u); }
+  else { const u = (t - 0.5) / 0.5; bg = _mix(YEL_BG, GRN_BG, u); fg = _mix(YEL_FG, GRN_FG, u); }
+  return { bg: `rgb(${bg.join(',')})`, fg: `rgb(${fg.join(',')})` };
+}
+function pctHTML(o, big, range) {
   const p = pct(o);
   const cls = 'hz-pct' + (big ? ' big' : '');
   if (p === null) return `<span class="${cls}" style="background:#f1f5f9;color:#94a3b8">—</span>`;
-  const lv = pctColors(p);
-  return `<span class="${cls}" style="background:${lv[0]};color:${lv[1]}">${p}%</span>`;
+  const c = gradColor(p, range);
+  return `<span class="${cls}" style="background:${c.bg};color:${c.fg}">${p}%</span>`;
 }
 function avgText(w) {
   const ps = [0, 1, 2, 3, 4, 5, 6].map(d => pct((w.occ || [])[d])).filter(p => p !== null);
@@ -1819,7 +1836,7 @@ function mobileHTML(w) {
   const dt = parseISO(addDays(week, selDay));
   const d = selDay;
   const occ = `<div class="hz-card">
-    <div class="hz-occ-top"><h3 style="margin:0">Ocupación · ${DAYS[d]} ${dt.getDate()} ${MES[dt.getMonth()]}</h3><span data-pct="${d}">${pctHTML(o(d), true)}</span></div>
+    <div class="hz-occ-top"><h3 style="margin:0">Ocupación · ${DAYS[d]} ${dt.getDate()} ${MES[dt.getMonth()]}</h3><span data-pct="${d}">${pctHTML(o(d), true, occRange(w))}</span></div>
     <div class="hz-occ-grid">${OCC_FIELDS.map(([f, l]) =>
       `<div><label>${l}</label><input class="hz-in" type="number" min="0" inputmode="numeric" value="${has(o(d)[f]) ? o(d)[f] : ''}" oninput="hzOcc(${d},'${f}',this.value)"></div>`).join('')}
     </div></div>`;
@@ -1863,7 +1880,7 @@ function deskHTML(w) {
     <tbody>
       <tr class="hz-sec"><td colspan="9">Ocupación del día</td></tr>
       ${OCC_FIELDS.map(occRow).join('')}
-      <tr><td class="hz-name">Ocupación</td>${days.map(d => `<td data-pct="${d}">${pctHTML(o(d))}</td>`).join('')}<td></td></tr>
+      <tr><td class="hz-name">Ocupación</td>${days.map(d => `<td data-pct="${d}">${pctHTML(o(d), false, occRange(w))}</td>`).join('')}<td></td></tr>
       ${staffRows || `<tr><td colspan="9" style="padding:24px;color:var(--muted)">Todavía no hay personal. Toca <strong>👥 Personal</strong> para agregarlo.</td></tr>`}
       ${hz.staff.length ? `<tr class="hz-foot"><td class="hz-name">Trabajando</td>${counts.map(c => `<td>${c}</td>`).join('')}<td></td></tr>` : ''}
     </tbody></table></div>`;
@@ -1881,8 +1898,9 @@ window.hzOcc = function (d, f, v) {
   let x = v === '' ? '' : Math.max(0, Math.floor(Number(v)));
   if (x !== '' && isNaN(x)) x = '';
   w.occ[d][f] = x;
-  document.querySelectorAll(`[data-pct="${d}"]`).forEach(c => { c.innerHTML = pctHTML(w.occ[d], !!c.closest('.hz-occ-top')); });
-  document.querySelectorAll(`[data-pctshort="${d}"]`).forEach(c => { const p = pct(w.occ[d]); c.textContent = p === null ? '' : p + '%'; });
+  const range = occRange(w);
+  document.querySelectorAll('[data-pct]').forEach(c => { const dd = +c.dataset.pct; c.innerHTML = pctHTML(w.occ[dd], !!c.closest('.hz-occ-top'), range); });
+  document.querySelectorAll('[data-pctshort]').forEach(c => { const dd = +c.dataset.pctshort; const p = pct(w.occ[dd]); c.textContent = p === null ? '' : p + '%'; });
   const a = $('hzAvg'); if (a) a.textContent = avgText(w);
   hzSave();
 };
@@ -2130,6 +2148,7 @@ window.hzImage = async function () {
   gy += headH;
 
   // Ocupación
+  const occR = occRange(w);
   x.textAlign = 'left'; x.fillStyle = '#475569'; x.font = `700 14px ${FONT}`;
   x.fillText('Ocupación', gx + 14, gy + occH / 2);
   x.textAlign = 'center';
@@ -2138,9 +2157,9 @@ window.hzImage = async function () {
     const p = pct(o(d));
     if (p === null) { x.fillStyle = '#94a3b8'; x.font = `700 14px ${FONT}`; x.fillText('—', cxx + dayW / 2, gy + occH / 2); }
     else {
-      const lv = pctColors(p); const pw = 64, ph = 24;
-      roundRect(x, cxx + dayW / 2 - pw / 2, gy + occH / 2 - ph / 2, pw, ph, 8); x.fillStyle = lv[0]; x.fill();
-      x.fillStyle = lv[1]; x.font = `800 14px ${FONT}`; x.fillText(p + '%', cxx + dayW / 2, gy + occH / 2);
+      const c = gradColor(p, occR); const pw = 64, ph = 24;
+      roundRect(x, cxx + dayW / 2 - pw / 2, gy + occH / 2 - ph / 2, pw, ph, 8); x.fillStyle = c.bg; x.fill();
+      x.fillStyle = c.fg; x.font = `800 14px ${FONT}`; x.fillText(p + '%', cxx + dayW / 2, gy + occH / 2);
     }
   });
   gy += occH;
