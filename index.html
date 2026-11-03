@@ -731,7 +731,42 @@ const MISSING=[
 
 // ── PDF PARSER
 function pdfResolveCode(hk,pkg){hk=hk.toUpperCase();pkg=pkg.toUpperCase();if(hk==='VD')return'vd';if(hk==='OD'){if(pkg==='RFSH')return'odrf';if(pkg==='FULL')return'odfu';return'odco';}if(hk==='VC')return'vc';if(hk==='VP')return'vp';if(hk==='OP')return'odfu';return'odco';}
+// ── STAY PMS PARSER (nuevo sistema, reemplaza Lightspeed)
+function stayStatus(service,rs){
+  service=(service||'').toUpperCase();rs=(rs||'').toUpperCase();
+  if(service==='SOS')return'odrf';        // refresh (0.5 cr)
+  if(service==='FC')return'odfu';         // full clean (1 cr)
+  if(rs.indexOf('VAC')===0)return'vd';    // COS + ya se fue / vacante sucio (1 cr)
+  return'odco';                            // COS + sigue ocupado, salida hoy (1 cr)
+}
+function parseStayText(rawText){
+  const text=rawText.replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
+  const empRe=/EMPLOYEE\s+(.+?)\s+POINTS ALLOTTED/gi;
+  const marks=[];let m;
+  while((m=empRe.exec(text))!==null)marks.push({name:m[1].trim(),i:m.index});
+  if(!marks.length)return[];
+  const out=[];
+  for(let k=0;k<marks.length;k++){
+    const body=text.slice(marks[k].i,k+1<marks.length?marks[k+1].i:text.length);
+    const roomRe=/(\d{3})\s*-\s*RM\w+/g;const idxs=[];let r;
+    while((r=roomRe.exec(body))!==null)idxs.push({num:r[1],e:r.index+r[0].length,i:r.index});
+    const rooms=[],seen=new Set();
+    for(let j=0;j<idxs.length;j++){
+      const chunk=body.slice(idxs[j].e,j+1<idxs.length?idxs[j+1].i:body.length);
+      const sm=chunk.match(/\b(COS|SOS|FC)\b/);
+      if(!sm)continue;
+      const pm=chunk.match(/([\d.]+)\s*pts/);
+      if(pm&&parseFloat(pm[1])===0)continue;   // ya limpio / sin crédito asignado
+      const stm=chunk.match(/\b(OCC D|VAC D|VAC P|VAC C-CU|OCC OC|OCC|VAC)\b/);
+      if(seen.has(idxs[j].num))continue;seen.add(idxs[j].num);
+      rooms.push({number:idxs[j].num,status:stayStatus(sm[1],stm?stm[1]:'')});
+    }
+    if(rooms.length)out.push({name:marks[k].name,code:'',rooms});
+  }
+  return out;
+}
 function parsePdfText(rawText){
+  if(/Housekeeping Assignment Sheet|POINTS ALLOTTED/i.test(rawText))return parseStayText(rawText);
   const text=rawText.replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
   const headerRe=/For Schedule HK and Board \S+ and Attendant ([^(]+?)\s*\((\w+)\)(?:\s+Page\s+\d+\s+of\s+\d+)?(?=\s+For All Wings|\s+Ordered|\s+Room)/gi;
   const headers=[];let hm;
@@ -761,7 +796,7 @@ async function handlePdfFiles(files){
   document.getElementById('pdfResults').style.display='none';document.getElementById('pdfFooter').style.display='none';pdfParsed=[];
   try{
     for(const file of pdfs){const text=await extractPdfText(file);pdfParsed.push(...parsePdfText(text));}
-    if(!pdfParsed.length){showPdfStatus('error','No se encontraron datos. ¿Es un PDF de Lightspeed?');document.getElementById('pdfDrop').style.display='block';return;}
+    if(!pdfParsed.length){showPdfStatus('error','No se encontraron datos. ¿Es el PDF de Stay (Housekeeping Assignment Sheet)?');document.getElementById('pdfDrop').style.display='block';return;}
     const totalRooms=pdfParsed.reduce((s,a)=>s+a.rooms.length,0);
     const totalCr=pdfParsed.reduce((s,a)=>s+a.rooms.reduce((ss,r)=>ss+roomCredits(r),0),0);
     showPdfStatus('success',`✓ ${pdfParsed.length} asociada(s) · ${totalRooms} cuartos · ${totalCr} créditos`);
@@ -769,7 +804,7 @@ async function handlePdfFiles(files){
     document.getElementById('pdfAttList').innerHTML=pdfParsed.map(att=>{
       const vd=att.rooms.filter(r=>r.status==='vd').length,cout=att.rooms.filter(r=>r.status==='odco').length,rfsh=att.rooms.filter(r=>r.status==='odrf').length,full=att.rooms.filter(r=>r.status==='odfu').length,vp=att.rooms.filter(r=>r.status==='vp').length;
       const cr=att.rooms.reduce((s,r)=>s+roomCredits(r),0);const dup=att.rooms.filter(r=>st.rooms.find(x=>x.number===r.number));
-      return`<div class="pdf-att-row"><div class="pdf-att-hdr"><div><div class="pdf-att-name">${att.name} <span style="font-size:.72rem;color:var(--muted);font-weight:400">(${att.code})</span></div>${dup.length?`<div style="font-size:.68rem;color:#d97706;margin-top:2px">⚠️ ${dup.length} ya existen</div>`:''}</div><div class="pdf-att-badges">${vd?`<span class="pdf-att-badge" style="background:var(--vd-bg);color:var(--vd)">VD×${vd}</span>`:''}${cout?`<span class="pdf-att-badge" style="background:var(--odco-bg);color:var(--odco)">COUT×${cout}</span>`:''}${rfsh?`<span class="pdf-att-badge" style="background:var(--odrf-bg);color:var(--odrf)">RFSH×${rfsh}</span>`:''}${full?`<span class="pdf-att-badge" style="background:var(--odrf-bg);color:var(--odrf)">FULL×${full}</span>`:''}${vp?`<span class="pdf-att-badge" style="background:var(--vp-bg);color:var(--vp)">VP×${vp}</span>`:''}<span class="pdf-att-badge" style="background:var(--vc-bg);color:var(--vc)">${cr}cr</span></div></div><div class="pdf-att-rooms">${att.rooms.map(r=>{const cls=r.status==='vd'?'vd':r.status==='odrf'?'rfsh':r.status==='odfu'?'full':r.status==='vp'?'vp':'cout';const d=st.rooms.find(x=>x.number===r.number);return`<span class="pdf-room-chip ${cls}" style="${d?'opacity:.35;text-decoration:line-through':''}">${r.number}·${STATUS[r.status]?.label||r.status}</span>`;}).join('')}</div></div>`;
+      return`<div class="pdf-att-row"><div class="pdf-att-hdr"><div><div class="pdf-att-name">${att.name} ${att.code?`<span style="font-size:.72rem;color:var(--muted);font-weight:400">(${att.code})</span>`:""}</div>${dup.length?`<div style="font-size:.68rem;color:#d97706;margin-top:2px">⚠️ ${dup.length} ya existen</div>`:''}</div><div class="pdf-att-badges">${vd?`<span class="pdf-att-badge" style="background:var(--vd-bg);color:var(--vd)">VD×${vd}</span>`:''}${cout?`<span class="pdf-att-badge" style="background:var(--odco-bg);color:var(--odco)">COUT×${cout}</span>`:''}${rfsh?`<span class="pdf-att-badge" style="background:var(--odrf-bg);color:var(--odrf)">RFSH×${rfsh}</span>`:''}${full?`<span class="pdf-att-badge" style="background:var(--odrf-bg);color:var(--odrf)">FULL×${full}</span>`:''}${vp?`<span class="pdf-att-badge" style="background:var(--vp-bg);color:var(--vp)">VP×${vp}</span>`:''}<span class="pdf-att-badge" style="background:var(--vc-bg);color:var(--vc)">${cr}cr</span></div></div><div class="pdf-att-rooms">${att.rooms.map(r=>{const cls=r.status==='vd'?'vd':r.status==='odrf'?'rfsh':r.status==='odfu'?'full':r.status==='vp'?'vp':'cout';const d=st.rooms.find(x=>x.number===r.number);return`<span class="pdf-room-chip ${cls}" style="${d?'opacity:.35;text-decoration:line-through':''}">${r.number}·${STATUS[r.status]?.label||r.status}</span>`;}).join('')}</div></div>`;
     }).join('');
     document.getElementById('pdfResults').style.display='block';document.getElementById('pdfFooter').style.display='flex';
   }catch(err){showPdfStatus('error','Error: '+err.message);document.getElementById('pdfDrop').style.display='block';}
@@ -1680,6 +1715,9 @@ function injectStyles() {
   .hz-sheet-foot button.p{background:var(--p);border-color:var(--p);color:white}
   .hz-sheet-foot button.req{border-color:#fcd34d;background:#fffbeb;color:#c77b08}
   .hz-field{width:100%;padding:11px;border:1.5px solid var(--bdr);border-radius:9px;font-size:.95rem;font-family:inherit;background:white;color:var(--text)}
+  .hz-days{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 4px}
+  .hz-dchip{min-width:46px;flex:1;padding:9px 4px;border-radius:10px;border:1.5px solid var(--bdr);background:white;font-size:.76rem;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit;text-align:center}
+  .hz-dchip.on{background:var(--p);border-color:var(--p);color:white}
   #hzModal{align-items:flex-end}
   @media(min-width:768px){
     #tab-horario{padding-bottom:20px}
@@ -1866,9 +1904,9 @@ window.hzOpenCell = function (id, d) {
       <button class="hz-act" style="width:100%;margin-bottom:12px" onclick="hzCellRole()">↻ Usar horario por defecto</button>
       ${pre.length ? `<div class="hz-lbl">Turnos usados antes</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${pre.map(([a, b]) => `<button class="hz-chip" onclick="hzPreset('${a}','${b}')">${fmt12(a)}–${fmt12(b)}</button>`).join('')}</div>` : ''}
-      <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;cursor:pointer">
-        <input type="checkbox" id="hzAll" style="width:18px;height:18px;accent-color:var(--p)"> Usar el mismo turno en los demás días vacíos de esta semana
-      </label>
+      <div class="hz-lbl">Aplicar a estos días (toca para elegir)</div>
+      <div class="hz-days" id="hzDays">${[0, 1, 2, 3, 4, 5, 6].map(dd => `<button type="button" class="hz-dchip ${dd === d ? 'on' : ''}" data-d="${dd}" onclick="hzToggleDay(${dd})">${DAYS[dd]}</button>`).join('')}</div>
+      <div class="hz-note" style="margin-top:4px">Lo que elijas abajo (turno, OFF o REQUEST OFF) se aplica a todos los días marcados.</div>
     </div>
     <div class="hz-sheet-foot">
       <div class="hz-foot-row">
@@ -1888,23 +1926,34 @@ window.hzCellRole = function () {
   $('hzE').value = endTime(s);
 };
 window.hzPreset = function (s, e) { $('hzS').value = s; $('hzE').value = e; };
+window.hzToggleDay = function (dd) {
+  const btn = document.querySelector(`#hzDays .hz-dchip[data-d="${dd}"]`);
+  if (btn) btn.classList.toggle('on');
+};
+function pickedDays() {
+  const on = [...document.querySelectorAll('#hzDays .hz-dchip.on')].map(b => +b.dataset.d);
+  return on.length ? on : [cellCtx.d];
+}
 window.hzCell = function (act) {
   if (!cellCtx) return;
-  const { id, d, base } = cellCtx;
+  const { id, base } = cellCtx;
   const w = ensureWeek();
-  const key = id + '_' + d;
-  if (act === 'clear') delete w.shifts[key];
-  else if (act === 'off') w.shifts[key] = { off: true };
-  else if (act === 'req') w.shifts[key] = { off: true, req: true };
-  else {
+  const days = pickedDays();
+  let obj = null;
+  if (act === 'off') obj = { off: true };
+  else if (act === 'req') obj = { off: true, req: true };
+  else if (act === 'save') {
     const s = $('hzS').value, e = $('hzE').value;
     if (!s || !e) { toast('⚠️ Pon la entrada y la salida'); return; }
     const pos = $('hzCellPos').value;
-    const obj = { s, e };
+    obj = { s, e };
     if (pos && pos !== base) obj.pos = pos;
-    w.shifts[key] = obj;
-    if ($('hzAll').checked) for (let i = 0; i < 7; i++) { const k = id + '_' + i; if (!w.shifts[k]) w.shifts[k] = { ...obj }; }
   }
+  days.forEach(d => {
+    const key = id + '_' + d;
+    if (act === 'clear') delete w.shifts[key];
+    else w.shifts[key] = { ...obj };
+  });
   hzSave(); hzCloseModal(); hzRender();
 };
 
