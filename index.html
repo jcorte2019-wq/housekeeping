@@ -1626,6 +1626,14 @@ function pctHTML(o, big, range) {
   const c = gradColor(p, range);
   return `<span class="${cls}" style="background:${c.bg};color:${c.fg}">${p}%</span>`;
 }
+// Room Attendants necesarias = (se van×1 + quieren refresh×0.5) ÷ créditos por persona
+const RA_TARGET = 15;
+function raNeeded(o) {
+  o = o || {};
+  if (!has(o.dep) && !has(o.ref)) return null;
+  return Math.round((num(o.dep) + num(o.ref) * 0.5) / RA_TARGET * 10) / 10;
+}
+function raText(o) { const v = raNeeded(o); return v === null ? '—' : String(v); }
 function avgText(w) {
   const ps = [0, 1, 2, 3, 4, 5, 6].map(d => pct((w.occ || [])[d])).filter(p => p !== null);
   if (!ps.length) return '—';
@@ -1699,6 +1707,10 @@ function injectStyles() {
   .hz-band .hz-name{background:var(--p2)!important;color:white}
   .hz-nm{font-weight:700}
   .hz-role{font-size:.66rem;color:var(--muted);font-weight:600}
+  .hz-ra-row td{background:var(--pl);font-weight:800;color:var(--p2)}
+  .hz-ra-row .hz-name{background:var(--pl)}
+  .hz-ra-line{margin-top:12px;padding-top:10px;border-top:1px solid #f0f4f8;font-size:.86rem;font-weight:600;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
+  .hz-ra-line strong{font-size:1.25rem;color:var(--p);font-weight:800}
   .hz-person{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4f8}
   .hz-person:last-child{border-bottom:none}
   .hz-pname{flex:1;min-width:0}
@@ -1839,7 +1851,8 @@ function mobileHTML(w) {
     <div class="hz-occ-top"><h3 style="margin:0">Ocupación · ${DAYS[d]} ${dt.getDate()} ${MES[dt.getMonth()]}</h3><span data-pct="${d}">${pctHTML(o(d), true, occRange(w))}</span></div>
     <div class="hz-occ-grid">${OCC_FIELDS.map(([f, l]) =>
       `<div><label>${l}</label><input class="hz-in" type="number" min="0" inputmode="numeric" value="${has(o(d)[f]) ? o(d)[f] : ''}" oninput="hzOcc(${d},'${f}',this.value)"></div>`).join('')}
-    </div></div>`;
+    </div>
+    <div class="hz-ra-line">🧹 Room Attendants que necesitas: <strong data-ra="${d}">${raText(o(d))}</strong></div></div>`;
 
   const groups = sectionGroups();
   let n = 0, tot = 0;
@@ -1881,6 +1894,7 @@ function deskHTML(w) {
       <tr class="hz-sec"><td colspan="9">Ocupación del día</td></tr>
       ${OCC_FIELDS.map(occRow).join('')}
       <tr><td class="hz-name">Ocupación</td>${days.map(d => `<td data-pct="${d}">${pctHTML(o(d), false, occRange(w))}</td>`).join('')}<td></td></tr>
+      <tr class="hz-ra-row"><td class="hz-name">🧹 Room Att. necesarias</td>${days.map(d => `<td data-ra="${d}">${raText(o(d))}</td>`).join('')}<td></td></tr>
       ${staffRows || `<tr><td colspan="9" style="padding:24px;color:var(--muted)">Todavía no hay personal. Toca <strong>👥 Personal</strong> para agregarlo.</td></tr>`}
       ${hz.staff.length ? `<tr class="hz-foot"><td class="hz-name">Trabajando</td>${counts.map(c => `<td>${c}</td>`).join('')}<td></td></tr>` : ''}
     </tbody></table></div>`;
@@ -1901,6 +1915,7 @@ window.hzOcc = function (d, f, v) {
   const range = occRange(w);
   document.querySelectorAll('[data-pct]').forEach(c => { const dd = +c.dataset.pct; c.innerHTML = pctHTML(w.occ[dd], !!c.closest('.hz-occ-top'), range); });
   document.querySelectorAll('[data-pctshort]').forEach(c => { const dd = +c.dataset.pctshort; const p = pct(w.occ[dd]); c.textContent = p === null ? '' : p + '%'; });
+  document.querySelectorAll('[data-ra]').forEach(c => { const dd = +c.dataset.ra; c.textContent = raText(w.occ[dd]); });
   const a = $('hzAvg'); if (a) a.textContent = avgText(w);
   hzSave();
 };
