@@ -741,9 +741,9 @@ function stayStatus(service,rs){
 }
 function parseStayText(rawText){
   const text=rawText.replace(/[\r\n]+/g,' ').replace(/\s+/g,' ').trim();
-  const empRe=/EMPLOYEE\s+(.+?)\s+POINTS ALLOTTED/gi;
+  const empRe=/EMPLOYEE\s+(.+?)\s+(?:ROLE\b|POINTS ALLOTTED)/gi;
   const marks=[];let m;
-  while((m=empRe.exec(text))!==null)marks.push({name:m[1].trim(),i:m.index});
+  while((m=empRe.exec(text))!==null){let nm=m[1].replace(/\s+ROLE\s+\w+$/i,'').replace(/\s+POINTS.*$/i,'').trim();marks.push({name:nm,i:m.index});}
   if(!marks.length)return[];
   const out=[];
   for(let k=0;k<marks.length;k++){
@@ -1536,6 +1536,14 @@ const POS_SHORT = { 'Housekeeper Supervisor': 'Superv.', 'Inspector': 'Inspec.',
 const DAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const OCC_FIELDS = [['inh', 'En el hotel'], ['ref', 'Quieren refresh'], ['dep', 'Se van'], ['arr', 'Llegan']];
+// Secciones estilo Excel
+const SECTIONS = [
+  { name: 'HOUSEKEEPING', pos: ['Housekeeper Supervisor', 'Inspector', 'Room Attendant'] },
+  { name: 'LAUNDRY & PUBLIC AREAS', pos: ['Laundry Attendant', 'Public Areas'] }
+];
+const ROLE_LABEL = { 'Housekeeper Supervisor': 'Supervisor', 'Inspector': 'Inspector', 'Laundry Attendant': 'Laundry', 'Public Areas': 'Public Areas', 'Room Attendant': 'Room Attendant' };
+const AREA_TAG = { 'Housekeeper Supervisor': 'SUPERVISOR', 'Inspector': 'INSPECTION', 'Laundry Attendant': 'LAUNDRY', 'Public Areas': 'PUBLIC AREAS', 'Room Attendant': 'ROOM' };
+const DISCLAIMER = 'El horario no está finalizado y está sujeto a cambios según la ocupación del hotel.';
 
 // ── Horarios de entrada por defecto (fin de semana = domingo y sábado)
 const SHIFT_MIN = 8 * 60 + 30;                 // 8 horas 30 minutos
@@ -1669,6 +1677,11 @@ function injectStyles() {
   .hz-occ-grid label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:4px}
   .hz-occ-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
   .hz-group{font-size:.76rem;font-weight:800;color:var(--p2);margin:12px 0 2px;display:flex;align-items:center;gap:6px}
+  .hz-sband{background:var(--p2);color:white;font-size:.76rem;font-weight:800;letter-spacing:.04em;text-align:center;padding:7px 10px;border-radius:8px;margin:14px 0 8px}
+  .hz-band td{background:var(--p2)!important;color:white;font-size:.78rem;font-weight:800;letter-spacing:.04em;text-align:center;padding:7px 10px}
+  .hz-band .hz-name{background:var(--p2)!important;color:white}
+  .hz-nm{font-weight:700}
+  .hz-role{font-size:.66rem;color:var(--muted);font-weight:600}
   .hz-person{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4f8}
   .hz-person:last-child{border-bottom:none}
   .hz-pname{flex:1;min-width:0}
@@ -1757,11 +1770,18 @@ function hzRender() {
       <button class="hz-act" onclick="hzUseTemplate()">✨ Usar predeterminado</button>
     </div>`;
   el.innerHTML = head + (mq.matches ? deskHTML(w) : mobileHTML(w)) +
-    `<div class="hz-note">Entradas automáticas por puesto (fin de semana = dom y sáb), turno de 8 h 30 min. Ocupación = (cuartos en hotel + llegan) ÷ ${TOTAL_ROOMS}. La semana va de domingo a sábado.</div>`;
+    `<div class="hz-note"><strong>${DISCLAIMER}</strong><br>Entradas automáticas por puesto (fin de semana = dom y sáb), turno de 8 h 30 min. Ocupación = (cuartos en hotel + llegan) ÷ ${TOTAL_ROOMS}. La semana va de domingo a sábado.</div>`;
 }
 
 function sortedGroups() {
   return POSITIONS.map(p => ({ p, list: hz.staff.filter(s => s.pos === p).sort((a, b) => a.name.localeCompare(b.name)) })).filter(g => g.list.length);
+}
+function sectionGroups() {
+  return SECTIONS.map(sec => ({
+    name: sec.name,
+    list: hz.staff.filter(s => sec.pos.includes(s.pos))
+      .sort((a, b) => (sec.pos.indexOf(a.pos) - sec.pos.indexOf(b.pos)) || a.name.localeCompare(b.name))
+  })).filter(g => g.list.length);
 }
 function weekHrs(w, id) {
   let t = 0;
@@ -1772,14 +1792,14 @@ function shiftBtn(w, s, d, cls) {
   const c = w.shifts[s.id + '_' + d];
   let k = '', html = '+ Turno';
   if (c && c.off) {
-    if (c.req) { k = 'req'; html = 'REQUEST OFF'; }
+    if (c.req) { k = 'req'; html = 'R - OFF'; }
     else { k = 'off'; html = 'OFF'; }
   } else if (c && c.s && c.e) {
     k = 'on';
     const diff = c.pos && c.pos !== s.pos;
     const sub = cls === 'hz-cell'
-      ? (diff ? `<span class="hz-h area">${POS_SHORT[c.pos] || c.pos}</span>` : `<span class="hz-h">${r1(hrs(c))} h</span>`)
-      : (diff ? `<small class="area">${POS_SHORT[c.pos] || c.pos}</small>` : `<small>${r1(hrs(c))} h</small>`);
+      ? (diff ? `<span class="hz-h area">${AREA_TAG[c.pos] || c.pos}</span>` : `<span class="hz-h">${r1(hrs(c))} h</span>`)
+      : (diff ? `<small class="area">${AREA_TAG[c.pos] || c.pos}</small>` : `<small>${r1(hrs(c))} h</small>`);
     html = `${fmt12(c.s)}–${fmt12(c.e)}${sub}`;
   }
   return `<button class="${cls} ${k}" onclick="hzOpenCell('${s.id}',${d})">${html}</button>`;
@@ -1804,13 +1824,13 @@ function mobileHTML(w) {
       `<div><label>${l}</label><input class="hz-in" type="number" min="0" inputmode="numeric" value="${has(o(d)[f]) ? o(d)[f] : ''}" oninput="hzOcc(${d},'${f}',this.value)"></div>`).join('')}
     </div></div>`;
 
-  const groups = sortedGroups();
+  const groups = sectionGroups();
   let n = 0, tot = 0;
-  const staff = groups.length ? groups.map(g => `<div class="hz-group">${POS_ICON[g.p]} ${g.p} (${g.list.length})</div>` +
+  const staff = groups.length ? groups.map(g => `<div class="hz-sband">${g.name}</div>` +
     g.list.map(s => {
       const c = w.shifts[s.id + '_' + d];
       if (c && c.s && c.e) { n++; tot += hrs(c); }
-      return `<div class="hz-person"><div class="hz-pname"><b>${esc(s.name)}</b><span>${weekHrs(w, s.id)} h esta semana</span></div>${shiftBtn(w, s, d, 'hz-shift')}</div>`;
+      return `<div class="hz-person"><div class="hz-pname"><b>${esc(s.name)}</b><span>${ROLE_LABEL[s.pos] || s.pos} · ${weekHrs(w, s.id)} h</span></div>${shiftBtn(w, s, d, 'hz-shift')}</div>`;
     }).join('')).join('') :
     `<div style="color:var(--muted);font-size:.86rem;text-align:center;padding:16px 4px">Todavía no hay personal.<br>Toca <strong>👥 Personal</strong> para agregarlo.</div>`;
 
@@ -1832,9 +1852,9 @@ function deskHTML(w) {
   const occRow = ([f, l]) => `<tr><td class="hz-name">${l}</td>${days.map(d =>
     `<td><input class="hz-in" type="number" min="0" inputmode="numeric" value="${has(o(d)[f]) ? o(d)[f] : ''}" oninput="hzOcc(${d},'${f}',this.value)"></td>`).join('')}<td></td></tr>`;
 
-  const staffRows = sortedGroups().map(g =>
-    `<tr class="hz-sec"><td colspan="9">${POS_ICON[g.p]} ${g.p} (${g.list.length})</td></tr>` +
-    g.list.map(s => `<tr><td class="hz-name">${esc(s.name)}</td>${days.map(d => `<td>${shiftBtn(w, s, d, 'hz-cell')}</td>`).join('')}<td class="hz-hrs">${weekHrs(w, s.id) || '—'}</td></tr>`).join('')
+  const staffRows = sectionGroups().map(g =>
+    `<tr class="hz-band"><td colspan="9">${g.name}</td></tr>` +
+    g.list.map(s => `<tr><td class="hz-name"><div class="hz-nm">${esc(s.name)}</div><div class="hz-role">${ROLE_LABEL[s.pos] || s.pos}</div></td>${days.map(d => `<td>${shiftBtn(w, s, d, 'hz-cell')}</td>`).join('')}<td class="hz-hrs">${weekHrs(w, s.id) || '—'}</td></tr>`).join('')
   ).join('');
   const counts = days.map(d => hz.staff.filter(s => { const c = w.shifts[s.id + '_' + d]; return c && c.s && c.e; }).length);
 
@@ -2058,13 +2078,13 @@ function ellip(x, text, maxw) {
 }
 window.hzImage = async function () {
   const w = viewWeek();
-  const groups = sortedGroups();
+  const groups = sectionGroups();
   if (!groups.length) { toast('Agrega personal antes de crear la imagen'); return; }
   const days = [0, 1, 2, 3, 4, 5, 6];
   const todayISO = iso(new Date());
   const SC = 2;
   const pad = 20, nameW = 168, dayW = 118;
-  const titleH = 68, headH = 50, occH = 38, groupH = 28, rowH = 42, footH = 30;
+  const titleH = 68, headH = 50, occH = 38, groupH = 28, rowH = 44, footH = 46;
   const gridW = nameW + dayW * 7;
   const W = pad * 2 + gridW;
   const bodyH = occH + groups.reduce((a, g) => a + groupH + g.list.length * rowH, 0);
@@ -2127,28 +2147,30 @@ window.hzImage = async function () {
 
   // Grupos y personas
   groups.forEach(g => {
-    x.fillStyle = '#f1f6fa'; x.fillRect(gx, gy, gridW, groupH);
-    x.textAlign = 'left'; x.fillStyle = '#0a4f66'; x.font = `800 13px ${FONT}`;
-    x.fillText(g.p.toUpperCase() + '  (' + g.list.length + ')', gx + 14, gy + groupH / 2);
+    x.fillStyle = '#0a4f66'; x.fillRect(gx, gy, gridW, groupH);
+    x.textAlign = 'center'; x.fillStyle = '#ffffff'; x.font = `800 13px ${FONT}`;
+    x.fillText(g.name, gx + gridW / 2, gy + groupH / 2);
     gy += groupH;
     g.list.forEach((s, idx) => {
       if (idx % 2) { x.fillStyle = '#fafcfe'; x.fillRect(gx, gy, gridW, rowH); }
       days.forEach(d => { if (isWeekend(d)) { x.fillStyle = '#f6f9fb'; x.fillRect(gx + nameW + dayW * days.indexOf(d), gy, dayW, rowH); } });
-      x.textAlign = 'left'; x.fillStyle = '#0f1923'; x.font = `700 15px ${FONT}`;
-      x.fillText(ellip(x, s.name, nameW - 24), gx + 14, gy + rowH / 2);
+      x.textAlign = 'left'; x.fillStyle = '#0f1923'; x.font = `700 14px ${FONT}`;
+      x.fillText(ellip(x, s.name, nameW - 24), gx + 14, gy + rowH / 2 - 8);
+      x.fillStyle = '#94a3b8'; x.font = `600 11px ${FONT}`;
+      x.fillText(ellip(x, ROLE_LABEL[s.pos] || s.pos, nameW - 24), gx + 14, gy + rowH / 2 + 9);
       x.textAlign = 'center';
       days.forEach((d, i) => {
         const cxx = gx + nameW + dayW * i;
         const c = w.shifts[s.id + '_' + d];
         if (c && c.off) {
-          if (c.req) { x.fillStyle = '#c77b08'; x.font = `800 13px ${FONT}`; x.fillText('REQ OFF', cxx + dayW / 2, gy + rowH / 2); }
+          if (c.req) { x.fillStyle = '#c77b08'; x.font = `800 13px ${FONT}`; x.fillText('R - OFF', cxx + dayW / 2, gy + rowH / 2); }
           else { x.fillStyle = '#94a3b8'; x.font = `800 13px ${FONT}`; x.fillText('OFF', cxx + dayW / 2, gy + rowH / 2); }
         } else if (c && c.s && c.e) {
+          const diff = c.pos && c.pos !== s.pos;
           x.fillStyle = '#0f1923'; x.font = `700 13px ${FONT}`;
           x.fillText(fmt12(c.s) + '–' + fmt12(c.e), cxx + dayW / 2, gy + rowH / 2 - 7);
-          const diff = c.pos && c.pos !== s.pos;
-          x.fillStyle = diff ? '#6d28d9' : '#94a3b8'; x.font = `600 11px ${FONT}`;
-          x.fillText(diff ? (POS_SHORT[c.pos] || c.pos) : (r1(hrs(c)) + ' h'), cxx + dayW / 2, gy + rowH / 2 + 9);
+          x.fillStyle = diff ? '#6d28d9' : '#94a3b8'; x.font = `${diff ? 700 : 600} 10px ${FONT}`;
+          x.fillText(diff ? (AREA_TAG[c.pos] || c.pos) : (r1(hrs(c)) + ' h'), cxx + dayW / 2, gy + rowH / 2 + 9);
         }
       });
       gy += rowH;
@@ -2163,8 +2185,10 @@ window.hzImage = async function () {
   roundRect(x, gx + 0.5, top + 0.5, gridW - 1, gy - top - 1, 2); x.stroke();
 
   // Pie
-  x.textAlign = 'left'; x.fillStyle = '#94a3b8'; x.font = `500 12px ${FONT}`;
-  x.fillText('Turno de 8 h 30 min · Ocupación = (en hotel + llegan) ÷ 116 · Semana dom–sáb', gx, gy + footH / 2 + 4);
+  x.textAlign = 'left'; x.fillStyle = '#64748b'; x.font = `600 12px ${FONT}`;
+  x.fillText(DISCLAIMER, gx, gy + footH / 2 - 2);
+  x.fillStyle = '#94a3b8'; x.font = `500 11px ${FONT}`;
+  x.fillText('Turno de 8 h 30 min · Ocupación = (en hotel + llegan) ÷ 116 · Semana dom–sáb', gx, gy + footH / 2 + 14);
 
   const fname = `horario-${week}.png`;
   cv.toBlob(async blob => {
