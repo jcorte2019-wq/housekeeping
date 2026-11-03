@@ -2084,7 +2084,7 @@ window.hzImage = async function () {
   const todayISO = iso(new Date());
   const SC = 2;
   const pad = 20, nameW = 168, dayW = 118;
-  const titleH = 68, headH = 50, occH = 38, groupH = 28, rowH = 44, footH = 46;
+  const titleH = 68, headH = 50, occH = 38, groupH = 28, rowH = 44, footH = 32;
   const gridW = nameW + dayW * 7;
   const W = pad * 2 + gridW;
   const bodyH = occH + groups.reduce((a, g) => a + groupH + g.list.length * rowH, 0);
@@ -2168,27 +2168,31 @@ window.hzImage = async function () {
         } else if (c && c.s && c.e) {
           const diff = c.pos && c.pos !== s.pos;
           x.fillStyle = '#0f1923'; x.font = `700 13px ${FONT}`;
-          x.fillText(fmt12(c.s) + '–' + fmt12(c.e), cxx + dayW / 2, gy + rowH / 2 - 7);
-          x.fillStyle = diff ? '#6d28d9' : '#94a3b8'; x.font = `${diff ? 700 : 600} 10px ${FONT}`;
-          x.fillText(diff ? (AREA_TAG[c.pos] || c.pos) : (r1(hrs(c)) + ' h'), cxx + dayW / 2, gy + rowH / 2 + 9);
+          x.fillText(fmt12(c.s) + '–' + fmt12(c.e), cxx + dayW / 2, gy + rowH / 2 + (diff ? -6 : 0));
+          if (diff) { x.fillStyle = '#6d28d9'; x.font = `700 10px ${FONT}`; x.fillText(AREA_TAG[c.pos] || c.pos, cxx + dayW / 2, gy + rowH / 2 + 10); }
         }
       });
       gy += rowH;
     });
   });
 
-  // Líneas de la cuadrícula
+  // Líneas de la cuadrícula (bordes marcados)
   const top = pad + titleH;
-  x.strokeStyle = '#e4eaf0'; x.lineWidth = 1;
+  x.strokeStyle = '#b9c3cf'; x.lineWidth = 1;
+  // verticales
   for (let i = 0; i <= 7; i++) { const lx = gx + nameW + dayW * i + 0.5; x.beginPath(); x.moveTo(lx, top); x.lineTo(lx, gy); x.stroke(); }
   x.beginPath(); x.moveTo(gx + 0.5, top); x.lineTo(gx + 0.5, gy); x.stroke();
-  roundRect(x, gx + 0.5, top + 0.5, gridW - 1, gy - top - 1, 2); x.stroke();
+  // horizontales en cada fila
+  const hline = y => { const yy = Math.round(y) + 0.5; x.beginPath(); x.moveTo(gx, yy); x.lineTo(gx + gridW, yy); x.stroke(); };
+  let hy = top; hline(hy); hy += headH; hline(hy); hy += occH; hline(hy);
+  groups.forEach(g => { hy += groupH; hline(hy); g.list.forEach(() => { hy += rowH; hline(hy); }); });
+  // borde exterior más grueso
+  x.strokeStyle = '#8c99a8'; x.lineWidth = 1.5;
+  roundRect(x, gx + 0.5, top + 0.5, gridW - 1, gy - top - 1, 3); x.stroke();
 
   // Pie
   x.textAlign = 'left'; x.fillStyle = '#64748b'; x.font = `600 12px ${FONT}`;
-  x.fillText(DISCLAIMER, gx, gy + footH / 2 - 2);
-  x.fillStyle = '#94a3b8'; x.font = `500 11px ${FONT}`;
-  x.fillText('Turno de 8 h 30 min · Ocupación = (en hotel + llegan) ÷ 116 · Semana dom–sáb', gx, gy + footH / 2 + 14);
+  x.fillText(DISCLAIMER, gx, gy + footH / 2 + 2);
 
   const fname = `horario-${week}.png`;
   cv.toBlob(async blob => {
