@@ -279,6 +279,16 @@ textarea{min-height:60px;resize:none}
   left:0!important;
   right:0!important;
 }
+
+.ls-select-bar{position:fixed;left:0;right:0;bottom:58px;max-width:480px;margin:0 auto;background:linear-gradient(135deg,#0d9467,#059669);color:white;padding:10px 14px;display:none;align-items:center;gap:8px;z-index:120;box-shadow:0 -2px 12px rgba(0,0,0,.2)}
+.ls-select-bar b{flex:1;font-size:.88rem}
+.ls-select-bar button{border:none;border-radius:8px;padding:9px 12px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit}
+.ls-select-bar .go{background:white;color:#047857}
+.ls-select-bar .sec{background:rgba(255,255,255,.2);color:white}
+.tile.ls-sel{outline:3px solid #059669;outline-offset:1px;background:#ecfdf5}
+.tile.ls-sel::after{content:'✓';position:absolute;top:4px;left:6px;width:20px;height:20px;border-radius:50%;background:#059669;color:white;font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+@media(min-width:768px){.ls-select-bar{max-width:768px}}
+@media(min-width:1100px){.ls-select-bar{bottom:0;left:190px;right:0;max-width:none;margin:0}}
 </style>
 </head>
 <body>
@@ -332,6 +342,7 @@ textarea{min-height:60px;resize:none}
       <div class="hbtns" id="hdrBtns">
         <button class="hbtn-pdf" id="btnPDF" onclick="openModal('modalPDF')">📄 PDF</button>
         <button class="hbtn" id="btnImport" onclick="openModal('modalPaste')">📋 Importar</button>
+        <button class="hbtn" id="btnLsMulti" onclick="enterLsMode()" style="display:none;background:rgba(5,150,105,.35);border-color:rgba(255,255,255,.35)">☑ LS</button>
         <button class="hbtn" onclick="doLogout()" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)">⬡ Salir</button>
       </div>
     </div>
@@ -549,7 +560,7 @@ textarea{min-height:60px;resize:none}
     <div class="sheet-hdr"><span class="sheet-title">Agregar asociada</span><button class="sheet-close" onclick="closeModal('modalAddEmp')">✕</button></div>
     <div class="sheet-body">
       <div class="fg"><label>Nombre</label><input type="text" id="empInput" placeholder="Nombre completo"></div>
-      <div class="fg"><label>PIN (4 dígitos)</label><input type="text" id="empPin" placeholder="ej. 56" maxlength="2" inputmode="numeric"></div>
+      <div class="fg"><label>PIN (2 dígitos)</label><input type="text" id="empPin" placeholder="ej. 56" maxlength="2" inputmode="numeric"></div>
     </div>
     <div class="sheet-foot"><button class="btn btn-o" onclick="closeModal('modalAddEmp')">Cancelar</button><button class="btn btn-p" onclick="saveEmp()">Agregar</button></div>
   </div>
@@ -571,17 +582,11 @@ textarea{min-height:60px;resize:none}
   </div>
 </div>
 <!-- ASSOC ROOMS -->
-<div class="overlay" id="modalAssocRooms">
-  <div class="sheet" style="position:relative;height:82vh;max-height:82vh;overflow:hidden;border-radius:16px;display:block">
-    <div class="sheet-hdr" id="assocHdr" style="position:relative;z-index:2;background:white;flex-shrink:0">
-      <span class="sheet-title" id="assocRoomsTitle">Cuartos</span>
-      <div style="display:flex;gap:6px;align-items:center">
-        <button onclick="openAddRoomToAssoc()" style="background:#1a5f7a;color:white;border:none;border-radius:8px;padding:5px 10px;font-size:.75rem;font-weight:600;cursor:pointer">+ Cuarto</button>
-        <button class="sheet-close" onclick="closeModal('modalAssocRooms')">✕</button>
-      </div>
-    </div>
-    <div id="assocRoomsBody" style="position:absolute;top:53px;bottom:0;left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0"></div>
-  </div>
+<div class="ls-select-bar" id="lsSelectBar">
+  <b><span id="lsSelectCount">0</span> seleccionados</b>
+  <button class="sec" onclick="lsAll()">Todos</button>
+  <button class="go" onclick="confirmBulkLS()">✓ Marcar LS</button>
+  <button class="sec" onclick="exitLsMode()">✕</button>
 </div>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -631,6 +636,7 @@ function startSession(role,empId){
   buildUI();renderAll();
 }
 window.doLogout=function(){
+  if(lsMode)exitLsMode();
   currentRole=null;currentEmpId=null;pinBuf='';updateDots();
   document.getElementById('loginError').textContent='';
   document.getElementById('loginScreen').style.display='flex';
@@ -639,6 +645,7 @@ window.doLogout=function(){
 
 function buildUI(){
   document.getElementById('mainApp').style.display='block';
+  document.getElementById('btnLsMulti').style.display=currentRole==='supervisor'?'':'none';
   const nav=document.getElementById('mainNav');
   if(currentRole==='supervisor'){
     nav.innerHTML=`<button class="nav-btn on" onclick="showTab('rooms',this)"><span class="ni">🏠</span>Cuartos</button>
@@ -794,6 +801,30 @@ function fmtTime(ts){
   return d.toLocaleDateString('es-MX',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 }
 
+// ── LIGHTSPEED MULTI-SELECCIÓN
+let lsMode=false;const lsSel=new Set();
+function updLs(){const c=document.getElementById('lsSelectCount');if(c)c.textContent=lsSel.size;}
+window.enterLsMode=function(){lsMode=true;lsSel.clear();document.getElementById('lsSelectBar').style.display='flex';updLs();renderGrid();toast('Toca los cuartos que ya subiste a Lightspeed');};
+window.exitLsMode=function(){lsMode=false;lsSel.clear();const b=document.getElementById('lsSelectBar');if(b)b.style.display='none';renderGrid();};
+window.tileTap=function(id){
+  if(!lsMode){openRoomModal(id);return;}
+  if(lsSel.has(id))lsSel.delete(id);else lsSel.add(id);
+  updLs();renderGrid();
+};
+window.lsAll=function(){
+  const isAll=curFilters.has('all');
+  st.rooms.filter(r=>(isAll||curFilters.has(r.status))&&!st.lsDone[r.id]).forEach(r=>lsSel.add(r.id));
+  updLs();renderGrid();
+};
+window.confirmBulkLS=function(){
+  const ids=[...lsSel];
+  if(!ids.length){toast('⚠️ Selecciona al menos un cuarto');return;}
+  ids.forEach(id=>{st.lsDone[id]=true;const r=st.rooms.find(x=>x.id===id);if(r)addLog(r,'ls',currentEmpId,'supervisor');});
+  const n=ids.length;
+  exitLsMode();save();refreshAssocModal();
+  toast('✅ '+n+(n===1?' cuarto marcado':' cuartos marcados')+' en Lightspeed');
+};
+
 // ── RENDER ALL
 window.renderAll=function(){
   setHdrHeight();
@@ -850,7 +881,7 @@ function renderGrid(){
   const s2=[...rooms.filter(r=>!st.lsDone[r.id]),...rooms.filter(r=>st.lsDone[r.id])];
   document.getElementById('roomsGrid').innerHTML=s2.map(r=>{
     const s=STATUS[r.status]||STATUS.vd,emp=st.employees.find(e=>e.id===r.assignedTo),rep=st.lsDone[r.id],cr=roomCredits(r);
-    return`<div class="tile s-${r.status}" onclick="openRoomModal('${r.id}')" style="${rep?'opacity:.45;':''}">
+    return`<div class="tile s-${r.status}${lsSel.has(r.id)?' ls-sel':''}" onclick="tileTap('${r.id}')" style="${rep?'opacity:.45;':''}">
       ${rep?'<span class="tile-done">✓</span>':''}
       ${r.missing?.length?`<span class="tile-alert">${r.missing.length}</span>`:''}
       <div class="tile-num" style="${rep?'text-decoration:line-through;color:#9ca3af':''}">${r.number}</div>
@@ -1347,7 +1378,7 @@ window.doImport=function(){
 window.saveHotel=function(){const n=document.getElementById('hotelInput')?.value.trim();if(n){st.hotel=n;save();renderAll();}closeModal('modalHotel');};
 window.saveEmp=function(){
   const n=document.getElementById('empInput').value.trim(),p=document.getElementById('empPin').value.trim();
-  if(!n)return;if(p&&p.length!==4){toast('⚠️ El PIN debe ser de 4 dígitos');return;}
+  if(!n)return;if(p&&!/^\d{2}$/.test(p)){toast('⚠️ El PIN debe ser de 2 dígitos');return;}
   st.employees.push({id:gid(),name:n,pin:p});closeModal('modalAddEmp');save();renderAll();toast('👤 '+n+' agregada');
 };
 window.delEmp=function(id){if(!confirm('¿Eliminar esta asociada?'))return;st.employees=st.employees.filter(e=>e.id!==id);st.rooms.forEach(r=>{if(r.assignedTo===id)r.assignedTo=null;});save();renderAll();};
@@ -1400,6 +1431,7 @@ window.sendReport=function(){
 
 // ── NAV / FILTER / MODAL
 window.showTab=function(name,btn){
+  if(lsMode&&name!=='rooms')exitLsMode();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
   const pg=document.getElementById('tab-'+name);if(pg)pg.classList.add('on');
@@ -1442,12 +1474,11 @@ document.getElementById('loadScreen').style.display='flex';
 setTimeout(()=>{document.getElementById('loadScreen').style.display='none';document.getElementById('loginScreen').style.display='flex';},1200);
 </script>
 <script type="module">
-
-// Instalación: subir este archivo junto a index.html y agregar antes de </body>:
-//
-// Los datos se guardan en su propio documento de Firebase (housekeeping/horario-aloft),
-// así que "Reiniciar día" NO borra el personal ni los horarios.
-
+// ═══════════════════════════════════════════════════════════
+// HORARIO — pestaña del supervisor (semana domingo → sábado)
+// Guarda en su propio documento de Firebase: housekeeping/horario-aloft
+// Así "Reiniciar día" NO borra el personal ni los horarios.
+// ═══════════════════════════════════════════════════════════
 import { getApps, getApp, initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, onSnapshot, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
@@ -1463,28 +1494,24 @@ const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const HZDOC = doc(db, 'housekeeping', 'horario-aloft');
 
-// ── Constantes
 const TOTAL_ROOMS = 116;
 const POSITIONS = ['Housekeeper Supervisor', 'Inspector', 'Laundry Attendant', 'Public Areas', 'Room Attendant'];
-const POS_ICON = {
-  'Housekeeper Supervisor': '🧭', 'Inspector': '🔍', 'Laundry Attendant': '🧺',
-  'Public Areas': '🛎️', 'Room Attendant': '🛏️'
-};
+const POS_ICON = { 'Housekeeper Supervisor': '🧭', 'Inspector': '🔍', 'Laundry Attendant': '🧺', 'Public Areas': '🛎️', 'Room Attendant': '🛏️' };
 const DAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
-const SHEET = 'height:auto!important;max-height:88vh;display:block!important;overflow-y:auto;max-width:460px;width:100%;border-radius:16px!important';
+const OCC_FIELDS = [['inh', 'En el hotel'], ['ref', 'Quieren refresh'], ['dep', 'Se van'], ['arr', 'Llegan']];
 
-// ── Estado
 let hz = { staff: [], weeks: {} };
-let week = sundayOf(new Date());   // domingo de la semana que se ve (YYYY-MM-DD)
+let week = sundayOf(new Date());
+let selDay = new Date().getDay();
 let saveT = null;
 let cellCtx = null;
 let lastPos = 'Room Attendant';
+const mq = window.matchMedia('(min-width:768px)');
 
-// ── Utilidades
 const $ = id => document.getElementById(id);
-const pad = n => String(n).padStart(2, '0');
-const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+function pad(n) { return String(n).padStart(2, '0'); }
+function iso(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 function parseISO(s) { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
 function sundayOf(d) { const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - x.getDay()); return iso(x); }
 function addDays(s, n) { const d = parseISO(s); d.setDate(d.getDate() + n); return iso(d); }
@@ -1493,6 +1520,7 @@ const toast = m => { if (window.toast) window.toast(m); };
 const rid = () => Math.random().toString(36).slice(2, 10);
 const has = v => v !== '' && v != null;
 const num = v => { const x = Number(v); return has(v) && isFinite(x) ? x : 0; };
+const r1 = x => Math.round(x * 10) / 10;
 
 function fmt12(t) {
   const [h, m] = t.split(':').map(Number);
@@ -1508,25 +1536,28 @@ function hrs(c) {
   return m / 60;
 }
 
-// ── Ocupación = (cuartos en hotel + llegadas) / 116
+// Ocupación = (cuartos en hotel + llegan) / 116
 function pct(o) {
   o = o || {};
   if (!has(o.inh) && !has(o.arr)) return null;
   return Math.round((num(o.inh) + num(o.arr)) / TOTAL_ROOMS * 1000) / 10;
 }
-function pctHTML(o) {
-  const p = pct(o);
-  if (p === null) return '<span class="hz-pct" style="background:#f1f5f9;color:#94a3b8">—</span>';
-  const lv = p >= 95 ? ['#fff1f1', '#d63b3b'] : p >= 80 ? ['#fffbeb', '#c77b08'] : p >= 50 ? ['#ecfdf5', '#0d9467'] : ['#eff6ff', '#1d6fd4'];
-  return `<span class="hz-pct" style="background:${lv[0]};color:${lv[1]}">${p}%</span>`;
+function pctColors(p) {
+  return p >= 95 ? ['#fff1f1', '#d63b3b'] : p >= 80 ? ['#fffbeb', '#c77b08'] : p >= 50 ? ['#ecfdf5', '#0d9467'] : ['#eff6ff', '#1d6fd4'];
 }
-function avgHTML(w) {
+function pctHTML(o, big) {
+  const p = pct(o);
+  const cls = 'hz-pct' + (big ? ' big' : '');
+  if (p === null) return `<span class="${cls}" style="background:#f1f5f9;color:#94a3b8">—</span>`;
+  const lv = pctColors(p);
+  return `<span class="${cls}" style="background:${lv[0]};color:${lv[1]}">${p}%</span>`;
+}
+function avgText(w) {
   const ps = [0, 1, 2, 3, 4, 5, 6].map(d => pct((w.occ || [])[d])).filter(p => p !== null);
   if (!ps.length) return '—';
-  return (Math.round(ps.reduce((a, b) => a + b, 0) / ps.length * 10) / 10) + '%';
+  return r1(ps.reduce((a, b) => a + b, 0) / ps.length) + '%';
 }
 
-// ── Datos de la semana
 function viewWeek() {
   const w = hz.weeks[week];
   return { occ: (w && w.occ) || [], shifts: (w && w.shifts) || {} };
@@ -1540,7 +1571,6 @@ function ensureWeek() {
   return w;
 }
 
-// ── Guardado (documento propio, con retraso para no escribir en cada tecla)
 function hzSave() {
   clearTimeout(saveT);
   saveT = setTimeout(async () => {
@@ -1548,45 +1578,91 @@ function hzSave() {
       await setDoc(HZDOC, { staff: hz.staff, weeks: hz.weeks, updatedAt: Date.now() });
     } catch (e) {
       console.error(e);
-      toast('⚠️ Error al guardar el horario');
+      toast('⚠️ Error al guardar el horario (revisa las reglas de Firebase)');
     }
     saveT = null;
   }, 500);
 }
 
-// ── Estilos
 function injectStyles() {
   const st = document.createElement('style');
   st.textContent = `
+  #tab-horario{padding-bottom:84px}
   .hz-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
   .hz-title{font-weight:800;font-size:1.05rem;margin-right:auto}
   .hz-wk{display:flex;align-items:center;gap:6px}
-  .hz-nav{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--bdr);background:white;cursor:pointer;font-size:1.1rem;line-height:1;color:var(--text)}
-  .hz-label{font-size:.82rem;font-weight:700;min-width:150px;text-align:center}
-  .hz-today-btn{height:32px;padding:0 10px;border-radius:8px;border:1.5px solid var(--bdr);background:white;cursor:pointer;font-size:.74rem;font-weight:700;color:var(--p)}
-  .hz-wrap{overflow-x:auto;background:white;border:1px solid var(--bdr);border-radius:14px;box-shadow:var(--shadow-sm)}
-  table.hz{border-collapse:separate;border-spacing:0;width:100%;min-width:660px;font-size:.78rem}
-  .hz th,.hz td{padding:6px 4px;border-bottom:1px solid #f0f4f8;text-align:center;vertical-align:middle}
-  .hz thead th{background:#f8fafc;font-size:.7rem;font-weight:700;color:var(--muted);line-height:1.25}
-  .hz thead th.hz-today{background:var(--pl);color:var(--p2)}
-  .hz .hz-name{position:sticky;left:0;background:white;text-align:left;padding-left:10px;min-width:108px;max-width:140px;font-weight:600;z-index:2;border-right:1px solid #f0f4f8}
-  .hz thead .hz-name{background:#f8fafc;z-index:3}
-  .hz .hz-sec td{background:#f1f6fa;font-size:.74rem;font-weight:800;color:var(--p2);text-align:left;padding:6px 10px}
-  .hz-in{width:48px;padding:6px 2px;text-align:center;border:1.5px solid var(--bdr);border-radius:7px;font-size:.84rem;font-weight:600;font-family:inherit;color:var(--text);background:white;-moz-appearance:textfield}
+  .hz-nav{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--bdr);background:white;cursor:pointer;font-size:1.2rem;line-height:1;color:var(--text)}
+  .hz-label{font-size:.84rem;font-weight:700;min-width:140px;text-align:center}
+  .hz-today-btn{height:36px;padding:0 12px;border-radius:9px;border:1.5px solid var(--bdr);background:white;cursor:pointer;font-size:.76rem;font-weight:700;color:var(--p);font-family:inherit}
+  .hz-act{height:38px;padding:0 14px;border-radius:10px;border:1.5px solid var(--bdr);background:white;cursor:pointer;font-size:.8rem;font-weight:700;color:var(--p);font-family:inherit}
+  .hz-pct{display:inline-block;min-width:48px;padding:4px 8px;border-radius:8px;font-weight:800;font-size:.8rem}
+  .hz-pct.big{font-size:1.5rem;padding:6px 14px;border-radius:12px}
+  .hz-in{width:100%;padding:10px 6px;text-align:center;border:1.5px solid var(--bdr);border-radius:9px;font-size:1rem;font-weight:700;font-family:inherit;color:var(--text);background:white;-moz-appearance:textfield}
   .hz-in::-webkit-outer-spin-button,.hz-in::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   .hz-in:focus{outline:none;border-color:var(--p)}
-  .hz-pct{display:inline-block;min-width:48px;padding:4px 6px;border-radius:8px;font-weight:800;font-size:.8rem}
-  .hz-cell{display:block;width:100%;min-width:62px;min-height:38px;border:1.5px dashed #d5dde7;border-radius:8px;background:white;cursor:pointer;font-size:.7rem;font-weight:700;color:#94a3b8;padding:3px 2px;line-height:1.2;font-family:inherit}
+  .hz-card{background:white;border:1px solid var(--bdr);border-radius:14px;box-shadow:var(--shadow-sm);padding:14px;margin-bottom:12px}
+  .hz-card h3{font-size:.8rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+  .hz-note{font-size:.72rem;color:var(--muted);margin-top:8px;line-height:1.5}
+  .hz-chip{border:1.5px solid var(--bdr);background:white;border-radius:20px;padding:7px 13px;font-size:.8rem;font-weight:700;color:var(--p);cursor:pointer;font-family:inherit}
+  .hz-time{width:100%;padding:11px;border:1.5px solid var(--bdr);border-radius:9px;font-size:1rem;font-family:inherit;color:var(--text);background:white}
+  .hz-srow{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f0f4f8}
+  /* Móvil: vista por día */
+  .hz-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+  .hz-dbtn{border:1.5px solid var(--bdr);background:white;border-radius:11px;padding:6px 0 5px;cursor:pointer;font-family:inherit;color:var(--text);text-align:center;line-height:1.25}
+  .hz-dbtn .dn{display:block;font-size:.66rem;font-weight:700;color:var(--muted)}
+  .hz-dbtn .dd{display:block;font-size:1rem;font-weight:800}
+  .hz-dbtn .dp{display:block;font-size:.6rem;font-weight:800;min-height:.8rem;color:var(--muted)}
+  .hz-dbtn.today .dd{color:var(--p)}
+  .hz-dbtn.sel{background:var(--p);border-color:var(--p);color:white}
+  .hz-dbtn.sel .dn,.hz-dbtn.sel .dp{color:rgba(255,255,255,.85)}
+  .hz-occ-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .hz-occ-grid label{display:block;font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:4px}
+  .hz-occ-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .hz-group{font-size:.76rem;font-weight:800;color:var(--p2);margin:12px 0 2px;display:flex;align-items:center;gap:6px}
+  .hz-person{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4f8}
+  .hz-person:last-child{border-bottom:none}
+  .hz-pname{flex:1;min-width:0}
+  .hz-pname b{display:block;font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hz-pname span{font-size:.7rem;color:var(--muted);font-weight:600}
+  .hz-shift{min-width:112px;min-height:44px;border:1.5px dashed #cbd5e1;border-radius:11px;background:white;cursor:pointer;font-size:.8rem;font-weight:700;color:#94a3b8;padding:4px 8px;line-height:1.25;font-family:inherit}
+  .hz-shift.on{border-style:solid;border-color:var(--p-light);background:var(--pl);color:var(--p2)}
+  .hz-shift.off{border-style:solid;border-color:#e2e8f0;background:#f1f5f9;color:#94a3b8}
+  .hz-shift small{display:block;font-size:.66rem;font-weight:600;opacity:.8}
+  .hz-sum{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;color:var(--muted);padding-top:10px;margin-top:4px;border-top:1px solid #f0f4f8}
+  /* Escritorio: tabla semanal */
+  .hz-wrap{overflow-x:auto;background:white;border:1px solid var(--bdr);border-radius:14px;box-shadow:var(--shadow-sm)}
+  table.hz{border-collapse:separate;border-spacing:0;width:100%;min-width:760px;font-size:.8rem}
+  .hz th,.hz td{padding:7px 5px;border-bottom:1px solid #f0f4f8;text-align:center;vertical-align:middle}
+  .hz thead th{background:#f8fafc;font-size:.72rem;font-weight:700;color:var(--muted);line-height:1.3}
+  .hz thead th.hz-today{background:var(--pl);color:var(--p2)}
+  .hz .hz-name{position:sticky;left:0;background:white;text-align:left;padding-left:12px;min-width:130px;font-weight:600;z-index:2;border-right:1px solid #f0f4f8}
+  .hz thead .hz-name{background:#f8fafc;z-index:3}
+  .hz .hz-sec td{background:#f1f6fa;font-size:.76rem;font-weight:800;color:var(--p2);text-align:left;padding:7px 12px}
+  .hz td .hz-in{padding:7px 2px;font-size:.9rem;width:64px}
+  .hz-cell{display:block;width:100%;min-width:78px;min-height:42px;border:1.5px dashed #d5dde7;border-radius:9px;background:white;cursor:pointer;font-size:.74rem;font-weight:700;color:#94a3b8;padding:3px 2px;line-height:1.25;font-family:inherit}
+  .hz-cell:hover{border-color:var(--p-light)}
   .hz-cell.on{border-style:solid;border-color:var(--p-light);background:var(--pl);color:var(--p2)}
   .hz-cell.off{border-style:solid;border-color:#e2e8f0;background:#f1f5f9;color:#94a3b8}
-  .hz-h{font-weight:600;opacity:.75;font-size:.64rem}
-  .hz-hrs{font-weight:700;color:var(--muted);font-size:.78rem}
+  .hz-h{font-weight:600;opacity:.75;font-size:.66rem}
+  .hz-hrs{font-weight:700;color:var(--muted)}
   .hz-foot td{background:#f8fafc;font-weight:700;color:var(--muted)}
   .hz-foot .hz-name{background:#f8fafc}
-  .hz-note{font-size:.72rem;color:var(--muted);margin-top:8px;line-height:1.5}
-  .hz-chip{border:1.5px solid var(--bdr);background:white;border-radius:20px;padding:5px 11px;font-size:.76rem;font-weight:700;color:var(--p);cursor:pointer;font-family:inherit}
-  .hz-time{width:100%;padding:10px;border:1.5px solid var(--bdr);border-radius:8px;font-size:.92rem;font-family:inherit;color:var(--text);background:white}
-  .hz-srow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f4f8}
+  /* Ventana propia */
+  .hz-sheet{background:white;width:100%;max-width:480px;margin:0 auto;border-radius:20px 20px 0 0;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -4px 32px rgba(0,0,0,.15)}
+  .hz-sheet-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bdr);position:sticky;top:0;background:white;z-index:1}
+  .hz-sheet-hdr b{font-size:.98rem}
+  .hz-x{background:#f0f4f8;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:.9rem}
+  .hz-sheet-body{padding:14px 16px 18px}
+  .hz-sheet-foot{display:flex;gap:8px;padding:0 16px 18px}
+  .hz-sheet-foot button{flex:1;padding:12px 6px;border-radius:10px;font-weight:700;font-size:.88rem;cursor:pointer;font-family:inherit;border:1.5px solid var(--bdr);background:white;color:var(--text)}
+  .hz-sheet-foot button.p{background:var(--p);border-color:var(--p);color:white}
+  .hz-field{width:100%;padding:11px;border:1.5px solid var(--bdr);border-radius:9px;font-size:.95rem;font-family:inherit;background:white;color:var(--text)}
+  #hzModal{align-items:flex-end}
+  @media(min-width:768px){
+    #tab-horario{padding-bottom:20px}
+    #hzModal{align-items:center!important;justify-content:center!important}
+    .hz-sheet{border-radius:16px;max-height:86vh}
+  }
   `;
   document.head.appendChild(st);
 }
@@ -1596,45 +1672,9 @@ function hzRender() {
   const el = $('tab-horario');
   if (!el) return;
   const w = viewWeek();
-  const days = [0, 1, 2, 3, 4, 5, 6];
-  const todayISO = iso(new Date());
   const d0 = parseISO(week), d6 = parseISO(addDays(week, 6));
-  const label = `${d0.getDate()} ${MES[d0.getMonth()]} – ${d6.getDate()} ${MES[d6.getMonth()]} ${d6.getFullYear()}`;
-  const o = d => (w.occ && w.occ[d]) || {};
-
-  const head = days.map(d => {
-    const dt = parseISO(addDays(week, d));
-    const t = iso(dt) === todayISO;
-    return `<th class="${t ? 'hz-today' : ''}">${DAYS[d]}<br><span style="font-weight:600">${dt.getDate()} ${MES[dt.getMonth()]}</span></th>`;
-  }).join('');
-
-  const occRow = (label, f) => `<tr><td class="hz-name">${label}</td>${days.map(d =>
-    `<td><input class="hz-in" type="number" min="0" inputmode="numeric" value="${has(o(d)[f]) ? o(d)[f] : ''}" oninput="hzOcc(${d},'${f}',this.value)"></td>`
-  ).join('')}<td></td></tr>`;
-
-  const groups = POSITIONS.map(p => ({
-    p, list: hz.staff.filter(s => s.pos === p).sort((a, b) => a.name.localeCompare(b.name))
-  })).filter(g => g.list.length);
-
-  const staffRows = groups.map(g =>
-    `<tr class="hz-sec"><td colspan="9">${POS_ICON[g.p]} ${g.p} (${g.list.length})</td></tr>` +
-    g.list.map(s => {
-      let tot = 0;
-      const cells = days.map(d => {
-        const c = w.shifts[s.id + '_' + d];
-        tot += hrs(c);
-        let cls = '', html = '+';
-        if (c && c.off) { cls = 'off'; html = 'Libre'; }
-        else if (c && c.s && c.e) { cls = 'on'; html = `${fmt12(c.s)}–${fmt12(c.e)}<br><span class="hz-h">${Math.round(hrs(c) * 10) / 10}h</span>`; }
-        return `<td><button class="hz-cell ${cls}" onclick="hzOpenCell('${s.id}',${d})">${html}</button></td>`;
-      }).join('');
-      return `<tr><td class="hz-name">${esc(s.name)}</td>${cells}<td class="hz-hrs">${tot ? Math.round(tot * 10) / 10 : '—'}</td></tr>`;
-    }).join('')
-  ).join('');
-
-  const counts = days.map(d => hz.staff.filter(s => { const c = w.shifts[s.id + '_' + d]; return c && c.s && c.e; }).length);
-
-  el.innerHTML = `
+  const label = `${d0.getDate()} ${MES[d0.getMonth()]} – ${d6.getDate()} ${MES[d6.getMonth()]}`;
+  const head = `
     <div class="hz-bar">
       <div class="hz-title">📅 Horario</div>
       <div class="hz-wk">
@@ -1645,58 +1685,124 @@ function hzRender() {
       </div>
     </div>
     <div class="hz-bar">
-      <button class="btn btn-o btn-sm" onclick="hzStaff()">👥 Personal</button>
-      <button class="btn btn-o btn-sm" onclick="hzCopyPrev()">📋 Copiar semana anterior</button>
-      <div style="margin-left:auto;font-size:.76rem;color:var(--muted);font-weight:600">Ocupación promedio: <strong id="hzAvg" style="color:var(--text)">${avgHTML(w)}</strong></div>
-    </div>
-    <div class="hz-wrap"><table class="hz">
-      <thead><tr><th class="hz-name"></th>${head}<th>Hrs</th></tr></thead>
-      <tbody>
-        <tr class="hz-sec"><td colspan="9">Ocupación del día</td></tr>
-        ${occRow('Cuartos en hotel', 'inh')}
-        ${occRow('Quieren refresh', 'ref')}
-        ${occRow('Se van', 'dep')}
-        ${occRow('Llegan', 'arr')}
-        <tr><td class="hz-name">Ocupación</td>${days.map(d => `<td id="hzp${d}">${pctHTML(o(d))}</td>`).join('')}<td></td></tr>
-        ${staffRows || `<tr><td colspan="9" style="padding:22px;color:var(--muted)">Todavía no hay personal. Toca <strong>👥 Personal</strong> para agregarlo.</td></tr>`}
-        ${hz.staff.length ? `<tr class="hz-foot"><td class="hz-name">Programadas</td>${counts.map(c => `<td>${c}</td>`).join('')}<td></td></tr>` : ''}
-      </tbody>
-    </table></div>
-    <div class="hz-note">Ocupación = (cuartos en hotel + llegadas) ÷ ${TOTAL_ROOMS}. La semana va de domingo a sábado.</div>`;
+      <button class="hz-act" onclick="hzStaff()">👥 Personal</button>
+      <button class="hz-act" onclick="hzCopyPrev()">📋 Copiar semana anterior</button>
+      <div style="margin-left:auto;font-size:.78rem;color:var(--muted);font-weight:600">Ocupación promedio: <strong id="hzAvg" style="color:var(--text)">${avgText(w)}</strong></div>
+    </div>`;
+  el.innerHTML = head + (mq.matches ? deskHTML(w) : mobileHTML(w)) +
+    `<div class="hz-note">Ocupación = (cuartos en hotel + llegan) ÷ ${TOTAL_ROOMS}. La semana va de domingo a sábado.</div>`;
 }
 
-// ── Navegación de semana
+function sortedGroups() {
+  return POSITIONS.map(p => ({ p, list: hz.staff.filter(s => s.pos === p).sort((a, b) => a.name.localeCompare(b.name)) })).filter(g => g.list.length);
+}
+function weekHrs(w, id) {
+  let t = 0;
+  for (let d = 0; d < 7; d++) t += hrs(w.shifts[id + '_' + d]);
+  return r1(t);
+}
+function shiftBtn(w, s, d, cls) {
+  const c = w.shifts[s.id + '_' + d];
+  let k = '', html = '+ Turno';
+  if (c && c.off) { k = 'off'; html = 'Libre'; }
+  else if (c && c.s && c.e) { k = 'on'; html = `${fmt12(c.s)}–${fmt12(c.e)}<small>${r1(hrs(c))} h</small>`; }
+  return `<button class="${cls} ${k}" onclick="hzOpenCell('${s.id}',${d})">${html}</button>`;
+}
+
+// ── Vista de teléfono: un día a la vez
+function mobileHTML(w) {
+  const todayISO = iso(new Date());
+  const o = d => (w.occ && w.occ[d]) || {};
+  const strip = [0, 1, 2, 3, 4, 5, 6].map(d => {
+    const dt = parseISO(addDays(week, d));
+    const p = pct(o(d));
+    return `<button class="hz-dbtn ${d === selDay ? 'sel' : ''} ${iso(dt) === todayISO ? 'today' : ''}" onclick="hzDay(${d})">
+      <span class="dn">${DAYS[d]}</span><span class="dd">${dt.getDate()}</span><span class="dp" data-pctshort="${d}">${p === null ? '' : p + '%'}</span></button>`;
+  }).join('');
+
+  const dt = parseISO(addDays(week, selDay));
+  const d = selDay;
+  const occ = `<div class="hz-card">
+    <div class="hz-occ-top"><h3 style="margin:0">Ocupación · ${DAYS[d]} ${dt.getDate()} ${MES[dt.getMonth()]}</h3><span data-pct="${d}">${pctHTML(o(d), true)}</span></div>
+    <div class="hz-occ-grid">${OCC_FIELDS.map(([f, l]) =>
+      `<div><label>${l}</label><input class="hz-in" type="number" min="0" inputmode="numeric" value="${has(o(d)[f]) ? o(d)[f] : ''}" oninput="hzOcc(${d},'${f}',this.value)"></div>`).join('')}
+    </div></div>`;
+
+  const groups = sortedGroups();
+  let n = 0, tot = 0;
+  const staff = groups.length ? groups.map(g => `<div class="hz-group">${POS_ICON[g.p]} ${g.p} (${g.list.length})</div>` +
+    g.list.map(s => {
+      const c = w.shifts[s.id + '_' + d];
+      if (c && c.s && c.e) { n++; tot += hrs(c); }
+      return `<div class="hz-person"><div class="hz-pname"><b>${esc(s.name)}</b><span>${weekHrs(w, s.id)} h esta semana</span></div>${shiftBtn(w, s, d, 'hz-shift')}</div>`;
+    }).join('')).join('') :
+    `<div style="color:var(--muted);font-size:.86rem;text-align:center;padding:16px 4px">Todavía no hay personal.<br>Toca <strong>👥 Personal</strong> para agregarlo.</div>`;
+
+  return `<div class="hz-strip">${strip}</div>${occ}
+    <div class="hz-card"><h3>Turnos del día</h3>${staff}
+    ${hz.staff.length ? `<div class="hz-sum"><span>Programadas: ${n}</span><span>${r1(tot)} h en total</span></div>` : ''}</div>`;
+}
+
+// ── Vista de computadora: semana completa
+function deskHTML(w) {
+  const days = [0, 1, 2, 3, 4, 5, 6];
+  const todayISO = iso(new Date());
+  const o = d => (w.occ && w.occ[d]) || {};
+  const head = days.map(d => {
+    const dt = parseISO(addDays(week, d));
+    return `<th class="${iso(dt) === todayISO ? 'hz-today' : ''}">${DAYS[d]}<br><span style="font-weight:600">${dt.getDate()} ${MES[dt.getMonth()]}</span></th>`;
+  }).join('');
+  const occRow = ([f, l]) => `<tr><td class="hz-name">${l}</td>${days.map(d =>
+    `<td><input class="hz-in" type="number" min="0" inputmode="numeric" value="${has(o(d)[f]) ? o(d)[f] : ''}" oninput="hzOcc(${d},'${f}',this.value)"></td>`).join('')}<td></td></tr>`;
+
+  const staffRows = sortedGroups().map(g =>
+    `<tr class="hz-sec"><td colspan="9">${POS_ICON[g.p]} ${g.p} (${g.list.length})</td></tr>` +
+    g.list.map(s => `<tr><td class="hz-name">${esc(s.name)}</td>${days.map(d => `<td>${shiftBtn(w, s, d, 'hz-cell')}</td>`).join('')}<td class="hz-hrs">${weekHrs(w, s.id) || '—'}</td></tr>`).join('')
+  ).join('');
+  const counts = days.map(d => hz.staff.filter(s => { const c = w.shifts[s.id + '_' + d]; return c && c.s && c.e; }).length);
+
+  return `<div class="hz-wrap"><table class="hz">
+    <thead><tr><th class="hz-name"></th>${head}<th>Hrs</th></tr></thead>
+    <tbody>
+      <tr class="hz-sec"><td colspan="9">Ocupación del día</td></tr>
+      ${OCC_FIELDS.map(occRow).join('')}
+      <tr><td class="hz-name">Ocupación</td>${days.map(d => `<td data-pct="${d}">${pctHTML(o(d))}</td>`).join('')}<td></td></tr>
+      ${staffRows || `<tr><td colspan="9" style="padding:24px;color:var(--muted)">Todavía no hay personal. Toca <strong>👥 Personal</strong> para agregarlo.</td></tr>`}
+      ${hz.staff.length ? `<tr class="hz-foot"><td class="hz-name">Programadas</td>${counts.map(c => `<td>${c}</td>`).join('')}<td></td></tr>` : ''}
+    </tbody></table></div>`;
+}
+
 window.hzWeek = function (dir) {
   week = dir === 0 ? sundayOf(new Date()) : addDays(week, dir * 7);
+  if (dir === 0) selDay = new Date().getDay();
   hzRender();
 };
+window.hzDay = function (d) { selDay = d; hzRender(); };
 
-// ── Captura de ocupación
 window.hzOcc = function (d, f, v) {
   const w = ensureWeek();
   let x = v === '' ? '' : Math.max(0, Math.floor(Number(v)));
   if (x !== '' && isNaN(x)) x = '';
   w.occ[d][f] = x;
-  const c = $('hzp' + d); if (c) c.innerHTML = pctHTML(w.occ[d]);
-  const a = $('hzAvg'); if (a) a.textContent = avgHTML(w);
+  document.querySelectorAll(`[data-pct="${d}"]`).forEach(c => { c.innerHTML = pctHTML(w.occ[d], !!c.closest('.hz-occ-top')); });
+  document.querySelectorAll(`[data-pctshort="${d}"]`).forEach(c => { const p = pct(w.occ[d]); c.textContent = p === null ? '' : p + '%'; });
+  const a = $('hzAvg'); if (a) a.textContent = avgText(w);
   hzSave();
 };
 
-// ── Ventana emergente genérica
-function openModal(html) {
+function openSheet(html) {
   const ov = $('hzModal');
   ov.innerHTML = html;
   ov.classList.add('on');
 }
 window.hzCloseModal = function () { const ov = $('hzModal'); if (ov) ov.classList.remove('on'); cellCtx = null; };
 
-// ── Turno de una persona en un día
 function presets() {
   const m = {};
   Object.values(hz.weeks).forEach(w => Object.values(w.shifts || {}).forEach(c => {
     if (c && c.s && c.e) { const k = c.s + '|' + c.e; m[k] = (m[k] || 0) + 1; }
   }));
-  return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k]) => k.split('|'));
+  return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k]) => k.split('|'));
 }
 window.hzOpenCell = function (id, d) {
   const s = hz.staff.find(x => x.id === id); if (!s) return;
@@ -1704,23 +1810,23 @@ window.hzOpenCell = function (id, d) {
   cellCtx = { id, d };
   const dt = parseISO(addDays(week, d));
   const pre = presets();
-  openModal(`<div class="sheet" style="${SHEET}">
-    <div class="sheet-hdr"><span class="sheet-title">${esc(s.name)} · ${DAYS[d]} ${dt.getDate()} ${MES[dt.getMonth()]}</span><button class="sheet-close" onclick="hzCloseModal()">✕</button></div>
-    <div style="padding:14px 16px">
-      ${pre.length ? `<div style="font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:6px">Turnos usados</div>
+  openSheet(`<div class="hz-sheet">
+    <div class="hz-sheet-hdr"><b>${esc(s.name)} · ${DAYS[d]} ${dt.getDate()} ${MES[dt.getMonth()]}</b><button class="hz-x" onclick="hzCloseModal()">✕</button></div>
+    <div class="hz-sheet-body">
+      ${pre.length ? `<div style="font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:6px">Turnos usados antes</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">${pre.map(([a, b]) => `<button class="hz-chip" onclick="hzPreset('${a}','${b}')">${fmt12(a)}–${fmt12(b)}</button>`).join('')}</div>` : ''}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
         <div><div style="font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:5px">Entrada</div><input class="hz-time" type="time" id="hzS" value="${c.s || ''}"></div>
         <div><div style="font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:5px">Salida</div><input class="hz-time" type="time" id="hzE" value="${c.e || ''}"></div>
       </div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;cursor:pointer">
-        <input type="checkbox" id="hzAll" style="width:17px;height:17px;accent-color:var(--p)"> Poner el mismo turno en los demás días vacíos de esta semana
+      <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;cursor:pointer">
+        <input type="checkbox" id="hzAll" style="width:18px;height:18px;accent-color:var(--p)"> Usar el mismo turno en los demás días vacíos de esta semana
       </label>
     </div>
-    <div class="sheet-foot" style="padding:0 16px 16px">
-      <button class="btn btn-o" onclick="hzCell('clear')">Borrar</button>
-      <button class="btn btn-o" onclick="hzCell('off')">Libre</button>
-      <button class="btn btn-p" onclick="hzCell('save')">Guardar</button>
+    <div class="hz-sheet-foot">
+      <button onclick="hzCell('clear')">Borrar</button>
+      <button onclick="hzCell('off')">Libre</button>
+      <button class="p" onclick="hzCell('save')">Guardar</button>
     </div>
   </div>`);
 };
@@ -1741,7 +1847,6 @@ window.hzCell = function (act) {
   hzSave(); hzCloseModal(); hzRender();
 };
 
-// ── Copiar la semana anterior (solo turnos, no la ocupación)
 window.hzCopyPrev = function () {
   const prev = hz.weeks[addDays(week, -7)];
   if (!prev || !prev.shifts || !Object.keys(prev.shifts).length) { toast('La semana anterior no tiene turnos'); return; }
@@ -1753,26 +1858,26 @@ window.hzCopyPrev = function () {
 
 // ── Personal
 function staffModal() {
-  const groups = POSITIONS.map(p => ({ p, l: hz.staff.filter(s => s.pos === p).sort((a, b) => a.name.localeCompare(b.name)) })).filter(g => g.l.length);
-  openModal(`<div class="sheet" style="${SHEET}">
-    <div class="sheet-hdr"><span class="sheet-title">👥 Personal</span><button class="sheet-close" onclick="hzCloseModal()">✕</button></div>
-    <div style="padding:14px 16px">
+  const groups = sortedGroups();
+  openSheet(`<div class="hz-sheet">
+    <div class="hz-sheet-hdr"><b>👥 Personal</b><button class="hz-x" onclick="hzCloseModal()">✕</button></div>
+    <div class="hz-sheet-body">
       <div style="display:grid;gap:8px;margin-bottom:14px">
-        <input type="text" id="hzName" placeholder="Nombre" onkeydown="if(event.key==='Enter')hzAddStaff()">
-        <select id="hzPos">${POSITIONS.map(p => `<option ${p === lastPos ? 'selected' : ''}>${p}</option>`).join('')}</select>
-        <button class="btn btn-p" onclick="hzAddStaff()">Agregar</button>
+        <input class="hz-field" type="text" id="hzName" placeholder="Nombre" onkeydown="if(event.key==='Enter')hzAddStaff()">
+        <select class="hz-field" id="hzPos">${POSITIONS.map(p => `<option ${p === lastPos ? 'selected' : ''}>${p}</option>`).join('')}</select>
+        <button class="hz-act" style="background:var(--p);border-color:var(--p);color:white;height:44px" onclick="hzAddStaff()">Agregar</button>
       </div>
       ${groups.length ? groups.map(g => `
-        <div style="font-size:.78rem;font-weight:800;color:var(--p2);margin:10px 0 2px">${POS_ICON[g.p]} ${g.p}</div>
-        ${g.l.map(s => `<div class="hz-srow">
-          <span style="flex:1;font-weight:600;font-size:.88rem">${esc(s.name)}</span>
-          <select style="width:auto;padding:6px 8px;font-size:.76rem" onchange="hzStaffPos('${s.id}',this.value)">${POSITIONS.map(p => `<option ${p === s.pos ? 'selected' : ''}>${p}</option>`).join('')}</select>
-          <button onclick="hzDelStaff('${s.id}')" style="background:none;border:none;color:#ef4444;font-size:.95rem;cursor:pointer;padding:4px 6px" aria-label="Eliminar">🗑</button>
+        <div class="hz-group">${POS_ICON[g.p]} ${g.p}</div>
+        ${g.list.map(s => `<div class="hz-srow">
+          <span style="flex:1;font-weight:600;font-size:.9rem">${esc(s.name)}</span>
+          <select class="hz-field" style="width:auto;padding:7px 8px;font-size:.76rem" onchange="hzStaffPos('${s.id}',this.value)">${POSITIONS.map(p => `<option ${p === s.pos ? 'selected' : ''}>${p}</option>`).join('')}</select>
+          <button onclick="hzDelStaff('${s.id}')" style="background:none;border:none;color:#ef4444;font-size:1rem;cursor:pointer;padding:6px" aria-label="Eliminar">🗑</button>
         </div>`).join('')}`).join('') : '<div style="color:var(--muted);font-size:.84rem;text-align:center;padding:10px">Aún no hay personal.</div>'}
     </div>
   </div>`);
 }
-window.hzStaff = function () { staffModal(); setTimeout(() => { const n = $('hzName'); if (n) n.focus(); }, 120); };
+window.hzStaff = function () { staffModal(); setTimeout(() => { const n = $('hzName'); if (n) n.focus(); }, 150); };
 window.hzAddStaff = function () {
   const n = $('hzName').value.trim();
   const p = $('hzPos').value;
@@ -1794,10 +1899,10 @@ window.hzDelStaff = function (id) {
   hzSave(); staffModal(); hzRender();
 };
 
-// ── Integración con la app existente
+// ── Integración con la app
 function injectNav() {
   const nav = $('mainNav'); if (!nav) return;
-  const setupBtn = nav.querySelector("[onclick*=\"'setup'\"]");   // solo existe en el menú del supervisor
+  const setupBtn = nav.querySelector("[onclick*=\"'setup'\"]");
   const ex = $('navHorario');
   if (setupBtn && !ex) {
     const b = document.createElement('button');
@@ -1805,12 +1910,13 @@ function injectNav() {
     b.setAttribute('onclick', "showTab('horario',this)");
     b.innerHTML = '<span class="ni">📅</span>Horario';
     nav.insertBefore(b, setupBtn);
+    if (window.curTabName === 'horario') b.classList.add('on');
   } else if (!setupBtn && ex) ex.remove();
 }
 
 function startSync() {
   onSnapshot(HZDOC, snap => {
-    if (snap.metadata.hasPendingWrites || saveT) return;   // no pisar lo que se está escribiendo
+    if (snap.metadata.hasPendingWrites || saveT) return;
     if (snap.exists()) {
       const d = snap.data();
       hz.staff = d.staff || [];
@@ -1834,7 +1940,6 @@ function boot() {
   ov.addEventListener('click', e => { if (e.target === ov) hzCloseModal(); });
   document.body.appendChild(ov);
 
-  // Redibujar la pestaña cuando la app llama a renderAll (sin quitar el foco si se está escribiendo)
   const origRender = window.renderAll;
   window.renderAll = function () {
     const r = origRender.apply(this, arguments);
@@ -1842,6 +1947,8 @@ function boot() {
     if (el && el.classList.contains('on') && !el.contains(document.activeElement)) hzRender();
     return r;
   };
+  const onMq = () => { const el = $('tab-horario'); if (el && el.classList.contains('on')) hzRender(); };
+  if (mq.addEventListener) mq.addEventListener('change', onMq); else if (mq.addListener) mq.addListener(onMq);
 
   new MutationObserver(injectNav).observe($('mainNav'), { childList: true });
   injectNav();
