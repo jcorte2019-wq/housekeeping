@@ -1497,11 +1497,25 @@ const HZDOC = doc(db, 'housekeeping', 'horario-aloft');
 const TOTAL_ROOMS = 116;
 const POSITIONS = ['Housekeeper Supervisor', 'Inspector', 'Laundry Attendant', 'Public Areas', 'Room Attendant'];
 const POS_ICON = { 'Housekeeper Supervisor': '🧭', 'Inspector': '🔍', 'Laundry Attendant': '🧺', 'Public Areas': '🛎️', 'Room Attendant': '🛏️' };
+const POS_SHORT = { 'Housekeeper Supervisor': 'Superv.', 'Inspector': 'Inspec.', 'Laundry Attendant': 'Laundry', 'Public Areas': 'Áreas', 'Room Attendant': 'Cuartos' };
 const DAYS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 const OCC_FIELDS = [['inh', 'En el hotel'], ['ref', 'Quieren refresh'], ['dep', 'Se van'], ['arr', 'Llegan']];
 
-let hz = { staff: [], weeks: {} };
+// ── Horarios de entrada por defecto (fin de semana = domingo y sábado)
+const SHIFT_MIN = 8 * 60 + 30;                 // 8 horas 30 minutos
+const START = {
+  'Room Attendant':         { wk: '09:00', wd: '08:30' },
+  'Housekeeper Supervisor': { wk: '08:30', wd: '08:00' },
+  'Inspector':              { wk: '08:30', wd: '08:00' },
+  'Laundry Attendant':      { wk: '07:00', wd: '07:00' },
+  'Public Areas':           { wk: '07:00', wd: '07:00' }
+};
+const isWeekend = d => d === 0 || d === 6;
+function defaultStart(pos, d) { const c = START[pos] || START['Room Attendant']; return isWeekend(d) ? c.wk : c.wd; }
+function endTime(s) { const [h, m] = s.split(':').map(Number); let t = h * 60 + m + SHIFT_MIN; t %= 1440; return pad(Math.floor(t / 60)) + ':' + pad(t % 60); }
+
+let hz = { staff: [], weeks: {}, template: {} };
 let week = sundayOf(new Date());
 let selDay = new Date().getDay();
 let saveT = null;
@@ -1575,7 +1589,7 @@ function hzSave() {
   clearTimeout(saveT);
   saveT = setTimeout(async () => {
     try {
-      await setDoc(HZDOC, { staff: hz.staff, weeks: hz.weeks, updatedAt: Date.now() });
+      await setDoc(HZDOC, { staff: hz.staff, weeks: hz.weeks, template: hz.template || {}, updatedAt: Date.now() });
     } catch (e) {
       console.error(e);
       toast('⚠️ Error al guardar el horario (revisa las reglas de Firebase)');
@@ -1594,7 +1608,8 @@ function injectStyles() {
   .hz-nav{width:36px;height:36px;border-radius:9px;border:1.5px solid var(--bdr);background:white;cursor:pointer;font-size:1.2rem;line-height:1;color:var(--text)}
   .hz-label{font-size:.84rem;font-weight:700;min-width:140px;text-align:center}
   .hz-today-btn{height:36px;padding:0 12px;border-radius:9px;border:1.5px solid var(--bdr);background:white;cursor:pointer;font-size:.76rem;font-weight:700;color:var(--p);font-family:inherit}
-  .hz-act{height:38px;padding:0 14px;border-radius:10px;border:1.5px solid var(--bdr);background:white;cursor:pointer;font-size:.8rem;font-weight:700;color:var(--p);font-family:inherit}
+  .hz-act{height:38px;padding:0 13px;border-radius:10px;border:1.5px solid var(--bdr);background:white;cursor:pointer;font-size:.8rem;font-weight:700;color:var(--p);font-family:inherit;white-space:nowrap}
+  .hz-act.go{background:var(--p);border-color:var(--p);color:white}
   .hz-pct{display:inline-block;min-width:48px;padding:4px 8px;border-radius:8px;font-weight:800;font-size:.8rem}
   .hz-pct.big{font-size:1.5rem;padding:6px 14px;border-radius:12px}
   .hz-in{width:100%;padding:10px 6px;text-align:center;border:1.5px solid var(--bdr);border-radius:9px;font-size:1rem;font-weight:700;font-family:inherit;color:var(--text);background:white;-moz-appearance:textfield}
@@ -1624,26 +1639,31 @@ function injectStyles() {
   .hz-pname{flex:1;min-width:0}
   .hz-pname b{display:block;font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hz-pname span{font-size:.7rem;color:var(--muted);font-weight:600}
-  .hz-shift{min-width:112px;min-height:44px;border:1.5px dashed #cbd5e1;border-radius:11px;background:white;cursor:pointer;font-size:.8rem;font-weight:700;color:#94a3b8;padding:4px 8px;line-height:1.25;font-family:inherit}
+  .hz-shift{min-width:118px;min-height:46px;border:1.5px dashed #cbd5e1;border-radius:11px;background:white;cursor:pointer;font-size:.8rem;font-weight:700;color:#94a3b8;padding:4px 8px;line-height:1.25;font-family:inherit}
   .hz-shift.on{border-style:solid;border-color:var(--p-light);background:var(--pl);color:var(--p2)}
   .hz-shift.off{border-style:solid;border-color:#e2e8f0;background:#f1f5f9;color:#94a3b8}
-  .hz-shift small{display:block;font-size:.66rem;font-weight:600;opacity:.8}
+  .hz-shift.req{border-style:solid;border-color:#fcd34d;background:#fffbeb;color:#c77b08}
+  .hz-shift small{display:block;font-size:.66rem;font-weight:600;opacity:.85}
+  .hz-shift small.area{color:#6d28d9;opacity:1}
   .hz-sum{display:flex;justify-content:space-between;font-size:.78rem;font-weight:700;color:var(--muted);padding-top:10px;margin-top:4px;border-top:1px solid #f0f4f8}
   /* Escritorio: tabla semanal */
   .hz-wrap{overflow-x:auto;background:white;border:1px solid var(--bdr);border-radius:14px;box-shadow:var(--shadow-sm)}
-  table.hz{border-collapse:separate;border-spacing:0;width:100%;min-width:760px;font-size:.8rem}
+  table.hz{border-collapse:separate;border-spacing:0;width:100%;min-width:820px;font-size:.8rem}
   .hz th,.hz td{padding:7px 5px;border-bottom:1px solid #f0f4f8;text-align:center;vertical-align:middle}
   .hz thead th{background:#f8fafc;font-size:.72rem;font-weight:700;color:var(--muted);line-height:1.3}
   .hz thead th.hz-today{background:var(--pl);color:var(--p2)}
-  .hz .hz-name{position:sticky;left:0;background:white;text-align:left;padding-left:12px;min-width:130px;font-weight:600;z-index:2;border-right:1px solid #f0f4f8}
+  .hz thead th.wkend{background:#eef4f8}
+  .hz .hz-name{position:sticky;left:0;background:white;text-align:left;padding-left:12px;min-width:132px;font-weight:600;z-index:2;border-right:1px solid #f0f4f8}
   .hz thead .hz-name{background:#f8fafc;z-index:3}
   .hz .hz-sec td{background:#f1f6fa;font-size:.76rem;font-weight:800;color:var(--p2);text-align:left;padding:7px 12px}
   .hz td .hz-in{padding:7px 2px;font-size:.9rem;width:64px}
-  .hz-cell{display:block;width:100%;min-width:78px;min-height:42px;border:1.5px dashed #d5dde7;border-radius:9px;background:white;cursor:pointer;font-size:.74rem;font-weight:700;color:#94a3b8;padding:3px 2px;line-height:1.25;font-family:inherit}
+  .hz-cell{display:block;width:100%;min-width:92px;min-height:44px;border:1.5px dashed #d5dde7;border-radius:9px;background:white;cursor:pointer;font-size:.74rem;font-weight:700;color:#94a3b8;padding:3px 2px;line-height:1.25;font-family:inherit}
   .hz-cell:hover{border-color:var(--p-light)}
   .hz-cell.on{border-style:solid;border-color:var(--p-light);background:var(--pl);color:var(--p2)}
   .hz-cell.off{border-style:solid;border-color:#e2e8f0;background:#f1f5f9;color:#94a3b8}
-  .hz-h{font-weight:600;opacity:.75;font-size:.66rem}
+  .hz-cell.req{border-style:solid;border-color:#fcd34d;background:#fffbeb;color:#c77b08}
+  .hz-h{display:block;font-weight:600;opacity:.75;font-size:.66rem}
+  .hz-h.area{color:#6d28d9;opacity:1}
   .hz-hrs{font-weight:700;color:var(--muted)}
   .hz-foot td{background:#f8fafc;font-weight:700;color:var(--muted)}
   .hz-foot .hz-name{background:#f8fafc}
@@ -1653,9 +1673,12 @@ function injectStyles() {
   .hz-sheet-hdr b{font-size:.98rem}
   .hz-x{background:#f0f4f8;border:none;border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:.9rem}
   .hz-sheet-body{padding:14px 16px 18px}
-  .hz-sheet-foot{display:flex;gap:8px;padding:0 16px 18px}
-  .hz-sheet-foot button{flex:1;padding:12px 6px;border-radius:10px;font-weight:700;font-size:.88rem;cursor:pointer;font-family:inherit;border:1.5px solid var(--bdr);background:white;color:var(--text)}
+  .hz-lbl{font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:5px}
+  .hz-sheet-foot{padding:0 16px 18px;display:grid;gap:8px}
+  .hz-foot-row{display:flex;gap:8px}
+  .hz-sheet-foot button{flex:1;padding:12px 6px;border-radius:10px;font-weight:700;font-size:.86rem;cursor:pointer;font-family:inherit;border:1.5px solid var(--bdr);background:white;color:var(--text)}
   .hz-sheet-foot button.p{background:var(--p);border-color:var(--p);color:white}
+  .hz-sheet-foot button.req{border-color:#fcd34d;background:#fffbeb;color:#c77b08}
   .hz-field{width:100%;padding:11px;border:1.5px solid var(--bdr);border-radius:9px;font-size:.95rem;font-family:inherit;background:white;color:var(--text)}
   #hzModal{align-items:flex-end}
   @media(min-width:768px){
@@ -1686,11 +1709,17 @@ function hzRender() {
     </div>
     <div class="hz-bar">
       <button class="hz-act" onclick="hzStaff()">👥 Personal</button>
-      <button class="hz-act" onclick="hzCopyPrev()">📋 Copiar semana anterior</button>
+      <button class="hz-act" onclick="hzAutofill()">⚡ Autollenar</button>
+      <button class="hz-act go" onclick="hzImage()">📷 Enviar imagen</button>
       <div style="margin-left:auto;font-size:.78rem;color:var(--muted);font-weight:600">Ocupación promedio: <strong id="hzAvg" style="color:var(--text)">${avgText(w)}</strong></div>
+    </div>
+    <div class="hz-bar" style="margin-top:-4px">
+      <button class="hz-act" onclick="hzCopyPrev()">📋 Copiar semana anterior</button>
+      <button class="hz-act" onclick="hzSaveTemplate()">⭐ Guardar predeterminado</button>
+      <button class="hz-act" onclick="hzUseTemplate()">✨ Usar predeterminado</button>
     </div>`;
   el.innerHTML = head + (mq.matches ? deskHTML(w) : mobileHTML(w)) +
-    `<div class="hz-note">Ocupación = (cuartos en hotel + llegan) ÷ ${TOTAL_ROOMS}. La semana va de domingo a sábado.</div>`;
+    `<div class="hz-note">Entradas automáticas por puesto (fin de semana = dom y sáb), turno de 8 h 30 min. Ocupación = (cuartos en hotel + llegan) ÷ ${TOTAL_ROOMS}. La semana va de domingo a sábado.</div>`;
 }
 
 function sortedGroups() {
@@ -1704,8 +1733,17 @@ function weekHrs(w, id) {
 function shiftBtn(w, s, d, cls) {
   const c = w.shifts[s.id + '_' + d];
   let k = '', html = '+ Turno';
-  if (c && c.off) { k = 'off'; html = 'Libre'; }
-  else if (c && c.s && c.e) { k = 'on'; html = `${fmt12(c.s)}–${fmt12(c.e)}<small>${r1(hrs(c))} h</small>`; }
+  if (c && c.off) {
+    if (c.req) { k = 'req'; html = 'REQUEST OFF'; }
+    else { k = 'off'; html = 'OFF'; }
+  } else if (c && c.s && c.e) {
+    k = 'on';
+    const diff = c.pos && c.pos !== s.pos;
+    const sub = cls === 'hz-cell'
+      ? (diff ? `<span class="hz-h area">${POS_SHORT[c.pos] || c.pos}</span>` : `<span class="hz-h">${r1(hrs(c))} h</span>`)
+      : (diff ? `<small class="area">${POS_SHORT[c.pos] || c.pos}</small>` : `<small>${r1(hrs(c))} h</small>`);
+    html = `${fmt12(c.s)}–${fmt12(c.e)}${sub}`;
+  }
   return `<button class="${cls} ${k}" onclick="hzOpenCell('${s.id}',${d})">${html}</button>`;
 }
 
@@ -1740,7 +1778,7 @@ function mobileHTML(w) {
 
   return `<div class="hz-strip">${strip}</div>${occ}
     <div class="hz-card"><h3>Turnos del día</h3>${staff}
-    ${hz.staff.length ? `<div class="hz-sum"><span>Programadas: ${n}</span><span>${r1(tot)} h en total</span></div>` : ''}</div>`;
+    ${hz.staff.length ? `<div class="hz-sum"><span>Trabajando: ${n}</span><span>${r1(tot)} h en total</span></div>` : ''}</div>`;
 }
 
 // ── Vista de computadora: semana completa
@@ -1750,7 +1788,8 @@ function deskHTML(w) {
   const o = d => (w.occ && w.occ[d]) || {};
   const head = days.map(d => {
     const dt = parseISO(addDays(week, d));
-    return `<th class="${iso(dt) === todayISO ? 'hz-today' : ''}">${DAYS[d]}<br><span style="font-weight:600">${dt.getDate()} ${MES[dt.getMonth()]}</span></th>`;
+    const cls = iso(dt) === todayISO ? 'hz-today' : (isWeekend(d) ? 'wkend' : '');
+    return `<th class="${cls}">${DAYS[d]}<br><span style="font-weight:600">${dt.getDate()} ${MES[dt.getMonth()]}</span></th>`;
   }).join('');
   const occRow = ([f, l]) => `<tr><td class="hz-name">${l}</td>${days.map(d =>
     `<td><input class="hz-in" type="number" min="0" inputmode="numeric" value="${has(o(d)[f]) ? o(d)[f] : ''}" oninput="hzOcc(${d},'${f}',this.value)"></td>`).join('')}<td></td></tr>`;
@@ -1768,7 +1807,7 @@ function deskHTML(w) {
       ${OCC_FIELDS.map(occRow).join('')}
       <tr><td class="hz-name">Ocupación</td>${days.map(d => `<td data-pct="${d}">${pctHTML(o(d))}</td>`).join('')}<td></td></tr>
       ${staffRows || `<tr><td colspan="9" style="padding:24px;color:var(--muted)">Todavía no hay personal. Toca <strong>👥 Personal</strong> para agregarlo.</td></tr>`}
-      ${hz.staff.length ? `<tr class="hz-foot"><td class="hz-name">Programadas</td>${counts.map(c => `<td>${c}</td>`).join('')}<td></td></tr>` : ''}
+      ${hz.staff.length ? `<tr class="hz-foot"><td class="hz-name">Trabajando</td>${counts.map(c => `<td>${c}</td>`).join('')}<td></td></tr>` : ''}
     </tbody></table></div>`;
 }
 
@@ -1804,49 +1843,86 @@ function presets() {
   }));
   return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k]) => k.split('|'));
 }
+
+// ── Turno de una persona en un día (con área y OFF / REQUEST OFF)
 window.hzOpenCell = function (id, d) {
   const s = hz.staff.find(x => x.id === id); if (!s) return;
   const c = viewWeek().shifts[id + '_' + d] || {};
-  cellCtx = { id, d };
+  cellCtx = { id, d, base: s.pos };
   const dt = parseISO(addDays(week, d));
+  const curPos = c.pos || s.pos;
+  const defS = c.s || defaultStart(curPos, d);
+  const defE = c.e || endTime(defS);
   const pre = presets();
   openSheet(`<div class="hz-sheet">
     <div class="hz-sheet-hdr"><b>${esc(s.name)} · ${DAYS[d]} ${dt.getDate()} ${MES[dt.getMonth()]}</b><button class="hz-x" onclick="hzCloseModal()">✕</button></div>
     <div class="hz-sheet-body">
-      ${pre.length ? `<div style="font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:6px">Turnos usados antes</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">${pre.map(([a, b]) => `<button class="hz-chip" onclick="hzPreset('${a}','${b}')">${fmt12(a)}–${fmt12(b)}</button>`).join('')}</div>` : ''}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-        <div><div style="font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:5px">Entrada</div><input class="hz-time" type="time" id="hzS" value="${c.s || ''}"></div>
-        <div><div style="font-size:.74rem;font-weight:700;color:var(--muted);margin-bottom:5px">Salida</div><input class="hz-time" type="time" id="hzE" value="${c.e || ''}"></div>
+      <div class="hz-lbl">Área de este día</div>
+      <select class="hz-field" id="hzCellPos" onchange="hzCellRole()" style="margin-bottom:12px">${POSITIONS.map(p => `<option ${p === curPos ? 'selected' : ''}>${p}</option>`).join('')}</select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div><div class="hz-lbl">Entrada</div><input class="hz-time" type="time" id="hzS" value="${defS}"></div>
+        <div><div class="hz-lbl">Salida</div><input class="hz-time" type="time" id="hzE" value="${defE}"></div>
       </div>
+      <button class="hz-act" style="width:100%;margin-bottom:12px" onclick="hzCellRole()">↻ Usar horario por defecto</button>
+      ${pre.length ? `<div class="hz-lbl">Turnos usados antes</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${pre.map(([a, b]) => `<button class="hz-chip" onclick="hzPreset('${a}','${b}')">${fmt12(a)}–${fmt12(b)}</button>`).join('')}</div>` : ''}
       <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;cursor:pointer">
         <input type="checkbox" id="hzAll" style="width:18px;height:18px;accent-color:var(--p)"> Usar el mismo turno en los demás días vacíos de esta semana
       </label>
     </div>
     <div class="hz-sheet-foot">
-      <button onclick="hzCell('clear')">Borrar</button>
-      <button onclick="hzCell('off')">Libre</button>
-      <button class="p" onclick="hzCell('save')">Guardar</button>
+      <div class="hz-foot-row">
+        <button onclick="hzCell('clear')">Borrar</button>
+        <button onclick="hzCell('off')">OFF</button>
+        <button class="req" onclick="hzCell('req')">REQUEST OFF</button>
+      </div>
+      <button class="p" onclick="hzCell('save')">Guardar turno</button>
     </div>
   </div>`);
+};
+window.hzCellRole = function () {
+  if (!cellCtx) return;
+  const pos = $('hzCellPos').value;
+  const s = defaultStart(pos, cellCtx.d);
+  $('hzS').value = s;
+  $('hzE').value = endTime(s);
 };
 window.hzPreset = function (s, e) { $('hzS').value = s; $('hzE').value = e; };
 window.hzCell = function (act) {
   if (!cellCtx) return;
-  const { id, d } = cellCtx;
+  const { id, d, base } = cellCtx;
   const w = ensureWeek();
   const key = id + '_' + d;
   if (act === 'clear') delete w.shifts[key];
   else if (act === 'off') w.shifts[key] = { off: true };
+  else if (act === 'req') w.shifts[key] = { off: true, req: true };
   else {
     const s = $('hzS').value, e = $('hzE').value;
     if (!s || !e) { toast('⚠️ Pon la entrada y la salida'); return; }
-    w.shifts[key] = { s, e };
-    if ($('hzAll').checked) for (let i = 0; i < 7; i++) { const k = id + '_' + i; if (!w.shifts[k]) w.shifts[k] = { s, e }; }
+    const pos = $('hzCellPos').value;
+    const obj = { s, e };
+    if (pos && pos !== base) obj.pos = pos;
+    w.shifts[key] = obj;
+    if ($('hzAll').checked) for (let i = 0; i < 7; i++) { const k = id + '_' + i; if (!w.shifts[k]) w.shifts[k] = { ...obj }; }
   }
   hzSave(); hzCloseModal(); hzRender();
 };
 
+// ── Autollenar la semana con el horario por defecto de cada puesto
+window.hzAutofill = function () {
+  if (!hz.staff.length) { toast('Agrega personal primero'); return; }
+  const w = ensureWeek();
+  if (Object.keys(w.shifts).length && !confirm('Esto pone el horario por defecto a todos en los 7 días. Después puedes marcar los descansos (OFF). ¿Continuar?')) return;
+  hz.staff.forEach(s => {
+    for (let d = 0; d < 7; d++) {
+      const st = defaultStart(s.pos, d);
+      w.shifts[s.id + '_' + d] = { s: st, e: endTime(st) };
+    }
+  });
+  hzSave(); hzRender(); toast('⚡ Horario por defecto aplicado — ahora marca los descansos');
+};
+
+// ── Copiar la semana anterior
 window.hzCopyPrev = function () {
   const prev = hz.weeks[addDays(week, -7)];
   if (!prev || !prev.shifts || !Object.keys(prev.shifts).length) { toast('La semana anterior no tiene turnos'); return; }
@@ -1854,6 +1930,21 @@ window.hzCopyPrev = function () {
   if (Object.keys(w.shifts).length && !confirm('Esta semana ya tiene turnos. ¿Reemplazarlos con los de la semana anterior?')) return;
   w.shifts = JSON.parse(JSON.stringify(prev.shifts));
   hzSave(); hzRender(); toast('📋 Turnos copiados');
+};
+
+// ── Horario predeterminado (guardar / usar)
+window.hzSaveTemplate = function () {
+  const w = viewWeek();
+  if (!Object.keys(w.shifts).length) { toast('Esta semana no tiene turnos para guardar'); return; }
+  hz.template = JSON.parse(JSON.stringify(w.shifts));
+  hzSave(); toast('⭐ Guardado como predeterminado');
+};
+window.hzUseTemplate = function () {
+  if (!hz.template || !Object.keys(hz.template).length) { toast('No hay predeterminado. Usa "Guardar predeterminado" en una semana que te guste.'); return; }
+  const w = ensureWeek();
+  if (Object.keys(w.shifts).length && !confirm('Esta semana ya tiene turnos. ¿Reemplazarlos con el predeterminado?')) return;
+  w.shifts = JSON.parse(JSON.stringify(hz.template));
+  hzSave(); hzRender(); toast('✨ Predeterminado aplicado');
 };
 
 // ── Personal
@@ -1865,8 +1956,9 @@ function staffModal() {
       <div style="display:grid;gap:8px;margin-bottom:14px">
         <input class="hz-field" type="text" id="hzName" placeholder="Nombre" onkeydown="if(event.key==='Enter')hzAddStaff()">
         <select class="hz-field" id="hzPos">${POSITIONS.map(p => `<option ${p === lastPos ? 'selected' : ''}>${p}</option>`).join('')}</select>
-        <button class="hz-act" style="background:var(--p);border-color:var(--p);color:white;height:44px" onclick="hzAddStaff()">Agregar</button>
+        <button class="hz-act go" style="height:44px" onclick="hzAddStaff()">Agregar</button>
       </div>
+      <div class="hz-lbl" style="margin-bottom:8px">El área que eliges aquí es la de siempre. En el horario puedes cambiarle el área a un día suelto.</div>
       ${groups.length ? groups.map(g => `
         <div class="hz-group">${POS_ICON[g.p]} ${g.p}</div>
         ${g.list.map(s => `<div class="hz-srow">
@@ -1899,6 +1991,148 @@ window.hzDelStaff = function (id) {
   hzSave(); staffModal(); hzRender();
 };
 
+// ── Exportar el horario como imagen (para enviar por mensaje)
+function roundRect(x, px, py, w, h, r) {
+  x.beginPath();
+  x.moveTo(px + r, py);
+  x.arcTo(px + w, py, px + w, py + h, r);
+  x.arcTo(px + w, py + h, px, py + h, r);
+  x.arcTo(px, py + h, px, py, r);
+  x.arcTo(px, py, px + w, py, r);
+  x.closePath();
+}
+function ellip(x, text, maxw) {
+  if (x.measureText(text).width <= maxw) return text;
+  let t = text;
+  while (t.length > 1 && x.measureText(t + '…').width > maxw) t = t.slice(0, -1);
+  return t + '…';
+}
+window.hzImage = async function () {
+  const w = viewWeek();
+  const groups = sortedGroups();
+  if (!groups.length) { toast('Agrega personal antes de crear la imagen'); return; }
+  const days = [0, 1, 2, 3, 4, 5, 6];
+  const todayISO = iso(new Date());
+  const SC = 2;
+  const pad = 20, nameW = 168, dayW = 118;
+  const titleH = 68, headH = 50, occH = 38, groupH = 28, rowH = 42, footH = 30;
+  const gridW = nameW + dayW * 7;
+  const W = pad * 2 + gridW;
+  const bodyH = occH + groups.reduce((a, g) => a + groupH + g.list.length * rowH, 0);
+  const H = pad * 2 + titleH + headH + bodyH + footH;
+
+  const cv = document.createElement('canvas');
+  cv.width = W * SC; cv.height = H * SC;
+  const x = cv.getContext('2d');
+  x.scale(SC, SC);
+  x.textBaseline = 'middle';
+  const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif';
+  x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+
+  const gx = pad; let gy = pad;
+  const o = d => (w.occ && w.occ[d]) || {};
+
+  // Título
+  roundRect(x, gx, gy, gridW, titleH, 12); x.fillStyle = '#0a4f66'; x.fill();
+  x.textAlign = 'left'; x.fillStyle = '#ffffff';
+  x.font = `700 21px ${FONT}`;
+  x.fillText('Horario — Aloft Houston Shenandoah', gx + 18, gy + 25);
+  const d0 = parseISO(week), d6 = parseISO(addDays(week, 6));
+  x.font = `600 15px ${FONT}`; x.fillStyle = 'rgba(255,255,255,.88)';
+  x.fillText(`${d0.getDate()} ${MES[d0.getMonth()]} – ${d6.getDate()} ${MES[d6.getMonth()]} ${d6.getFullYear()}`, gx + 18, gy + 48);
+  x.textAlign = 'right';
+  x.fillText('Ocupación prom: ' + avgText(w), gx + gridW - 18, gy + 48);
+  gy += titleH;
+
+  // Encabezado de columnas
+  x.fillStyle = '#f8fafc'; x.fillRect(gx, gy, gridW, headH);
+  days.forEach((d, i) => {
+    const cxx = gx + nameW + dayW * i;
+    const dt = parseISO(addDays(week, d));
+    const t = iso(dt) === todayISO;
+    if (t) { x.fillStyle = '#e6f4f9'; x.fillRect(cxx, gy, dayW, headH); }
+    else if (isWeekend(d)) { x.fillStyle = '#eef4f8'; x.fillRect(cxx, gy, dayW, headH); }
+    x.textAlign = 'center';
+    x.fillStyle = t ? '#0a4f66' : '#64748b'; x.font = `700 14px ${FONT}`;
+    x.fillText(DAYS[d], cxx + dayW / 2, gy + 17);
+    x.fillStyle = '#0f1923'; x.font = `700 15px ${FONT}`;
+    x.fillText(dt.getDate() + ' ' + MES[dt.getMonth()], cxx + dayW / 2, gy + 35);
+  });
+  gy += headH;
+
+  // Ocupación
+  x.textAlign = 'left'; x.fillStyle = '#475569'; x.font = `700 14px ${FONT}`;
+  x.fillText('Ocupación', gx + 14, gy + occH / 2);
+  x.textAlign = 'center';
+  days.forEach((d, i) => {
+    const cxx = gx + nameW + dayW * i;
+    const p = pct(o(d));
+    if (p === null) { x.fillStyle = '#94a3b8'; x.font = `700 14px ${FONT}`; x.fillText('—', cxx + dayW / 2, gy + occH / 2); }
+    else {
+      const lv = pctColors(p); const pw = 64, ph = 24;
+      roundRect(x, cxx + dayW / 2 - pw / 2, gy + occH / 2 - ph / 2, pw, ph, 8); x.fillStyle = lv[0]; x.fill();
+      x.fillStyle = lv[1]; x.font = `800 14px ${FONT}`; x.fillText(p + '%', cxx + dayW / 2, gy + occH / 2);
+    }
+  });
+  gy += occH;
+
+  // Grupos y personas
+  groups.forEach(g => {
+    x.fillStyle = '#f1f6fa'; x.fillRect(gx, gy, gridW, groupH);
+    x.textAlign = 'left'; x.fillStyle = '#0a4f66'; x.font = `800 13px ${FONT}`;
+    x.fillText(g.p.toUpperCase() + '  (' + g.list.length + ')', gx + 14, gy + groupH / 2);
+    gy += groupH;
+    g.list.forEach((s, idx) => {
+      if (idx % 2) { x.fillStyle = '#fafcfe'; x.fillRect(gx, gy, gridW, rowH); }
+      days.forEach(d => { if (isWeekend(d)) { x.fillStyle = '#f6f9fb'; x.fillRect(gx + nameW + dayW * days.indexOf(d), gy, dayW, rowH); } });
+      x.textAlign = 'left'; x.fillStyle = '#0f1923'; x.font = `700 15px ${FONT}`;
+      x.fillText(ellip(x, s.name, nameW - 24), gx + 14, gy + rowH / 2);
+      x.textAlign = 'center';
+      days.forEach((d, i) => {
+        const cxx = gx + nameW + dayW * i;
+        const c = w.shifts[s.id + '_' + d];
+        if (c && c.off) {
+          if (c.req) { x.fillStyle = '#c77b08'; x.font = `800 13px ${FONT}`; x.fillText('REQ OFF', cxx + dayW / 2, gy + rowH / 2); }
+          else { x.fillStyle = '#94a3b8'; x.font = `800 13px ${FONT}`; x.fillText('OFF', cxx + dayW / 2, gy + rowH / 2); }
+        } else if (c && c.s && c.e) {
+          x.fillStyle = '#0f1923'; x.font = `700 13px ${FONT}`;
+          x.fillText(fmt12(c.s) + '–' + fmt12(c.e), cxx + dayW / 2, gy + rowH / 2 - 7);
+          const diff = c.pos && c.pos !== s.pos;
+          x.fillStyle = diff ? '#6d28d9' : '#94a3b8'; x.font = `600 11px ${FONT}`;
+          x.fillText(diff ? (POS_SHORT[c.pos] || c.pos) : (r1(hrs(c)) + ' h'), cxx + dayW / 2, gy + rowH / 2 + 9);
+        }
+      });
+      gy += rowH;
+    });
+  });
+
+  // Líneas de la cuadrícula
+  const top = pad + titleH;
+  x.strokeStyle = '#e4eaf0'; x.lineWidth = 1;
+  for (let i = 0; i <= 7; i++) { const lx = gx + nameW + dayW * i + 0.5; x.beginPath(); x.moveTo(lx, top); x.lineTo(lx, gy); x.stroke(); }
+  x.beginPath(); x.moveTo(gx + 0.5, top); x.lineTo(gx + 0.5, gy); x.stroke();
+  roundRect(x, gx + 0.5, top + 0.5, gridW - 1, gy - top - 1, 2); x.stroke();
+
+  // Pie
+  x.textAlign = 'left'; x.fillStyle = '#94a3b8'; x.font = `500 12px ${FONT}`;
+  x.fillText('Turno de 8 h 30 min · Ocupación = (en hotel + llegan) ÷ 116 · Semana dom–sáb', gx, gy + footH / 2 + 4);
+
+  const fname = `horario-${week}.png`;
+  cv.toBlob(async blob => {
+    if (!blob) { toast('No se pudo crear la imagen'); return; }
+    const file = new File([blob], fname, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: 'Horario', text: `Horario ${d0.getDate()} ${MES[d0.getMonth()]} – ${d6.getDate()} ${MES[d6.getMonth()]}` }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    toast('📷 Imagen descargada');
+  }, 'image/png');
+};
+
 // ── Integración con la app
 function injectNav() {
   const nav = $('mainNav'); if (!nav) return;
@@ -1910,7 +2144,6 @@ function injectNav() {
     b.setAttribute('onclick', "showTab('horario',this)");
     b.innerHTML = '<span class="ni">📅</span>Horario';
     nav.insertBefore(b, setupBtn);
-    if (window.curTabName === 'horario') b.classList.add('on');
   } else if (!setupBtn && ex) ex.remove();
 }
 
@@ -1921,6 +2154,7 @@ function startSync() {
       const d = snap.data();
       hz.staff = d.staff || [];
       hz.weeks = d.weeks || {};
+      hz.template = d.template || {};
     }
     const el = $('tab-horario');
     if (el && el.classList.contains('on') && !el.contains(document.activeElement)) hzRender();
