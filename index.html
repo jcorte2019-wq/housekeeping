@@ -343,8 +343,8 @@ textarea{min-height:60px;resize:none}
       </div>
       <div class="hbtns" id="hdrBtns">
         <button class="hbtn-pdf" id="btnPDF" onclick="openModal('modalPDF')">📄 PDF</button>
-        <button class="hbtn" id="btnImport" onclick="openModal('modalPaste')">📋 Importar</button>
-        <button class="hbtn" id="btnLsMulti" onclick="enterLsMode()" style="display:none;background:rgba(5,150,105,.35);border-color:rgba(255,255,255,.35)">☑ LS</button>
+        
+        <button class="hbtn" id="btnLsMulti" onclick="enterLsMode()" style="display:none;background:rgba(5,150,105,.35);border-color:rgba(255,255,255,.35)">☑ Subido</button>
         <button class="hbtn" onclick="doLogout()" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)">⬡ Salir</button>
       </div>
     </div>
@@ -393,7 +393,7 @@ textarea{min-height:60px;resize:none}
       <div class="pdf-drop" id="pdfDrop">
         <input type="file" id="pdfFileInput" accept=".pdf" multiple>
         <div style="font-size:2rem;margin-bottom:8px">📄</div>
-        <h3 style="font-size:.92rem;font-weight:700;color:var(--p);margin-bottom:4px">Subir hoja de Lightspeed</h3>
+        <h3 style="font-size:.92rem;font-weight:700;color:var(--p);margin-bottom:4px">Subir hoja de asignación</h3>
         <p style="font-size:.75rem;color:var(--muted)">Arrastra el PDF aquí o toca para seleccionar</p>
       </div>
       <div class="pdf-status" id="pdfStatus"><div class="pdf-spinner" id="pdfSpinner"></div><span id="pdfStatusText"></span></div>
@@ -437,7 +437,7 @@ textarea{min-height:60px;resize:none}
     <div id="roomScrollArea" style="position:absolute;top:52px;bottom:0;left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch">
       <div id="vcMode" style="display:none;padding:12px 14px">
         <div class="st-opts" id="stOptsVC" style="gap:5px;margin-bottom:12px"></div>
-        <button onclick="quickLS()" style="width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-size:1rem;font-weight:700;background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.35);display:flex;align-items:center;justify-content:center;gap:8px">✅ Marcar en Lightspeed</button>
+        <button onclick="quickLS()" style="width:100%;padding:14px;border-radius:12px;border:none;cursor:pointer;font-size:1rem;font-weight:700;background:linear-gradient(135deg,#0d9467,#059669);color:white;box-shadow:0 3px 10px rgba(13,148,103,.35);display:flex;align-items:center;justify-content:center;gap:8px">✅ Marcar como subido</button>
       </div>
       <div id="normalMode" style="padding:10px 14px">
         <div class="st-opts" id="stOpts" style="gap:5px;margin-bottom:9px"></div>
@@ -477,7 +477,7 @@ textarea{min-height:60px;resize:none}
           <input type="text" id="roomNote" placeholder="Nota..." onchange="autoSaveNote()" style="flex:1;font-size:.82rem;padding:7px 10px;border:1.5px solid var(--bdr);border-radius:8px">
           <label style="display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap">
             <input type="checkbox" id="lsCheck" onchange="saveLs()" style="width:17px;height:17px;accent-color:#059669;cursor:pointer">
-            <span style="font-size:.75rem;font-weight:600;color:#059669">LS</span>
+            <span style="font-size:.75rem;font-weight:600;color:#059669">Subido</span>
           </label>
         </div>
         <button id="btnSendMaint" onclick="openWOModal()" style="display:none;width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--mant-bd);background:var(--mant-bg);color:var(--mant);font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:8px">🔧 Enviar a Mantenimiento</button>
@@ -587,7 +587,7 @@ textarea{min-height:60px;resize:none}
 <div class="ls-select-bar" id="lsSelectBar">
   <b><span id="lsSelectCount">0</span> seleccionados</b>
   <button class="sec" onclick="lsAll()">Todos</button>
-  <button class="go" onclick="confirmBulkLS()">✓ Marcar LS</button>
+  <button class="go" onclick="confirmBulkLS()">✓ Marcar subido</button>
   <button class="sec" onclick="exitLsMode()">✕</button>
 </div>
 <script type="module">
@@ -841,7 +841,7 @@ function fmtTime(ts){
 // ── LIGHTSPEED MULTI-SELECCIÓN
 let lsMode=false;const lsSel=new Set();
 function updLs(){const c=document.getElementById('lsSelectCount');if(c)c.textContent=lsSel.size;}
-window.enterLsMode=function(){lsMode=true;lsSel.clear();document.getElementById('lsSelectBar').style.display='flex';updLs();renderGrid();toast('Toca los cuartos que ya subiste a Lightspeed');};
+window.enterLsMode=function(){lsMode=true;lsSel.clear();document.getElementById('lsSelectBar').style.display='flex';updLs();renderGrid();toast('Toca los cuartos que ya subiste al sistema');};
 window.exitLsMode=function(){lsMode=false;lsSel.clear();const b=document.getElementById('lsSelectBar');if(b)b.style.display='none';renderGrid();};
 window.tileTap=function(id){
   if(!lsMode){openRoomModal(id);return;}
@@ -859,7 +859,7 @@ window.confirmBulkLS=function(){
   ids.forEach(id=>{st.lsDone[id]=true;const r=st.rooms.find(x=>x.id===id);if(r)addLog(r,'ls',currentEmpId,'supervisor');});
   const n=ids.length;
   exitLsMode();save();refreshAssocModal();
-  toast('✅ '+n+(n===1?' cuarto marcado':' cuartos marcados')+' en Lightspeed');
+  toast('✅ '+n+(n===1?' cuarto marcado':' cuartos marcados')+' como subidos');
 };
 
 // ── RENDER ALL
@@ -1336,7 +1336,7 @@ window.openRoomModal=function(id){
       logEl.innerHTML=`<div style="font-size:.62rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Historial</div>`+
         logs.slice(0,5).map(l=>{
           const s=STATUS[l.status];
-          const label=l.status==='ls'?'→ Lightspeed':(s?`→ ${s.icon} ${s.label}`:`→ ${l.status}`);
+          const label=l.status==='ls'?'→ Subido':(s?`→ ${s.icon} ${s.label}`:`→ ${l.status}`);
           return`<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #f0f4f8;font-size:.72rem">
             <span style="font-weight:600;color:var(--text)">${l.who}</span>
             <span style="color:var(--muted)">${label}</span>
@@ -1385,14 +1385,14 @@ window.selStatus=function(k){
 function lateVisible(s){return s==='odco'||s==='odrf'||s==='odfu';}
 window.setLate=function(btn){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.lateCheckout=btn.dataset.h||null;document.querySelectorAll('.late-btn').forEach(b=>b.classList.toggle('on',b===btn&&btn.dataset.h));save();renderGrid();refreshAssocModal();if(btn.dataset.h)toast(`🕐 Late ${btn.dataset.h} — Cuarto ${r.number}`);};
 window.autoSaveNote=function(){const r=st.rooms.find(x=>x.id===curRoomId);if(r){r.note=document.getElementById('roomNote').value;save();}};
-window.saveLs=function(){const el=document.getElementById('lsCheck');if(!el||!curRoomId)return;st.lsDone[curRoomId]=el.checked;save();renderGrid();refreshAssocModal();if(el.checked){toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),200);}};
+window.saveLs=function(){const el=document.getElementById('lsCheck');if(!el||!curRoomId)return;st.lsDone[curRoomId]=el.checked;save();renderGrid();refreshAssocModal();if(el.checked){toast('✅ Marcado como subido');setTimeout(()=>closeModal('modalRoom'),200);}};
 window.quickLS=function(){
   if(!curRoomId)return;
   st.lsDone[curRoomId]=true;
   const el=document.getElementById('lsCheck');if(el)el.checked=true;
   const r=st.rooms.find(x=>x.id===curRoomId);
   if(r) addLog(r,'ls',currentEmpId,'supervisor');
-  save();renderGrid();refreshAssocModal();toast('✅ Marcado en Lightspeed');setTimeout(()=>closeModal('modalRoom'),200);
+  save();renderGrid();refreshAssocModal();toast('✅ Marcado como subido');setTimeout(()=>closeModal('modalRoom'),200);
 };
 window.togMissing=function(id){document.getElementById('mo-'+id).classList.toggle('sel');const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.missing=MISSING.filter(m=>document.getElementById('mo-'+m.id)?.classList.contains('sel')).map(m=>m.id);save();};
 window.adjHangers=function(d){const r=st.rooms.find(x=>x.id===curRoomId);if(!r)return;r.hangers=Math.max(0,Math.min(4,(r.hangers!=null?r.hangers:4)+d));document.getElementById('hangerCount').textContent=r.hangers;document.getElementById('hangerNote').textContent=r.hangers<4?`⚠️ Faltan ${4-r.hangers}`:'';save();renderGrid();refreshAssocModal();};
@@ -1799,7 +1799,6 @@ function hzRender() {
     </div>
     <div class="hz-bar">
       <button class="hz-act" onclick="hzStaff()">👥 Personal</button>
-      <button class="hz-act" onclick="hzAutofill()">⚡ Autollenar</button>
       <button class="hz-act go" onclick="hzImage()">📷 Enviar imagen</button>
       <div style="margin-left:auto;font-size:.78rem;color:var(--muted);font-weight:600">Ocupación promedio: <strong id="hzAvg" style="color:var(--text)">${avgText(w)}</strong></div>
     </div>
