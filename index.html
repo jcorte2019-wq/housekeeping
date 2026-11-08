@@ -289,6 +289,8 @@ textarea{min-height:60px;resize:none}
 .tile.ls-sel::after{content:'✓';position:absolute;top:4px;left:6px;width:20px;height:20px;border-radius:50%;background:#059669;color:white;font-size:.75rem;font-weight:800;display:flex;align-items:center;justify-content:center}
 @media(min-width:768px){.ls-select-bar{max-width:768px}}
 @media(min-width:1100px){.ls-select-bar{bottom:0;left:190px;right:0;max-width:none;margin:0}}
+.tile-type{display:inline-block;font-size:.56rem;font-weight:800;letter-spacing:.02em;color:#0f6b8a;background:#e6f2f7;border-radius:5px;padding:1px 4px;vertical-align:middle;margin-left:3px}
+.tile-type.sk{color:#7c3aed;background:#f3ecfe}
 </style>
 </head>
 <body>
@@ -919,7 +921,7 @@ function renderGrid(){
     return`<div class="tile s-${r.status}${lsSel.has(r.id)?' ls-sel':''}" onclick="tileTap('${r.id}')" style="${rep?'opacity:.45;':''}">
       ${rep?'<span class="tile-done">✓</span>':''}
       ${r.missing?.length?`<span class="tile-alert">${r.missing.length}</span>`:''}
-      <div class="tile-num" style="${rep?'text-decoration:line-through;color:#9ca3af':''}">${r.number}</div>
+      <div class="tile-num" style="${rep?'text-decoration:line-through;color:#9ca3af':''}">${r.number}${roomType(r.number)?` <span class="tile-type${roomType(r.number)==='SK'?' sk':''}">${roomType(r.number)}</span>`:''}</div>
       <div class="tile-status" style="color:${rep?'#9ca3af':s.color}">${s.icon} ${s.label}${r.dnd?' 🚫':''}</div>
       ${r.lateCheckout?`<div style="font-size:.56rem;font-weight:700;color:#7c3aed;margin-top:1px">🕐 ${r.lateCheckout}</div>`:''}
       <div class="tile-emp">${emp?emp.name.split(' ')[0]:'—'}</div>
@@ -1283,9 +1285,17 @@ window.updateEmpPin=function(id,pin){
 };
 
 // ── ROOM MODAL (supervisor)
+function roomType(num){
+  num=parseInt(num,10);if(!num)return'';
+  const fl=Math.floor(num/100),n=num%100;let t='';
+  if((n>=1&&n<=8)||(n>=15&&n<=21)||(n>=25&&n<=32))t='KK';
+  else if((n>=9&&n<=14)||n===23||n===33||n===34)t='QQ';
+  if(t==='KK'&&fl>=3&&fl<=5&&num%2===1&&num!==301)t='SK';
+  return t;
+}
 window.openRoomModal=function(id){
   curRoomId=id;const r=st.rooms.find(x=>x.id===id);if(!r)return;
-  document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number}`;
+  document.getElementById('roomModalTitle').textContent=`Cuarto ${r.number}${roomType(r.number)?' · '+roomType(r.number):''}`;
   const allowed=VALID_TRANSITIONS[r.status]||Object.keys(STATUS);
   document.getElementById('stOpts').innerHTML=Object.entries(STATUS).map(([k,v])=>{
     const isCur=k===r.status,isOk=isCur||allowed.includes(k);
